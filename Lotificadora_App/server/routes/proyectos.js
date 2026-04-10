@@ -1,0 +1,58 @@
+import { Router } from "express";
+import { executeProcedure, querySql } from "../utils/sql.js";
+import { asyncHandler } from "../middleware/errorHandler.js";
+
+const router = Router();
+
+router.get(
+  "/dashboard",
+  asyncHandler(async (req, res) => {
+    const result = await querySql("SELECT * FROM vw_dashboard_proyectos");
+    res.json(result.recordset);
+  })
+);
+
+router.get(
+  "/",
+  asyncHandler(async (req, res) => {
+    const result = await executeProcedure("sp_proyectos_listar", {
+      proyectoId: req.query.proyectoId,
+    });
+    res.json(result.recordset);
+  })
+);
+
+router.get(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const result = await executeProcedure("sp_proyectos_obtener", { id: req.params.id });
+    res.json(result.recordset[0] ?? null);
+  })
+);
+
+router.post(
+  "/",
+  asyncHandler(async (req, res) => {
+    const result = await executeProcedure("sp_proyectos_crear", req.body);
+    res.json(result.recordset ?? result.returnValue);
+  })
+);
+
+router.put(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const payload = { id: req.params.id, ...req.body };
+    const result = await executeProcedure("sp_proyectos_actualizar", payload);
+    res.json(result.recordset ?? result.returnValue);
+  })
+);
+
+router.delete(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const result = await executeProcedure("sp_proyectos_eliminar", { id: req.params.id });
+    res.json(result.recordset ?? { deletedId: req.params.id });
+  })
+);
+
+export default router;

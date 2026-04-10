@@ -32,8 +32,8 @@ export default [
     // Clientes
     ...prefix("clientes", [
       index("pages/clientes/ClientesList.jsx"),
-      // route("nuevo", "pages/clientes/ClienteForm.jsx", { id: "cliente-nuevo" }),
-      // route(":id/editar", "pages/clientes/ClienteForm.jsx", { id: "cliente-editar" }),
+      route("nuevo", "pages/clientes/ClienteForm.jsx", { id: "cliente-nuevo" }),
+      route(":id/editar", "pages/clientes/ClienteForm.jsx", { id: "cliente-editar" }),
     ]),
 
     // Ventas
