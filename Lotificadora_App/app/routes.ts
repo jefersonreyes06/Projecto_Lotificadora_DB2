@@ -1,0 +1,59 @@
+import { type RouteConfig, index, layout, route, prefix } from "@react-router/dev/routes";
+
+export default [
+  layout("layouts/MainLayout.jsx", [
+    index("pages/Dashboard.jsx"),
+
+    // Proyectos
+    ...prefix("proyectos", [
+      index("pages/proyectos/ProyectosList.jsx"),
+      // Añadimos un ID único a cada una
+      route("nuevo", "pages/proyectos/ProyectoForm.jsx", { id: "proyecto-nuevo" }),
+      route(":id/editar", "pages/proyectos/ProyectoForm.jsx", { id: "proyecto-editar" }),
+    ]),
+
+    // Etapas
+    ...prefix("etapas", [
+      index("pages/etapas/EtapasList.jsx"),
+      route("nueva", "pages/etapas/EtapaForm.jsx", { id: "etapa-nueva" }),
+      route(":id/editar", "pages/etapas/EtapaForm.jsx", { id: "etapa-editar" }),
+    ]),
+
+    route("bloques", "pages/bloques/BloquesList.jsx"),
+
+    // Lotes
+    ...prefix("lotes", [
+      index("pages/lotes/LotesList.jsx"),
+      route("nuevo", "pages/lotes/LoteForm.jsx", { id: "lote-nuevo" }),
+      route(":id/editar", "pages/lotes/LoteForm.jsx", { id: "lote-editar" }),
+      route("disponibles", "pages/lotes/LotesDisponibles.jsx"),
+    ]),
+
+    // Clientes
+    ...prefix("clientes", [
+      index("pages/clientes/ClientesList.jsx"),
+      // route("nuevo", "pages/clientes/ClienteForm.jsx", { id: "cliente-nuevo" }),
+      // route(":id/editar", "pages/clientes/ClienteForm.jsx", { id: "cliente-editar" }),
+    ]),
+
+    // Ventas
+    ...prefix("ventas", [
+      // index("pages/ventas/VentasList.jsx"),
+      route("nueva", "pages/ventas/VentaForm.jsx"),
+      // route(":id/plan-pagos", "pages/ventas/PlanPagos.jsx"),
+    ]),
+
+    // Pagos
+    ...prefix("pagos", [
+      // index("pages/pagos/PagosList.jsx"),
+      route("nuevo", "pages/pagos/PagoForm.jsx"),
+    ]),
+
+    // route("cuentas", "pages/cuentas/CuentasList.jsx"),
+
+    ...prefix("reportes", [
+      route("vistas", "pages/reportes/ReporteVistas.jsx"),
+      route("procedimientos", "pages/reportes/ReporteProcedimientos.jsx"),
+      route("funciones", "pages/reportes/ReporteFunciones.jsx"),
+    ]),
+  ]),] satisfies RouteConfig;
