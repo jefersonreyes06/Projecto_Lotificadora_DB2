@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { StatCard, Card, Badge, PageHeader, PageContent } from "../components/index";
+import { dashboardApi } from "../../services/api";
 
 const quickLinks = [
   { to: "/lotes/disponibles", label: "Ver lotes disponibles", icon: "◉", desc: "Consulta en tiempo real" },
