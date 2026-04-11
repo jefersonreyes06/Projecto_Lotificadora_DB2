@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router";
-// import { pagosApi, ventasApi } from "../../services/api";
+import { pagosApi } from "../../services/api.js";
 import {
   PageHeader, PageContent, Button, FormField, Input, Select, Card, Alert, Badge,
 } from "../../components/index";

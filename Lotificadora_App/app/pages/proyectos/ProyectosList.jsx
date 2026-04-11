@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
 
+import { proyectosApi } from "../../services/api.js";
 import {
   PageHeader, PageContent, Button, DataTable, Badge, Card, Input,
 } from "../../components/index";
@@ -15,9 +16,9 @@ export default function ProyectosList() {
 
   useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:3001/api/proyectos")
-      .then((res) => res.json())
-      .then(setData)
+    proyectosApi
+      .list()
+      .then((d) => { setData(d); })
       .catch((err) => setError(err.message || "Error al cargar proyectos"))
       .finally(() => setLoading(false));
   }, []);

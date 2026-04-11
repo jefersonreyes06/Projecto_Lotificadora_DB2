@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 
+import { bloquesApi } from "../../services/api.js";
 import { PageHeader, PageContent, Card, DataTable, Badge, Button, Input } from "../../components/index";
 
 export function BloquesList() {
@@ -14,9 +15,9 @@ export function BloquesList() {
 
   useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:3001/api/bloques")
-      .then((res) => res.json())
-      .then(setData)
+    bloquesApi
+      .list()
+      .then((d) => setData(d))
       .catch((err) => setError(err.message || "Error al cargar bloques"))
       .finally(() => setLoading(false));
   }, []);
@@ -48,7 +49,11 @@ export function BloquesList() {
   return (
     <div>
       <PageHeader title="Bloques" subtitle="sp_bloques_listar — filtros por nombre, proyecto y etapa"
-        actions={<Button>+ Nuevo bloque</Button>}
+        actions={
+          <Link to="/bloques/nuevo">
+            <Button>+ Nuevo bloque</Button>
+          </Link>
+        }
       />
       <PageContent>
         {error && (

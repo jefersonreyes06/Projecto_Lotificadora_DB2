@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { proyectosApi, etapasApi, reportesApi } from "../../services/api.js";
 
 import {
   PageHeader, PageContent, Card, DataTable, Badge, Button, FormField, Select,
@@ -13,11 +14,11 @@ function LotesPorEtapa() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // useEffect(() => { proyectosApi.list().then(setProyectos).catch(() => {}); }, []);
-  // useEffect(() => {
-  //   if (!proyectoId) { setEtapas([]); return; }
-  //   etapasApi.list(proyectoId).then(setEtapas).catch(() => {});
-  // }, [proyectoId]);
+  useEffect(() => { proyectosApi.list().then(setProyectos).catch(() => {}); }, []);
+  useEffect(() => {
+    if (!proyectoId) { setEtapas([]); return; }
+    etapasApi.list(proyectoId).then(setEtapas).catch(() => {});
+  }, [proyectoId]);
 
   const cols = [
     { key: "codigo_lote", label: "Código" },
@@ -48,10 +49,10 @@ function LotesPorEtapa() {
         </FormField>
         <Button
           disabled={!etapaId}
-          // onClick={() => {
-          //   setLoading(true);
-          //   reportesApi.lotesPorEtapa(etapaId).then(setData).catch(() => setData([])).finally(() => setLoading(false));
-          // }}
+          onClick={() => {
+            setLoading(true);
+            reportesApi.lotesPorEtapa(etapaId).then(setData).catch(() => setData([])).finally(() => setLoading(false));
+          }}
         >
           Ejecutar función
         </Button>
@@ -68,7 +69,7 @@ function ClientesPorProyecto() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // useEffect(() => { proyectosApi.list().then(setProyectos).catch(() => {}); }, []);
+  useEffect(() => { proyectosApi.list().then(setProyectos).catch(() => {}); }, []);
 
   const cols = [
     { key: "nombre_completo", label: "Cliente" },
@@ -95,10 +96,10 @@ function ClientesPorProyecto() {
         </FormField>
         <Button
           disabled={!proyectoId}
-          // onClick={() => {
-          //   setLoading(true);
-          //   reportesApi.clientesPorProyecto(proyectoId).then(setData).catch(() => setData([])).finally(() => setLoading(false));
-          // }}
+          onClick={() => {
+            setLoading(true);
+            reportesApi.clientesPorProyecto(proyectoId).then(setData).catch(() => setData([])).finally(() => setLoading(false));
+          }}
         >
           Ejecutar función
         </Button>

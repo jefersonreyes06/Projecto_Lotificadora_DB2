@@ -5,7 +5,7 @@
 // BASE_URL apunta al backend (Express / .NET / etc.)
 // ──────────────────────────────────────────────────────────
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+const BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
 async function request(path, options = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
@@ -47,24 +47,50 @@ export const etapasApi = {
 // ──────────────────────────────────────────────
 // BLOQUES — sp_bloques_*
 // ──────────────────────────────────────────────
+const normalizeBloquePayload = (data) => ({
+  etapaId: data.etapaId,
+  nombre: data.nombre,
+  areaTotalVaras: data.area_total_varas ?? data.areaTotalVaras ?? null,
+  estado: data.estado,
+});
+
 export const bloquesApi = {
   list: (etapaId) =>
     request(`/bloques${etapaId ? `?etapaId=${etapaId}` : ""}`),
   get: (id) => request(`/bloques/${id}`),
-  create: (data) => request("/bloques", { method: "POST", body: JSON.stringify(data) }),
-  update: (id, data) => request(`/bloques/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  create: (data) => request("/bloques", {
+    method: "POST",
+    body: JSON.stringify(normalizeBloquePayload(data)),
+  }),
+  update: (id, data) => request(`/bloques/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(normalizeBloquePayload(data)),
+  }),
   remove: (id) => request(`/bloques/${id}`, { method: "DELETE" }),
 };
 
 // ──────────────────────────────────────────────
 // LOTES — sp_lotes_*
 // ──────────────────────────────────────────────
+const normalizeLotePayload = (data) => ({
+  loteId: data.loteId,
+  bloqueId: data.bloqueId,
+  codigoLote: data.codigo_lote ?? data.codigoLote,
+  areaM2: data.area_m2 ?? data.areaM2,
+  esEsquina: data.es_esquina ?? data.esEsquina ?? false,
+  cercaParque: data.cerca_parque ?? data.cercaParque ?? false,
+  calleCerrada: data.calle_cerrada ?? data.calleCerrada ?? false,
+  frenteAvenida: data.frente_avenida ?? data.frenteAvenida ?? false,
+  estado: data.estado,
+  valorTotal: data.valorTotal ?? data.valor_total ?? null,
+});
+
 export const lotesApi = {
   list: (bloqueId) =>
     request(`/lotes${bloqueId ? `?bloqueId=${bloqueId}` : ""}`),
   get: (id) => request(`/lotes/${id}`),
-  create: (data) => request("/lotes", { method: "POST", body: JSON.stringify(data) }),
-  update: (id, data) => request(`/lotes/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  create: (data) => request("/lotes", { method: "POST", body: JSON.stringify(normalizeLotePayload(data)) }),
+  update: (id, data) => request(`/lotes/${id}`, { method: "PUT", body: JSON.stringify(normalizeLotePayload(data)) }),
   remove: (id) => request(`/lotes/${id}`, { method: "DELETE" }),
   // Vista vw_lotes_disponibles
   disponibles: (filtros) =>

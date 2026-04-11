@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import {
   PageHeader, PageContent, Card, DataTable, Badge, FormField, Select, Button, Input, Modal, Alert,
 } from "../../components/index";
-import { lotesApi, proyectosApi, etapasApi, clientesApi, ventasApi } from "../../../services/api";
+import { lotesApi, proyectosApi, etapasApi } from "../../services/api";
 
 const ESTADO_COLORS = {
   Disponible: "success",
