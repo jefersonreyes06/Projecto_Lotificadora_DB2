@@ -60,4 +60,52 @@ router.get(
   })
 );
 
+// NUEVAS FUNCIONES DE TIPO TABLA
+
+router.get(
+  "/lotes-disponibles-proyecto/:proyectoId",
+  asyncHandler(async (req, res) => {
+    const result = await querySql("SELECT * FROM fn_lotes_disponibles_por_proyecto(@proyectoId)", {
+      proyectoId: req.params.proyectoId,
+    });
+    res.json(result.recordset);
+  })
+);
+
+router.get(
+  "/historial-pagos-cliente/:clienteId",
+  asyncHandler(async (req, res) => {
+    const result = await querySql("SELECT * FROM fn_historial_pagos_cliente(@clienteId)", {
+      clienteId: req.params.clienteId,
+    });
+    res.json(result.recordset);
+  })
+);
+
+router.get(
+  "/cuotas-vencidas",
+  asyncHandler(async (req, res) => {
+    const result = await querySql("SELECT * FROM fn_cuotas_vencidas()");
+    res.json(result.recordset);
+  })
+);
+
+router.get(
+  "/ventas-por-mes/:anio",
+  asyncHandler(async (req, res) => {
+    const result = await querySql("SELECT * FROM fn_ventas_por_mes(@anio)", {
+      anio: req.params.anio,
+    });
+    res.json(result.recordset);
+  })
+);
+
+router.get(
+  "/estadisticas-lotes-estado",
+  asyncHandler(async (req, res) => {
+    const result = await querySql("SELECT * FROM fn_estadisticas_lotes_por_estado()");
+    res.json(result.recordset);
+  })
+);
+
 export default router;

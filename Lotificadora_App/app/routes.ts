@@ -67,5 +67,6 @@ export default [
       route("vistas", "pages/reportes/ReporteVistas.jsx"),
       route("procedimientos", "pages/reportes/ReporteProcedimientos.jsx"),
       route("funciones", "pages/reportes/ReporteFunciones.jsx"),
+      route("funciones-tabla", "pages/reportes/ReporteFuncionesTabla.jsx"),
     ]),
   ]),] satisfies RouteConfig;

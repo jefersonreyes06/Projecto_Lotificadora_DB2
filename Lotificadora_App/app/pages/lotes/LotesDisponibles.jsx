@@ -123,7 +123,7 @@ export default function LotesDisponibles() {
     try {
       const montoTotal = ventaModal.lote.valor_total;
       const prima = ventaForm.tipoVenta === "Contado" ? 0 : (parseFloat(ventaForm.prima) || 0);
-      const montoFinanciado = ventaForm.tipoVenta === "Financiado" ? montoTotal - prima : 0;
+      const montoFinanciado = ventaForm.tipoVenta === "Credito" ? montoTotal - prima : 0;
       const aniosPlazo = ventaForm.tipoVenta === "Contado" ? 0 : ventaForm.aniosPlazo;
 
       console.log(clienteData, ventaModal.lote, ventaForm);

@@ -20,6 +20,7 @@ export default function PagosList() {
   const [cierreFecha, setCierre] = useState(new Date().toISOString().split("T")[0]);
   const [cierreLoading, setCierreLoading] = useState(false);
   const [cierreMsg, setCierreMsg]         = useState(null);
+  const [busquedaLote, setBusquedaLote] = useState("");
   const navigate = useNavigate();
 
   const load = () => {
@@ -43,7 +44,7 @@ export default function PagosList() {
     setCierreLoading(true);
     setCierreMsg(null);
     try {
-      const res = await pagosApi.cierreDiario(cierreFecha); // sp_cierre_caja_diario — cursor
+      const res = await pagosApi.cierreDiario(cierreFecha);
       setCierreMsg({ type: "success", text: `Cierre realizado: ${res.total_depositos} depósito(s) por ${fmtLps(res.monto_total)}` });
       load();
     } catch (e) {
@@ -51,6 +52,11 @@ export default function PagosList() {
     } finally {
       setCierreLoading(false);
     }
+  };
+
+  const handleBuscarLote = () => {
+    if (!busquedaLote.trim()) return;
+    navigate(`/pagos/nuevo?numeroLote=${encodeURIComponent(busquedaLote)}`);
   };
 
   const totalEfectivo = data.filter((p) => p.tipo_pago === "Efectivo").reduce((s, p) => s + Number(p.monto_pagado ?? 0), 0);
@@ -90,6 +96,33 @@ export default function PagosList() {
       />
 
       <PageContent>
+        {/* Búsqueda rápida de lote */}
+        <Card className="p-5 mb-6 border-blue-400/20 bg-blue-400/5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-blue-400/70 mb-3">
+            🔍 Buscar lote para pagar
+          </p>
+          <div className="flex gap-3 items-end flex-wrap">
+            <div className="flex-1 min-w-xs">
+              <label className="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1.5">
+                Número de lote (ej: A-01, B-05)
+              </label>
+              <Input
+                type="text"
+                value={busquedaLote}
+                onChange={(e) => setBusquedaLote(e.target.value)}
+                placeholder="Ingrese número de lote"
+                onKeyDown={(e) => e.key === 'Enter' && handleBuscarLote()}
+              />
+            </div>
+            <Button onClick={handleBuscarLote} disabled={!busquedaLote.trim()}>
+              Ir a pagar
+            </Button>
+            <p className="text-xs text-stone-500 self-center">
+              Se valida automáticamente: Crédito + Proceso
+            </p>
+          </div>
+        </Card>
+
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <StatCard label="Total recaudado"  value={fmtLps(totalEfectivo + totalBanco)} accent />

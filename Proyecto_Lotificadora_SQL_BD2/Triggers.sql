@@ -230,3 +230,206 @@ BEGIN
     END;
 END;
 GO
+
+-- ============================================
+-- TRIGGERS ADICIONALES PARA PAGOS
+-- ============================================
+
+-- Trigger 11: Actualizar saldo de cuenta bancaria cuando se registra pago por depósito
+CREATE OR ALTER TRIGGER tr_Pagos_Insert_UpdateCuentaBancaria
+ON Pagos
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Actualizar saldo de la cuenta bancaria si el pago es por depósito/transferencia
+    UPDATE cb
+    SET cb.SaldoActual = cb.SaldoActual + i.MontoRecibido
+    FROM CuentaBancaria cb
+    INNER JOIN inserted i ON cb.CuentaID = i.CuentaBancariaID
+    WHERE i.MetodoPago IN ('Deposito', 'Transferencia')
+      AND i.CuentaBancariaID IS NOT NULL;
+END;
+GO
+
+-- Trigger 12: Validar que el pago solo se registre para ventas al crédito en proceso
+CREATE OR ALTER TRIGGER tr_Pagos_Insert_ValidateLoteEstado
+ON Pagos
+INSTEAD OF INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @ErrorCount INT = 0;
+    DECLARE @ValidPagos TABLE (
+        PagoID INT,
+        CuotaID INT,
+        FechaPago DATE,
+        MontoRecibido DECIMAL(12,2),
+        MetodoPago VARCHAR(20),
+        NumeroDeposito VARCHAR(50),
+        CuentaBancariaID INT,
+        UsuarioCajaID INT,
+        Observaciones VARCHAR(200)
+    );
+    
+    -- Validar cada pago insertado
+    IF EXISTS (
+        SELECT 1
+        FROM inserted i
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM PlanPagos pp
+            INNER JOIN Ventas v ON pp.VentaID = v.VentaID
+            INNER JOIN Lotes l ON v.LoteID = l.LoteID
+            WHERE pp.CuotaID = i.CuotaID
+              AND v.TipoVenta = 'Credito'
+              AND v.Estado = 'Activa'
+              AND (l.Estado = 'Proceso' OR l.Estado = 'Vendido')
+              AND pp.Estado = 'Pendiente'
+        )
+    )
+    BEGIN
+        RAISERROR('El pago no puede registrarse. Validar: Venta activa, crédito, lote en proceso/vendido, cuota pendiente.', 16, 1);
+        ROLLBACK;
+        RETURN;
+    END;
+    
+    -- Si todas las validaciones pasan, insertar los pagos
+    INSERT INTO Pagos (CuotaID, FechaPago, MontoRecibido, MetodoPago, NumeroDeposito, CuentaBancariaID, UsuarioCajaID, Observaciones)
+    SELECT CuotaID, FechaPago, MontoRecibido, MetodoPago, NumeroDeposito, CuentaBancariaID, UsuarioCajaID, Observaciones
+    FROM inserted;
+END;
+GO
+
+-- Trigger 13: Cambiar estado del lote a "Vendido" cuando todas las cuotas están pagadas
+CREATE OR ALTER TRIGGER tr_PlanPagos_Update_UpdateLoteEstado
+ON PlanPagos
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Si se actualiza el estado de una cuota a "Pagada", verificar si todas están pagadas
+    IF UPDATE(Estado)
+    BEGIN
+        UPDATE l
+        SET l.Estado = 'Vendido'
+        FROM Lotes l
+        INNER JOIN Ventas v ON l.LoteID = v.LoteID
+        INNER JOIN PlanPagos pp ON v.VentaID = pp.VentaID
+        WHERE NOT EXISTS (
+            SELECT 1 FROM PlanPagos pp2
+            WHERE pp2.VentaID = v.VentaID
+              AND pp2.Estado != 'Pagada'
+              AND pp2.Estado != 'Cancelada'
+        )
+        AND l.Estado = 'Proceso';
+    END;
+END;
+GO
+
+-- Trigger 14: Registrar en auditoría cuando se actualiza una cuota
+CREATE OR ALTER TRIGGER tr_PlanPagos_Update_Auditoria
+ON PlanPagos
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    INSERT INTO Auditoria (TablaAfectada, RegistroID, Accion, DatosAntiguos, DatosNuevos)
+    SELECT 'PlanPagos', i.CuotaID, 'UPDATE',
+           'Estado: ' + d.Estado + ', SaldoPendiente: ' + CAST(d.SaldoPendiente AS VARCHAR(20)),
+           'Estado: ' + i.Estado + ', SaldoPendiente: ' + CAST(i.SaldoPendiente AS VARCHAR(20))
+    FROM inserted i
+    INNER JOIN deleted d ON i.CuotaID = d.CuotaID
+    WHERE i.Estado != d.Estado OR i.SaldoPendiente != d.SaldoPendiente;
+END;
+GO
+
+-- Trigger 15: Registrar en auditoría cuando se registra una factura
+CREATE OR ALTER TRIGGER tr_Facturas_Insert_Auditoria
+ON Facturas
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    INSERT INTO Auditoria (TablaAfectada, RegistroID, Accion, DatosNuevos)
+    SELECT 'Facturas', i.FacturaID, 'INSERT',
+           'NumeroFactura: ' + i.NumeroFactura + ', Total: ' + CAST(i.TotalFactura AS VARCHAR(20)) + ', CAI: ' + i.CAI
+    FROM inserted i;
+END;
+GO
+
+-- Trigger 16: Validar que el monto de pago no exceda el saldo pendiente
+CREATE OR ALTER TRIGGER tr_Pagos_Insert_ValidateMontoRecibido
+ON Pagos
+INSTEAD OF INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Validar que el monto recibido no exceda el saldo pendiente de la cuota
+    IF EXISTS (
+        SELECT 1
+        FROM inserted i
+        INNER JOIN PlanPagos pp ON i.CuotaID = pp.CuotaID
+        WHERE i.MontoRecibido > pp.SaldoPendiente
+    )
+    BEGIN
+        RAISERROR('El monto recibido no puede exceder el saldo pendiente de la cuota.', 16, 1);
+        ROLLBACK;
+        RETURN;
+    END;
+    
+    -- Si la validación pasa, insertar los pagos
+    INSERT INTO Pagos (CuotaID, FechaPago, MontoRecibido, MetodoPago, NumeroDeposito, CuentaBancariaID, UsuarioCajaID, Observaciones)
+    SELECT CuotaID, FechaPago, MontoRecibido, MetodoPago, NumeroDeposito, CuentaBancariaID, UsuarioCajaID, Observaciones
+    FROM inserted;
+END;
+GO
+
+-- Trigger 17: Actualizar estado de cuota cuando se registra pago (reemplaza trigger anterior)
+CREATE OR ALTER TRIGGER tr_Pagos_Insert_UpdateCuotaEstado
+ON Pagos
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @CuotaID INT;
+    DECLARE @MontoRecibido DECIMAL(12,2);
+    DECLARE @SaldoPendiente DECIMAL(12,2);
+    
+    -- Recorrer cada pago insertado
+    DECLARE cur CURSOR FOR
+    SELECT i.CuotaID, i.MontoRecibido
+    FROM inserted i;
+    
+    OPEN cur;
+    FETCH NEXT FROM cur INTO @CuotaID, @MontoRecibido;
+    
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        -- Obtener el saldo pendiente actual
+        SELECT @SaldoPendiente = SaldoPendiente FROM PlanPagos WHERE CuotaID = @CuotaID;
+        
+        -- Actualizar la cuota
+        UPDATE PlanPagos
+        SET Estado = CASE 
+                WHEN @MontoRecibido >= @SaldoPendiente THEN 'Pagada'
+                ELSE 'Parcial'
+            END,
+            SaldoPendiente = @SaldoPendiente - @MontoRecibido,
+            FechaPago = GETDATE()
+        WHERE CuotaID = @CuotaID;
+        
+        FETCH NEXT FROM cur INTO @CuotaID, @MontoRecibido;
+    END;
+    
+    CLOSE cur;
+    DEALLOCATE cur;
+END;
+GO

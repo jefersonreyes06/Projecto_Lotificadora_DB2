@@ -125,6 +125,7 @@ BEGIN
         c.NombreCompleto AS ClienteNombre,
         v.LoteID,
         l.NumeroLote,
+        l.Estado AS LoteEstado,
         v.FechaVenta,
         v.TipoVenta,
         v.MontoTotal,
@@ -332,3 +333,84 @@ GO
 -- porque causaba duplicación de registros de Lotes. La funcionalidad se consolidó
 -- en el trigger 'tr_Ventas_Insert_UpdateLoteStatus' del archivo Triggers.sql
 -- Ver: ConsolidacionCorrecciones.sql para más detalles.
+
+-- =====================================================
+-- PROCEDIMIENTO PARA CREAR VENTA Y ACTUALIZAR LOTE
+-- =====================================================
+
+-- Crear venta y cambiar estado del lote
+CREATE PROCEDURE sp_crear_venta_lote
+    @ClienteID INT,
+    @LoteID INT,
+    @TipoVenta VARCHAR(20),
+    @Prima DECIMAL(12,2) = 0,
+    @AniosPlazo INT = 0,
+    @TasaInteresAplicada DECIMAL(5,2) = 0
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @MontoTotal DECIMAL(12,2);
+    DECLARE @MontoFinanciado DECIMAL(12,2);
+    DECLARE @VentaID INT;
+
+    BEGIN TRY
+        -- Validar que el lote existe y está disponible
+        IF NOT EXISTS (SELECT 1 FROM Lotes WHERE LoteID = @LoteID AND Estado = 'Disponible')
+        BEGIN
+            SELECT 'Error: Lote no encontrado o no disponible' AS Mensaje, 0 AS Exito;
+            RETURN;
+        END;
+
+        -- Validar que el cliente existe y está activo
+        IF NOT EXISTS (SELECT 1 FROM Clientes WHERE ClienteID = @ClienteID AND Estado = 'Activo')
+        BEGIN
+            SELECT 'Error: Cliente no encontrado o inactivo' AS Mensaje, 0 AS Exito;
+            RETURN;
+        END;
+
+        -- Obtener el precio del lote
+        SELECT @MontoTotal = PrecioFinal FROM Lotes WHERE LoteID = @LoteID;
+
+        -- Calcular monto financiado
+        SET @MontoFinanciado = @MontoTotal - @Prima;
+
+        -- Insertar la venta
+        INSERT INTO Ventas (
+            ClienteID, 
+            LoteID, 
+            FechaVenta, 
+            TipoVenta, 
+            MontoTotal, 
+            Prima, 
+            MontoFinanciado, 
+            AniosPlazo, 
+            TasaInteresAplicada, 
+            Estado
+        ) VALUES (
+            @ClienteID, 
+            @LoteID, 
+            GETDATE(), 
+            @TipoVenta, 
+            @MontoTotal, 
+            @Prima, 
+            @MontoFinanciado, 
+            @AniosPlazo, 
+            @TasaInteresAplicada, 
+            'Activa'
+        );
+
+        SET @VentaID = SCOPE_IDENTITY();
+
+        -- Actualizar estado del lote
+        UPDATE Lotes SET Estado = 'Vendido', FechaVenta = GETDATE() WHERE LoteID = @LoteID;
+
+        -- Retornar éxito
+        SELECT @VentaID AS VentaID, 'Venta creada exitosamente' AS Mensaje, 1 AS Exito;
+
+    END TRY
+    BEGIN CATCH
+        SELECT 0 AS VentaID, ERROR_MESSAGE() AS Mensaje, 0 AS Exito;
+    END CATCH;
+END;
+GO

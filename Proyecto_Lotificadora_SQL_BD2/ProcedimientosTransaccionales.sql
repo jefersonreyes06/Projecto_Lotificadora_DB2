@@ -47,9 +47,9 @@ BEGIN
         SET @MontoFinanciado = @MontoTotal - @Prima;
         
         -- Si es financiado, validar que se proporcionaron años y tasa
-        IF @TipoVenta = 'Financiado' AND (@AniosPlazo = 0 OR @TasaInteresAplicada = 0)
+        IF @TipoVenta = 'Credito' AND (@AniosPlazo = 0 OR @TasaInteresAplicada = 0)
         BEGIN
-            SET @ErrorMessage = 'Para ventas financiadas se requieren años de plazo y tasa de interés.';
+            SET @ErrorMessage = 'Para ventas al crédito se requieren años de plazo y tasa de interés.';
             RAISERROR(@ErrorMessage, 16, 1);
         END;
         
@@ -59,8 +59,8 @@ BEGIN
         
         SET @VentaID = SCOPE_IDENTITY();
         
-        -- Si es financiado, generar plan de pagos
-        IF @TipoVenta = 'Financiado'
+        -- Si es al crédito, generar plan de pagos
+        IF @TipoVenta = 'Credito'
         BEGIN
             EXEC sp_generar_plan_pagos @VentaID, @MontoFinanciado, @AniosPlazo, @TasaInteresAplicada;
         END;
@@ -89,6 +89,77 @@ BEGIN
 END;
 GO
 
+-- GENERAR PLAN DE PAGOS (Transaccional)
+-- Genera el plan de pagos para una venta al crédito
+CREATE OR ALTER PROCEDURE sp_generar_plan_pagos
+    @VentaID INT,
+    @MontoFinanciado DECIMAL(12,2),
+    @AniosPlazo INT,
+    @TasaInteresAplicada DECIMAL(5,2)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @CuotaMensual DECIMAL(12,2);
+    DECLARE @TotalCuotas INT = @AniosPlazo * 12;
+    DECLARE @FechaVencimiento DATE = DATEADD(MONTH, 1, GETDATE());
+    DECLARE @SaldoPendiente DECIMAL(12,2) = @MontoFinanciado;
+    DECLARE @InteresMensual DECIMAL(12,2);
+    DECLARE @CapitalMensual DECIMAL(12,2);
+    DECLARE @CuotaID INT;
+    DECLARE @ErrorMessage NVARCHAR(4000);
+    
+    BEGIN TRY
+        BEGIN TRANSACTION;
+        
+        -- Calcular cuota mensual usando fórmula de amortización
+        SET @InteresMensual = @TasaInteresAplicada / 100 / 12;
+        SET @CuotaMensual = (@MontoFinanciado * @InteresMensual * POWER(1 + @InteresMensual, @TotalCuotas)) / (POWER(1 + @InteresMensual, @TotalCuotas) - 1);
+        
+        -- Insertar cuotas mensuales
+        DECLARE @i INT = 1;
+        WHILE @i <= @TotalCuotas
+        BEGIN
+            -- Calcular interés y capital para esta cuota
+            SET @InteresMensual = @SaldoPendiente * (@TasaInteresAplicada / 100 / 12);
+            SET @CapitalMensual = @CuotaMensual - @InteresMensual;
+            
+            -- Asegurar que no exceda el saldo pendiente
+            IF @CapitalMensual > @SaldoPendiente
+                SET @CapitalMensual = @SaldoPendiente;
+            
+            -- Insertar cuota
+            INSERT INTO PlanPagos (VentaID, NumeroCuota, FechaVencimiento, MontoCuota, Capital, Interes, SaldoPendiente, Estado)
+            VALUES (@VentaID, @i, @FechaVencimiento, @CuotaMensual, @CapitalMensual, @InteresMensual, @SaldoPendiente, 'Pendiente');
+            
+            SET @CuotaID = SCOPE_IDENTITY();
+            
+            -- Actualizar saldo pendiente
+            SET @SaldoPendiente = @SaldoPendiente - @CapitalMensual;
+            
+            -- Próxima fecha de vencimiento
+            SET @FechaVencimiento = DATEADD(MONTH, 1, @FechaVencimiento);
+            
+            SET @i = @i + 1;
+        END;
+        
+        -- Actualizar cuota mensual estimada en la venta
+        UPDATE Ventas SET CuotaMensualEstimada = @CuotaMensual WHERE VentaID = @VentaID;
+        
+        COMMIT TRANSACTION;
+        
+        SELECT @VentaID AS VentaID, 'Plan de pagos generado exitosamente' AS Mensaje, 1 AS Exito;
+        
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+            
+        SELECT 0 AS VentaID, ERROR_MESSAGE() AS Mensaje, 0 AS Exito;
+    END CATCH;
+END;
+GO
+
 -- 2. REGISTRAR PAGO COMPLETO (Transaccional)
 -- Incluye: Validar cuota pendiente, registrar pago, actualizar saldos, generar factura
 CREATE OR ALTER PROCEDURE sp_registrar_pago_completo
@@ -98,7 +169,8 @@ CREATE OR ALTER PROCEDURE sp_registrar_pago_completo
     @NumeroDeposito VARCHAR(50) = NULL,
     @CuentaBancariaID INT = NULL,
     @UsuarioCajaID INT,
-    @Observaciones VARCHAR(200) = NULL
+    @Observaciones VARCHAR(200) = NULL,
+    @FechaPago DATE = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -122,6 +194,21 @@ BEGIN
             RAISERROR(@ErrorMessage, 16, 1);
         END;
         
+        -- Validar que la venta es crédito y el lote está en estado Proceso
+        IF NOT EXISTS (
+            SELECT 1
+            FROM PlanPagos p
+            INNER JOIN Ventas v ON p.VentaID = v.VentaID
+            INNER JOIN Lotes l ON v.LoteID = l.LoteID
+            WHERE p.CuotaID = @CuotaID
+              AND v.TipoVenta = 'Credito'
+              AND l.Estado = 'Proceso'
+        )
+        BEGIN
+            SET @ErrorMessage = 'El pago solo puede registrarse para ventas al crédito con lote en estado Proceso.';
+            RAISERROR(@ErrorMessage, 16, 1);
+        END;
+        
         -- Obtener datos de la cuota
         SELECT @MontoCuota = MontoCuota, @SaldoPendiente = SaldoPendiente, @VentaID = VentaID
         FROM PlanPagos WHERE CuotaID = @CuotaID;
@@ -140,8 +227,8 @@ BEGIN
                            '-' + RIGHT('00000' + CAST(@CuotaID AS VARCHAR(5)), 5);
         
         -- Insertar el pago
-        INSERT INTO Pagos (CuotaID, MontoRecibido, MetodoPago, NumeroDeposito, CuentaBancariaID, UsuarioCajaID, Observaciones)
-        VALUES (@CuotaID, @MontoRecibido, @MetodoPago, @NumeroDeposito, @CuentaBancariaID, @UsuarioCajaID, @Observaciones);
+        INSERT INTO Pagos (CuotaID, FechaPago, MontoRecibido, MetodoPago, NumeroDeposito, CuentaBancariaID, UsuarioCajaID, Observaciones)
+        VALUES (@CuotaID, ISNULL(@FechaPago, GETDATE()), @MontoRecibido, @MetodoPago, @NumeroDeposito, @CuentaBancariaID, @UsuarioCajaID, @Observaciones);
         
         SET @PagoID = SCOPE_IDENTITY();
         
@@ -149,7 +236,7 @@ BEGIN
         UPDATE PlanPagos 
         SET Estado = CASE WHEN @MontoRecibido >= @SaldoPendiente THEN 'Pagada' ELSE 'Parcial' END,
             SaldoPendiente = @SaldoPendiente - @MontoRecibido,
-            FechaPago = GETDATE()
+            FechaPago = ISNULL(@FechaPago, GETDATE())
         WHERE CuotaID = @CuotaID;
         
         -- Generar factura
@@ -218,8 +305,8 @@ BEGIN
         IF @CaracteristicasXML IS NOT NULL
         BEGIN
             SELECT @PrecioFinal = @PrecioBase + SUM(c.PorcentajeIncremento * @PrecioBase / 100)
-            FROM @CaracteristicasXML.nodes('/caracteristicas/caracteristica') AS CaracteristicaXML(cross)
-            INNER JOIN Caracteristicas c ON c.CaracteristicaID = CaracteristicaXML.cross.value('@id', 'INT');
+            FROM @CaracteristicasXML.nodes('/caracteristicas/caracteristica') AS CaracteristicaXML(item)
+            INNER JOIN Caracteristicas c ON c.CaracteristicaID = CaracteristicaXML.item.value('@id', 'INT');
         END;
         
         -- Insertar el lote
@@ -232,8 +319,8 @@ BEGIN
         IF @CaracteristicasXML IS NOT NULL
         BEGIN
             INSERT INTO LoteCaracteristicas (LoteID, CaracteristicaID)
-            SELECT @LoteID, CaracteristicaXML.cross.value('@id', 'INT')
-            FROM @CaracteristicasXML.nodes('/caracteristicas/caracteristica') AS CaracteristicaXML(cross);
+            SELECT @LoteID, CaracteristicaXML.item.value('@id', 'INT')
+            FROM @CaracteristicasXML.nodes('/caracteristicas/caracteristica') AS CaracteristicaXML(item);
         END;
         
         -- Actualizar área total del bloque (esto también se hace con trigger, pero por seguridad)

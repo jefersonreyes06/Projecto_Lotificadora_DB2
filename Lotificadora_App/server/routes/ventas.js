@@ -40,49 +40,40 @@ router.get(
   })
 );
 
-router.get(
-  "/:id",
-  asyncHandler(async (req, res) => {
-    const result = await executeProcedure("sp_ventas_obtener_por_id", { VentaID: req.params.id });
-    res.json(result.recordset[0] ?? null);
-  })
-);
 
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    const { ClienteId, LoteId, TipoVenta, Prima = 0, AniosPlazo = 0, TasaInteresAplicada = 0 } = req.body;
+    console.log("BODY:", req.body);
 
-    // Transaccional: sp_crear_venta_completa
-    // Valida lote y cliente, crea venta, genera plan de pagos y actualiza lote.
-    const result = await executeProcedure("sp_crear_venta_completa", {
-      ClienteID: ClienteId,
-      LoteID: LoteId,
-      TipoVenta: TipoVenta,
-      Prima: Prima,
-      AniosPlazo: AniosPlazo,
-      TasaInteresAplicada: TasaInteresAplicada
-    });
+    const { 
+      ClienteId: ClienteID, 
+      LoteId: LoteID, 
+      TipoVenta, 
+      Prima = 0, 
+      AniosPlazo: AniosPlazo = 0, 
+      TasaInteresAplicada = 12.0 
+    } = req.body;
+
+    const params = {
+      ClienteID,
+      LoteID,
+      TipoVenta,
+      Prima,
+      AniosPlazo,
+      TasaInteresAplicada
+    };
+
+    console.log("PARAMS:", params);
+
+    const result = await executeProcedure("sp_crear_venta_lote", params);
+
+    console.log("RESULT:", result);
+
     res.json(result.recordset[0]);
   })
 );
 
-router.put(
-  "/:id",
-  asyncHandler(async (req, res) => {
-    const payload = { VentaID: req.params.id, ...req.body };
-    const result = await executeProcedure("sp_ventas_actualizar", payload);
-    res.json(result.recordset ?? result.returnValue);
-  })
-);
-
-router.delete(
-  "/:id",
-  asyncHandler(async (req, res) => {
-    const result = await executeProcedure("sp_ventas_eliminar", { VentaID: req.params.id });
-    res.json(result.recordset ?? result.returnValue);
-  })
-);
 
 // Cancelar venta completa (transaccional)
 router.post(
@@ -106,42 +97,8 @@ router.get(
   })
 );
 
-// ------------------
-router.post(
-  "/:id/plan-pagos",
-  asyncHandler(async (req, res) => {
-    const payload = { ventaId: req.params.id, ...req.body };
-    
-    // Transaccional: sp_generar_plan_pagos
-    // Genera el plan de pagos completo para la venta.
-    const result = await executeProcedure("sp_generar_plan_pagos", payload);
-    res.json(result.recordset);
-  })
-);
 
-router.get(
-  "/:id/plan-pagos",
-  asyncHandler(async (req, res) => {
-    const result = await querySql("SELECT * FROM fn_plan_pagos(@id)", { id: req.params.id });
-    res.json(result.recordset[0] ?? null);
-  })
-);
 
-router.get(
-  "/:id/amortizacion",
-  asyncHandler(async (req, res) => {
-    const result = await querySql("SELECT * FROM fn_tabla_amortizacion(@id)", { id: req.params.id });
-    res.json(result.recordset);
-  })
-);
-
-router.get(
-  "/:id/cuotas-pendientes",
-  asyncHandler(async (req, res) => {
-    const result = await querySql("SELECT * FROM fn_tabla_pagos_pendientes(@id)", { id: req.params.id });
-    res.json(result.recordset);
-  })
-);
 
 // ====================
 // ESTADÍSTICAS DE VENTAS
@@ -181,6 +138,68 @@ router.get(
       total_credito: 0,
       total_mora: 0
     });
+  })
+);
+
+
+router.get(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const result = await executeProcedure("sp_ventas_obtener_por_id", { VentaID: req.params.id });
+    res.json(result.recordset[0] ?? null);
+  })
+);
+
+router.get(
+  "/:id/plan-pagos",
+  asyncHandler(async (req, res) => {
+    const result = await querySql("SELECT * FROM fn_plan_pagos(@id)", { id: req.params.id });
+    res.json(result.recordset[0] ?? null);
+  })
+);
+
+router.get(
+  "/:id/amortizacion",
+  asyncHandler(async (req, res) => {
+    const result = await querySql("SELECT * FROM fn_tabla_amortizacion(@id)", { id: req.params.id });
+    res.json(result.recordset);
+  })
+);
+
+router.get(
+  "/:id/cuotas-pendientes",
+  asyncHandler(async (req, res) => {
+    const result = await querySql("SELECT * FROM fn_tabla_pagos_pendientes(@id)", { id: req.params.id });
+    res.json(result.recordset);
+  })
+);
+// ------------------
+router.post(
+  "/:id/plan-pagos",
+  asyncHandler(async (req, res) => {
+    const payload = { ventaId: req.params.id, ...req.body };
+    
+    // Transaccional: sp_generar_plan_pagos
+    // Genera el plan de pagos completo para la venta.
+    const result = await executeProcedure("sp_generar_plan_pagos", payload);
+    res.json(result.recordset);
+  })
+);
+
+router.put(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const payload = { VentaID: req.params.id, ...req.body };
+    const result = await executeProcedure("sp_ventas_actualizar", payload);
+    res.json(result.recordset ?? result.returnValue);
+  })
+);
+
+router.delete(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const result = await executeProcedure("sp_ventas_eliminar", { VentaID: req.params.id });
+    res.json(result.recordset ?? result.returnValue);
   })
 );
 

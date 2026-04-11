@@ -137,6 +137,15 @@ export const pagosApi = {
     request(`/pagos${ventaId ? `?ventaId=${ventaId}` : ""}`),
   get: (id) => request(`/pagos/${id}`),
   registrar: (data) => request("/pagos", { method: "POST", body: JSON.stringify(data) }),
+  pendientes: (ventaId) => request(`/ventas/${ventaId}/cuotas-pendientes`),
+  // sp_obtener_plan_pagos — obtener cuotas por VentaID
+  planPagos: (ventaId) => request(`/pagos/plan-pagos/${ventaId}`),
+  // sp_lotes_disponibles_credito — buscar lote por NumeroLote
+  lotePorNumero: (numeroLote) => 
+    request(`/pagos/lotes/disponibles?numeroLote=${encodeURIComponent(numeroLote)}`),
+  // sp_lotes_disponibles_credito — buscar lotes por DNI
+  lotesPorDni: (dni) => 
+    request(`/pagos/lotes/disponibles?dni=${encodeURIComponent(dni)}`),
   update: (id, data) => request(`/pagos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   remove: (id) => request(`/pagos/${id}`, { method: "DELETE" }),
   // sp_cierre_caja_diario — cursor
@@ -163,8 +172,8 @@ const normalizeVentaPayload = (data) => ({
   LoteId: data.loteId ?? data.LoteId ?? data.lote_id ?? data.LoteID ?? null,
   TipoVenta: data.tipo_venta ?? data.TipoVenta ?? data.tipoVenta ?? null,
   Prima: data.prima !== undefined && data.prima !== null ? data.prima : 0,
-  AniosPlazo: data.anios_financiamiento ?? data.aniosPlazo ?? data.AniosPlazo ?? 0,
-  TasaInteresAplicada: data.tasaInteresAplicada ?? data.TasaInteresAplicada ?? data.interes ?? null,
+  AniosPlazo: data.tipo_venta === 'Credito' ? (data.anios_financiamiento ?? data.aniosPlazo ?? data.AniosPlazo ?? 0) : 0,
+  TasaInteresAplicada: data.tipo_venta === 'Credito' ? (data.tasa_interes ?? data.tasaInteresAplicada ?? data.TasaInteresAplicada ?? data.interes ?? 12.0) : 0,
 });
 
 // VENTAS — sp_ventas_*
@@ -257,4 +266,13 @@ export const reportesApi = {
   lotesPorEtapa: (etapaId) => request(`/reportes/lotes-etapa/${etapaId}`),    // fn_lotes_por_etapa
   clientesPorProyecto: (proyectoId) =>
     request(`/reportes/clientes-proyecto/${proyectoId}`),                       // fn_clientes_por_proyecto
+
+  // NUEVAS FUNCIONES TIPO TABLA
+  lotesDisponiblesProyecto: (proyectoId) =>
+    request(`/reportes/lotes-disponibles-proyecto/${proyectoId}`),             // fn_lotes_disponibles_por_proyecto
+  historialPagosCliente: (clienteId) =>
+    request(`/reportes/historial-pagos-cliente/${clienteId}`),                  // fn_historial_pagos_cliente
+  cuotasVencidas: () => request("/reportes/cuotas-vencidas"),                   // fn_cuotas_vencidas
+  ventasPorMes: (anio) => request(`/reportes/ventas-por-mes/${anio}`),         // fn_ventas_por_mes
+  estadisticasLotesEstado: () => request("/reportes/estadisticas-lotes-estado"), // fn_estadisticas_lotes_por_estado
 };

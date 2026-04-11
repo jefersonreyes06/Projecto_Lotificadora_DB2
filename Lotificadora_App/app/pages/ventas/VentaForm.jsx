@@ -15,10 +15,7 @@ export default function VentaForm() {
     tipo_venta: "Contado",
     prima: "",
     anios_financiamiento: 10,
-    avalId: "",
-    beneficiarioNombre: "",
-    beneficiarioDni: "",
-    beneficiarioRelacion: "",
+    tasa_interes: 12.0,
   });
 
   const [loteInfo, setLoteInfo] = useState(null);
@@ -57,7 +54,7 @@ export default function VentaForm() {
     try {
       const res = await ventasApi.create(form);
       // sp_generar_plan_pagos se llama automáticamente en el SP de venta (transaccional)
-      setSuccess(res.ventaId);
+      setSuccess(res.VentaID);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -246,30 +243,17 @@ export default function VentaForm() {
                         max={30}
                       />
                     </FormField>
-                    <div className="border-t border-stone-800 pt-4 space-y-3">
-                      <p className="text-xs font-semibold uppercase tracking-widest text-stone-500">
-                        Aval y beneficiario
-                      </p>
-                      <FormField label="ID del aval" required>
-                        <Input
-                          type="number"
-                          value={form.avalId}
-                          onChange={set("avalId")}
-                          placeholder="ID del cliente aval"
-                        />
-                      </FormField>
-                      <FormField label="Beneficiario (nombre)" required>
-                        <Input value={form.beneficiarioNombre} onChange={set("beneficiarioNombre")} />
-                      </FormField>
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField label="DNI beneficiario">
-                          <Input value={form.beneficiarioDni} onChange={set("beneficiarioDni")} />
-                        </FormField>
-                        <FormField label="Relación">
-                          <Input value={form.beneficiarioRelacion} onChange={set("beneficiarioRelacion")} placeholder="Cónyuge, hijo..." />
-                        </FormField>
-                      </div>
-                    </div>
+                    <FormField label="Tasa de interés (%)" required>
+                      <Input
+                        type="number"
+                        value={form.tasa_interes}
+                        onChange={set("tasa_interes")}
+                        placeholder="12.0"
+                        min={0}
+                        max={50}
+                        step={0.1}
+                      />
+                    </FormField>
                   </>
                 )}
 
