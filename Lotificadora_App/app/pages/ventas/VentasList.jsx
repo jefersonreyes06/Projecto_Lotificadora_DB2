@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { ventasApi } from "../../services/api.js";
+
 import {
   PageHeader, PageContent, Button, DataTable, Badge, Card, Input, Select, FormField,
 } from "../../components/index";
@@ -33,16 +34,16 @@ export default function VentasList() {
   }, [search, tipoFiltro, data]);
 
   const columns = [
-    { key: "id",           label: "#",        width: 60, render: (v) => <span className="text-stone-500 font-mono text-xs">{v}</span> },
-    { key: "cliente",      label: "Cliente" },
+    { key: "VentaId",           label: "#",        width: 60, render: (v) => <span className="text-stone-500 font-mono text-xs">{v}</span> },
+    { key: "ClienteNombre",      label: "Cliente" },
     { key: "lote",         label: "Lote" },
     { key: "fecha_venta",  label: "Fecha", render: (v) => new Date(v).toLocaleDateString("es-HN") },
-    { key: "tipo_venta",   label: "Tipo",  render: (v) => <Badge variant={TIPO_COLORS[v] ?? "default"}>{v}</Badge> },
+    { key: "TipoVenta",   label: "Tipo",  render: (v) => <Badge variant={TIPO_COLORS[v] ?? "default"}>{v}</Badge> },
     { key: "monto_total",  label: "Monto",
       render: (v) => <span className="text-amber-400 font-medium">L {Number(v).toLocaleString("es-HN", { minimumFractionDigits: 2 })}</span> },
     { key: "cuotas_pendientes", label: "Cuotas pend.",
       render: (v) => <span className={v > 0 ? "text-red-400" : "text-stone-500"}>{v ?? "—"}</span> },
-    { key: "estado_cuenta", label: "Estado",
+    { key: "Estado", label: "Estado",
       render: (v) => <Badge variant={ESTADO_COLORS[v] ?? "default"}>{v ?? "—"}</Badge> },
     { key: "id", label: "", width: 130,
       render: (id, row) => (
