@@ -23,8 +23,17 @@ router.get(
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    const result = await executeProcedure("sp_registrar_pago", req.body);
-    res.json(result.recordset ?? result.returnValue);
+    const { cuotaId, montoRecibido, metodoPago, numeroDeposito, cuentaBancariaId, usuarioCajaId, observaciones } = req.body;
+    const result = await executeProcedure("sp_registrar_pago_completo", {
+      CuotaID: cuotaId,
+      MontoRecibido: montoRecibido,
+      MetodoPago: metodoPago,
+      NumeroDeposito: numeroDeposito,
+      CuentaBancariaID: cuentaBancariaId,
+      UsuarioCajaID: usuarioCajaId,
+      Observaciones: observaciones
+    });
+    res.json(result.recordset[0]);
   })
 );
 

@@ -73,16 +73,12 @@ export const bloquesApi = {
 // LOTES — sp_lotes_*
 // ──────────────────────────────────────────────
 const normalizeLotePayload = (data) => ({
-  loteId: data.loteId,
   bloqueId: data.bloqueId,
-  codigoLote: data.codigo_lote ?? data.codigoLote,
-  areaM2: data.area_m2 ?? data.areaM2,
-  esEsquina: data.es_esquina ?? data.esEsquina ?? false,
-  cercaParque: data.cerca_parque ?? data.cercaParque ?? false,
-  calleCerrada: data.calle_cerrada ?? data.calleCerrada ?? false,
-  frenteAvenida: data.frente_avenida ?? data.frenteAvenida ?? false,
-  estado: data.estado,
-  valorTotal: data.valorTotal ?? data.valor_total ?? null,
+  numeroLote: data.numeroLote ?? data.numero_lote ?? data.codigoLote,
+  areaVaras: data.areaVaras ?? data.area_varas ?? data.areaM2,
+  precioBase: data.precioBase ?? data.precio_base ?? data.valorTotal,
+  estado: data.estado ?? 'Disponible',
+  caracteristicas: data.caracteristicas ?? []
 });
 
 export const lotesApi = {
@@ -121,10 +117,15 @@ export const clientesApi = {
 export const ventasApi = {
   list: () => request("/ventas"),
   get: (id) => request(`/ventas/${id}`),
-  // sp_crear_venta — con manejo transaccional
+  // sp_crear_venta_completa — con manejo transaccional
   create: (data) => request("/ventas", { method: "POST", body: JSON.stringify(data) }),
   update: (id, data) => request(`/ventas/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   remove: (id) => request(`/ventas/${id}`, { method: "DELETE" }),
+  // Cancelar venta completa (transaccional)
+  cancelar: (id, motivo) => request(`/ventas/${id}/cancelar`, { 
+    method: "POST", 
+    body: JSON.stringify({ motivoCancelacion: motivo }) 
+  }),
   // sp_generar_plan_pagos — cursor + transacción
   generarPlan: (ventaId, params) =>
     request(`/ventas/${ventaId}/plan-pagos`, {
@@ -143,7 +144,7 @@ export const pagosApi = {
   list: (ventaId) =>
     request(`/pagos${ventaId ? `?ventaId=${ventaId}` : ""}`),
   get: (id) => request(`/pagos/${id}`),
-  // sp_registrar_pago — transaccional
+  // sp_registrar_pago_completo — transaccional
   registrar: (data) =>
     request("/pagos", { method: "POST", body: JSON.stringify(data) }),
   // sp_cierre_caja_diario — cursor
