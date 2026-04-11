@@ -19,6 +19,7 @@ export default [
       route(":id/editar", "pages/etapas/EtapaForm.jsx", { id: "etapa-editar" }),
     ]),
 
+    // Bloques
     route("bloques", "pages/bloques/BloquesList.jsx"),
 
     // Lotes
@@ -49,7 +50,13 @@ export default [
       route("nuevo", "pages/pagos/PagoForm.jsx"),
     ]),
 
-    // route("cuentas", "pages/cuentas/CuentasList.jsx"),
+    // Cuentas
+    ...prefix("cuentas", [
+      index("pages/cuentas/CuentasList.jsx"),
+      route("nuevo", "pages/cuentas/CuentaForm.jsx", { id: "cuenta-nueva" }),
+      route(":id/editar", "pages/cuentas/CuentaForm.jsx", { id: "cuenta-editar" }),
+      route(":id/movimientos", "pages/cuentas/CuentaMovimientos.jsx", { id: "cuenta-movimientos" }),
+    ]),
 
     ...prefix("reportes", [
       route("vistas", "pages/reportes/ReporteVistas.jsx"),

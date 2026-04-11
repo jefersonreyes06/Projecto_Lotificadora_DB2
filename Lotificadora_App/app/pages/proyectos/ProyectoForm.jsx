@@ -4,15 +4,14 @@ import { useNavigate, useParams, Link } from "react-router";
 import {
   PageHeader, PageContent, Button, FormField, Input, Select, Card, Alert,
 } from "../../components/index";
+//import { proyectosApi } from "../../services/api";
+import { lotesApi, proyectosApi, etapasApi } from "../../../services/api";
 
 const EMPTY = {
-  nombre: "",
-  descripcion: "",
-  ubicacion: "",
-  departamento: "",
-  municipio: "",
-  limite_anios_financiamiento: 20,
-  estado: "Activo",
+  Nombre: "",
+  UbicacionLegal: "",
+  MaxAniosFinanciamiento: 20,
+  Estado: "Activo",
 };
 
 export default function ProyectoForm() {
@@ -23,6 +22,7 @@ export default function ProyectoForm() {
   const [form, setForm] = useState(EMPTY);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -52,6 +52,20 @@ export default function ProyectoForm() {
       setError(err.message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm("¿Estás seguro de eliminar este proyecto? Esta acción no se puede deshacer.")) return;
+    setDeleting(true);
+    setError(null);
+    try {
+      await proyectosApi.remove(id);
+      navigate("/proyectos");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -85,59 +99,30 @@ export default function ProyectoForm() {
                 <div className="col-span-2">
                   <FormField label="Nombre del proyecto" required>
                     <Input
-                      value={form.nombre}
-                      onChange={set("nombre")}
+                      value={form.Nombre}
+                      onChange={set("Nombre")}
                       placeholder="Ej. Residencial Los Pinos"
                       required
                     />
                   </FormField>
                 </div>
 
-                <FormField label="Departamento" required>
-                  <Input
-                    value={form.departamento}
-                    onChange={set("departamento")}
-                    placeholder="Francisco Morazán"
-                    required
-                  />
-                </FormField>
-
-                <FormField label="Municipio" required>
-                  <Input
-                    value={form.municipio}
-                    onChange={set("municipio")}
-                    placeholder="Tegucigalpa"
-                    required
-                  />
-                </FormField>
-
                 <div className="col-span-2">
-                  <FormField label="Ubicación / Dirección">
+                  <FormField label="Ubicación Legal" required>
                     <Input
-                      value={form.ubicacion}
-                      onChange={set("ubicacion")}
-                      placeholder="Km 12 carretera al norte..."
+                      value={form.UbicacionLegal}
+                      onChange={set("UbicacionLegal")}
+                      placeholder="Dirección legal del proyecto"
+                      required
                     />
                   </FormField>
                 </div>
 
-                <div className="col-span-2">
-                  <FormField label="Descripción">
-                    <textarea
-                      value={form.descripcion}
-                      onChange={set("descripcion")}
-                      rows={3}
-                      className="w-full bg-stone-800 border border-stone-700 rounded-md px-3 py-2 text-sm text-stone-100 placeholder-stone-600 focus:outline-none focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/20 transition-all resize-none"
-                      placeholder="Descripción del proyecto habitacional..."
-                    />
-                  </FormField>
-                </div>
-
-                <FormField label="Límite años financiamiento" required>
+                <FormField label="Máximo años financiamiento" required>
                   <Input
                     type="number"
-                    value={form.limite_anios_financiamiento}
-                    onChange={set("limite_anios_financiamiento")}
+                    value={form.MaxAniosFinanciamiento}
+                    onChange={set("MaxAniosFinanciamiento")}
                     min={1}
                     max={30}
                     required
@@ -145,7 +130,7 @@ export default function ProyectoForm() {
                 </FormField>
 
                 <FormField label="Estado">
-                  <Select value={form.estado} onChange={set("estado")}>
+                  <Select value={form.Estado} onChange={set("Estado")}>
                     <option value="Activo">Activo</option>
                     <option value="Inactivo">Inactivo</option>
                     <option value="Completado">Completado</option>
@@ -153,13 +138,28 @@ export default function ProyectoForm() {
                 </FormField>
               </div>
 
-              <div className="flex justify-end gap-3 pt-2 border-t border-stone-800">
-                <Link to="/proyectos">
-                  <Button variant="secondary">Cancelar</Button>
-                </Link>
-                <Button type="submit" disabled={saving}>
-                  {saving ? "Guardando..." : isEdit ? "Actualizar" : "Crear proyecto"}
-                </Button>
+              <div className="flex justify-between gap-3 pt-2 border-t border-stone-800">
+                <div>
+                  {isEdit && (
+                    <Button
+                      type="button"
+                      variant="danger"
+                      onClick={handleDelete}
+                      disabled={deleting}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      {deleting ? "Eliminando..." : "Eliminar proyecto"}
+                    </Button>
+                  )}
+                </div>
+                <div className="flex gap-3">
+                  <Link to="/proyectos">
+                    <Button variant="secondary">Cancelar</Button>
+                  </Link>
+                  <Button type="submit" disabled={saving}>
+                    {saving ? "Guardando..." : isEdit ? "Actualizar" : "Crear proyecto"}
+                  </Button>
+                </div>
               </div>
             </Card>
           </form>

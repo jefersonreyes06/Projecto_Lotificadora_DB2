@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router";
 
+import { clientesApi } from "../../../services/api.js";
+
 import {
   PageHeader,
   PageContent,
@@ -18,6 +20,7 @@ const EMPTY = {
   nombre: "",
   apellido: "",
   dni: "",
+  rtn: "", // Campo agregado
   fecha_nacimiento: "",
   genero: "",
   estado_civil: "",
@@ -80,8 +83,8 @@ function StepPersonal({ form, set, errors }) {
         <FormField label="DNI / Identidad" required error={errors.dni}>
           <Input value={form.dni} onChange={set("dni")} placeholder="0801-1990-12345" maxLength={15} />
         </FormField>
-        <FormField label="Fecha de nacimiento">
-          <Input type="date" value={form.fecha_nacimiento} onChange={set("fecha_nacimiento")} />
+        <FormField label="RTN">
+          <Input value={form.rtn} onChange={set("rtn")} placeholder="0801-1990-123456-1" maxLength={17} />
         </FormField>
         <FormField label="Género">
           <Select value={form.genero} onChange={set("genero")}>
@@ -338,7 +341,7 @@ export default function ClienteForm() {
     <div>
       <PageHeader
         title={isEdit ? "Editar Cliente" : "Nuevo Cliente"}
-        subtitle={isEdit ? `sp_clientes_actualizar @id=${id}` : "sp_clientes_insertar"}
+        subtitle={isEdit ? `sp_clientes_actualizar @id=${id}` : "sp_clientes_registrar"}
         actions={
           <Link to="/clientes">
             <Button variant="ghost">← Volver</Button>

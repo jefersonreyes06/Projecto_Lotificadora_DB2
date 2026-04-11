@@ -1,26 +1,42 @@
 // ── ProyectosList.jsx ──────────────────────────
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
 
 import {
-  PageHeader, PageContent, Button, DataTable, Badge, Card,
+  PageHeader, PageContent, Button, DataTable, Badge, Card, Input,
 } from "../../components/index";
 
 export default function ProyectosList() {
+  const [filters, setFilters] = useState({ proyectoId: "", nombre: "" });
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const load = () => {
-    
-  };
+  useEffect(() => {
+    setLoading(true);
+    fetch("http://localhost:3001/api/proyectos")
+      .then((res) => res.json())
+      .then(setData)
+      .catch((err) => setError(err.message || "Error al cargar proyectos"))
+      .finally(() => setLoading(false));
+  }, []);
 
-  useEffect(load, []);
+  const filteredData = useMemo(() => {
+    return data.filter((row) => {
+      const matchesId = filters.proyectoId
+        ? String(row.ProyectoID ?? "").includes(filters.proyectoId)
+        : true;
+      const matchesName = filters.nombre
+        ? String(row.Nombre ?? "").toLowerCase().includes(filters.nombre.toLowerCase())
+        : true;
+      return matchesId && matchesName;
+    });
+  }, [data, filters]);
 
   const columns = [
-    { key: "nombre", label: "Proyecto" },
-    { key: "ubicacion", label: "Ubicación" },
+    { key: "Nombre", label: "Proyecto" },
+    { key: "UbicacionLegal", label: "Ubicación" },
     {
       key: "total_etapas",
       label: "Etapas",
@@ -37,14 +53,14 @@ export default function ProyectosList() {
       render: (v) => <Badge variant="success">{v ?? 0}</Badge>,
     },
     {
-      key: "estado",
+      key: "Estado",
       label: "Estado",
       render: (v) => (
         <Badge variant={v === "Activo" ? "success" : "default"}>{v}</Badge>
       ),
     },
     {
-      key: "id",
+      key: "ProyectoID",
       label: "",
       width: 120,
       render: (id) => (
@@ -61,7 +77,7 @@ export default function ProyectosList() {
     <div>
       <PageHeader
         title="Proyectos Habitacionales"
-        subtitle="sp_proyectos_listar — procesamiento en servidor"
+        subtitle="sp_proyectos_listar — filtros por ID o nombre"
         actions={
           <Link to="/proyectos/nuevo">
             <Button>+ Nuevo proyecto</Button>
@@ -74,12 +90,36 @@ export default function ProyectosList() {
             {error}
           </div>
         )}
+
+        <Card className="mb-6 p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-semibold text-stone-400 block mb-2">Proyecto ID</label>
+              <Input
+                type="text"
+                placeholder="Filtrar por ID"
+                value={filters.proyectoId}
+                onChange={(e) => setFilters((f) => ({ ...f, proyectoId: e.target.value }))}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-semibold text-stone-400 block mb-2">Nombre de proyecto</label>
+              <Input
+                type="text"
+                placeholder="Filtrar por nombre"
+                value={filters.nombre}
+                onChange={(e) => setFilters((f) => ({ ...f, nombre: e.target.value }))}
+              />
+            </div>
+          </div>
+        </Card>
+
         <Card>
           <DataTable
             columns={columns}
-            data={data}
+            data={filteredData}
             loading={loading}
-            onRowClick={(row) => navigate(`/proyectos/${row.id}/editar`)}
+            onRowClick={(row) => navigate(`/proyectos/${row.ProyectoID}/editar`)}
           />
         </Card>
       </PageContent>

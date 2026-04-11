@@ -17,7 +17,7 @@ router.get(
   "/",
   asyncHandler(async (req, res) => {
     const result = await executeProcedure("sp_lotes_listar", {
-      bloqueId: req.query.bloqueId,
+      bloqueId: req.query.bloqueId || null,
     });
     res.json(result.recordset);
   })
@@ -34,7 +34,17 @@ router.get(
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    const result = await executeProcedure("sp_lotes_crear", req.body);
+    const params = {
+      BloqueID: req.body.bloqueId,
+      CodigoLote: req.body.codigoLote,
+      AreaM2: req.body.areaM2,
+      EsEsquina: req.body.esEsquina,
+      CercaParque: req.body.cercaParque,
+      Estado: req.body.estado,
+      ValorTotal: req.body.valorTotal,
+    };
+
+    const result = await executeProcedure("sp_lotes_crear", params);
     res.json(result.recordset ?? result.returnValue);
   })
 );
@@ -42,8 +52,18 @@ router.post(
 router.put(
   "/:id",
   asyncHandler(async (req, res) => {
-    const payload = { id: req.params.id, ...req.body };
-    const result = await executeProcedure("sp_lotes_actualizar", payload);
+    const params = {
+      id: req.params.id,
+      BloqueID: req.body.bloqueId || null,
+      CodigoLote: req.body.codigoLote || null,
+      AreaM2: req.body.areaM2 || null,
+      EsEsquina: req.body.esEsquina ?? null,
+      CercaParque: req.body.cercaParque ?? null,
+      Estado: req.body.estado || null,
+      ValorTotal: req.body.valorTotal || null,
+    };
+
+    const result = await executeProcedure("sp_lotes_actualizar", params);
     res.json(result.recordset ?? result.returnValue);
   })
 );

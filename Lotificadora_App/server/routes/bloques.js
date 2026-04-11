@@ -4,11 +4,14 @@ import { asyncHandler } from "../middleware/errorHandler.js";
 
 const router = Router();
 
+// Rutas para bloques
+
+// Listar bloques por etapa
 router.get(
   "/",
   asyncHandler(async (req, res) => {
     const result = await executeProcedure("sp_bloques_listar", {
-      etapaId: req.query.etapaId,
+      etapaId: req.query.etapaId || null,
     });
     res.json(result.recordset);
   })
@@ -25,7 +28,14 @@ router.get(
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    const result = await executeProcedure("sp_bloques_crear", req.body);
+    const params = {
+      EtapaID: req.body.etapaId,
+      Nombre: req.body.nombre,
+      AreaTotalVaras: req.body.areaTotalVaras,
+      Estado: req.body.estado || "Disponible",
+    };
+
+    const result = await executeProcedure("sp_bloques_crear", params);
     res.json(result.recordset ?? result.returnValue);
   })
 );
@@ -33,8 +43,14 @@ router.post(
 router.put(
   "/:id",
   asyncHandler(async (req, res) => {
-    const payload = { id: req.params.id, ...req.body };
-    const result = await executeProcedure("sp_bloques_actualizar", payload);
+    const params = {
+      id: req.params.id,
+      Nombre: req.body.nombre || null,
+      AreaTotalVaras: req.body.areaTotalVaras || null,
+      Estado: req.body.estado || null,
+    };
+
+    const result = await executeProcedure("sp_bloques_actualizar", params);
     res.json(result.recordset ?? result.returnValue);
   })
 );

@@ -18,4 +18,8 @@ const dbConfig = {
 const pool = new mssql.ConnectionPool(dbConfig);
 const poolConnect = pool.connect();
 
+poolConnect
+  .then(() => console.log("Database connected"))
+  .catch((err) => console.error("DB connection failed:", err));
+
 export { pool, poolConnect };

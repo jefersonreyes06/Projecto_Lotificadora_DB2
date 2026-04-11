@@ -41,7 +41,18 @@ router.post(
 router.put(
   "/:id",
   asyncHandler(async (req, res) => {
-    const payload = { id: req.params.id, ...req.body };
+    const { Nombre, UbicacionLegal, MaxAniosFinanciamiento, Estado } = req.body;
+    const payload = {
+      id: req.params.id,
+      Nombre,
+      UbicacionLegal,
+      MaxAniosFinanciamiento,
+      Estado
+    };
+
+    //const payload = { id: req.params.id, ...req.body }; Esto generaba un error porque da la fecha 
+    // como un parametro adicional, y el procedimiento no lo esperaba. Al desestructurar manualmente, solo se envían los campos necesarios.
+
     const result = await executeProcedure("sp_proyectos_actualizar", payload);
     res.json(result.recordset ?? result.returnValue);
   })

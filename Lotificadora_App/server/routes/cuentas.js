@@ -12,6 +12,18 @@ router.get(
   })
 );
 
+router.get(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const result = await executeProcedure("sp_cuentas_obtener", { id: req.params.id });
+    if (result.recordset && result.recordset.length > 0) {
+      res.json(result.recordset[0]);
+    } else {
+      res.status(404).json({ error: "Cuenta no encontrada" });
+    }
+  })
+);
+
 router.post(
   "/",
   asyncHandler(async (req, res) => {
