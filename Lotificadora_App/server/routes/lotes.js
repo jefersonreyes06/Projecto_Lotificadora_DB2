@@ -34,27 +34,17 @@ router.get(
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    const { bloqueId, numeroLote, areaVaras, precioBase, estado = 'Disponible', caracteristicas } = req.body;
-    
-    // Transaccional: sp_crear_lote_completo
-    // Crea lote, asigna características y actualiza el bloque en una sola transacción.
-    let caracteristicasXML = null;
-    if (caracteristicas && caracteristicas.length > 0) {
-      const xmlParts = ['<caracteristicas>'];
-      caracteristicas.forEach(id => {
-        xmlParts.push(`<caracteristica id="${id}"/>`);
-      });
-      xmlParts.push('</caracteristicas>');
-      caracteristicasXML = xmlParts.join('');
-    }
-    
-    const result = await executeProcedure("sp_crear_lote_completo", {
+    const { bloqueId, areaVaras, precioVara, estado = 'Disponible', esEsquina, cercaParque, calleCerrada, frenteAvenida } = req.body;
+
+    const result = await executeProcedure("sp_lotes_crear", {
       BloqueID: bloqueId,
-      NumeroLote: numeroLote,
       AreaVaras: areaVaras,
-      PrecioBase: precioBase,
+      PrecioVara: precioVara,
       Estado: estado,
-      CaracteristicasXML: caracteristicasXML
+      EsEsquina: esEsquina,
+      CercaParque: cercaParque,
+      CalleCerrada: calleCerrada,
+      FrenteAvenida: frenteAvenida,
     });
     res.json(result.recordset[0]);
   })

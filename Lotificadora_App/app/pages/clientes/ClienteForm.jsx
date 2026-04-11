@@ -75,10 +75,7 @@ function StepPersonal({ form, set, errors }) {
       <SectionLabel>Identificación</SectionLabel>
       <div className="grid grid-cols-2 gap-4">
         <FormField label="Nombre(s)" required error={errors.nombre}>
-          <Input value={form.nombre} onChange={set("nombre")} placeholder="Juan Carlos" />
-        </FormField>
-        <FormField label="Apellido(s)" required error={errors.apellido}>
-          <Input value={form.apellido} onChange={set("apellido")} placeholder="Martínez López" />
+          <Input value={form.nombreComple} onChange={set("nombre")} placeholder="Juan Carlos" />
         </FormField>
         <FormField label="DNI / Identidad" required error={errors.dni}>
           <Input value={form.dni} onChange={set("dni")} placeholder="0801-1990-12345" maxLength={15} />

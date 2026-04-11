@@ -73,12 +73,33 @@ export const bloquesApi = {
 // LOTES — sp_lotes_*
 // ──────────────────────────────────────────────
 const normalizeLotePayload = (data) => ({
-  bloqueId: data.bloqueId,
-  numeroLote: data.numeroLote ?? data.numero_lote ?? data.codigoLote,
-  areaVaras: data.areaVaras ?? data.area_varas ?? data.areaM2,
-  precioBase: data.precioBase ?? data.precio_base ?? data.valorTotal,
-  estado: data.estado ?? 'Disponible',
-  caracteristicas: data.caracteristicas ?? []
+  bloqueId: data.bloqueId ?? data.BloqueID ?? data.bloque_id ?? null,
+  numeroLote: data.numeroLote ?? data.numero_lote ?? data.codigo_lote ?? data.codigoLote ?? null,
+  areaVaras: data.areaVaras ?? data.area_varas ?? data.AreaVaras ?? data.area_m2 ?? data.areaM2 ?? data.areavaras ?? null,
+  precioVara: data.precioVara ?? data.precio_vara ?? data.PrecioVara ?? data.precioVara ?? data.precio_vara ?? null,
+  estado: data.estado ?? data.Estado ?? 'Disponible',
+  caracteristicas: data.caracteristicas ?? [],
+  esEsquina: data.es_esquina ?? data.EsEsquina ?? false,
+  cercaParque: data.cerca_parque ?? data.CercaParque ?? false,
+  calleCerrada: data.calle_cerrada ?? data.CalleCerrada ?? false,
+  frenteAvenida: data.frente_avenida ?? data.FrenteAvenida ?? false,
+  descripcion: data.descripcion ?? data.Descripcion ?? "",
+});
+
+const normalizeLoteDisponible = (data) => ({
+  id: data.LoteID ?? data.id ?? null,
+  codigo_lote: data.codigo_lote ?? data.NumeroLote ?? data.numeroLote ?? "",
+  proyecto: data.proyecto ?? data.Proyecto ?? data.ProyectoNombre ?? "",
+  etapa: data.etapa ?? data.Etapa ?? data.EtapaNombre ?? "",
+  bloque: data.bloque ?? data.Bloque ?? data.BloqueNombre ?? "",
+  area_m2: data.area_m2 ?? data.AreaVaras ?? data.areaVaras ?? data.areaM2 ?? "",
+  precio_base: data.precio_base ?? data.PrecioBase ?? data.precioBase ?? "",
+  precio_final: data.precio_final ?? data.PrecioFinal ?? data.precioFinal ?? data.valor_total ?? data.ValorTotal ?? "",
+  estado: data.estado ?? data.Estado ?? "",
+  proyectoId: data.proyectoId ?? data.ProyectoID ?? "",
+  etapaId: data.etapaId ?? data.EtapaID ?? "",
+  bloqueId: data.bloqueId ?? data.BloqueID ?? "",
+  valor_total: data.valor_total ?? data.PrecioFinal ?? data.ValorTotal ?? "",
 });
 
 export const lotesApi = {
@@ -94,7 +115,8 @@ export const lotesApi = {
   // fn_valor_lote(id) — función escalar SQL
   calcularValor: (id) => request(`/lotes/${id}/valor`),
   // Lotes disponibles para venta
-  disponiblesVenta: () => request("/ventas/lotes/disponibles"),
+  disponiblesVenta: () =>
+    request("/ventas/lotes/disponibles").then((rows) => rows.map(normalizeLoteDisponible)),
 };
 
 // ──────────────────────────────────────────────

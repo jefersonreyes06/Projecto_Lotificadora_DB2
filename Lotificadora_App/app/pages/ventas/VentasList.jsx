@@ -69,7 +69,6 @@ export default function VentasList() {
       <PageHeader
         title="Ventas"
         subtitle="sp_ventas_listar — procesamiento en servidor"
-        actions={<Link to="/ventas/nueva"><Button>+ Nueva venta</Button></Link>}
       />
       <PageContent>
         {/* Stats rápidas */}

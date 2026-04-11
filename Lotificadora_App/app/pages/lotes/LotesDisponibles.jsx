@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import {
   PageHeader, PageContent, Card, DataTable, Badge, FormField, Select, Button, Input, Modal, Alert,
 } from "../../components/index";
-import { lotesApi, proyectosApi, etapasApi } from "../../services/api";
+import { lotesApi, proyectosApi, etapasApi, bloquesApi, clientesApi, ventasApi } from "../../services/api";
 
 const ESTADO_COLORS = {
   Disponible: "success",
@@ -17,17 +17,20 @@ export default function LotesDisponibles() {
   const [lotes, setLotes] = useState([]);
   const [proyectos, setProyectos] = useState([]);
   const [etapas, setEtapas] = useState([]);
+  const [bloques, setBloques] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [draftFiltros, setDraftFiltros] = useState({
     proyectoId: "",
     etapaId: "",
+    bloqueId: "",
     areaMin: "",
     areaMax: "",
   });
   const [filtros, setFiltros] = useState({
     proyectoId: "",
     etapaId: "",
+    bloqueId: "",
     areaMin: "",
     areaMax: "",
   });
@@ -58,17 +61,36 @@ export default function LotesDisponibles() {
   useEffect(() => {
     if (!draftFiltros.proyectoId) {
       setEtapas([]);
+      setBloques([]);
       return;
     }
     etapasApi.list(draftFiltros.proyectoId).then(setEtapas).catch(() => setEtapas([]));
   }, [draftFiltros.proyectoId]);
 
+  useEffect(() => {
+    if (!draftFiltros.etapaId || !draftFiltros.proyectoId) {
+      setBloques([]);
+      return;
+    }
+    bloquesApi.list().then((bloques) => setBloques(bloques.filter((b) => b.EtapaID === draftFiltros.etapaId))).catch(() => setBloques([]));
+  }, [draftFiltros.etapaId, draftFiltros.proyectoId]);
+
   const buscar = () => {
     setFiltros(draftFiltros);
   };
 
-  const handleChange = (key) => (event) =>
-    setDraftFiltros((prev) => ({ ...prev, [key]: event.target.value }));
+  const handleChange = (key) => (event) => {
+    const value = event.target.value;
+    setDraftFiltros((prev) => {
+      if (key === "proyectoId") {
+        return { ...prev, proyectoId: value, etapaId: "", bloqueId: "" };
+      }
+      if (key === "etapaId") {
+        return { ...prev, etapaId: value, bloqueId: "" };
+      }
+      return { ...prev, [key]: value };
+    });
+  };
 
   // Funciones para la modal de venta
   const abrirVentaModal = (lote) => {
@@ -138,10 +160,13 @@ export default function LotesDisponibles() {
       const matchesEtapa = filtros.etapaId
         ? etapaId === filtros.etapaId
         : true;
+      const matchesBloque = filtros.bloqueId
+        ? String(item.bloqueId ?? "") === filtros.bloqueId
+        : true;
       const matchesAreaMin = filtros.areaMin ? area >= parseFloat(filtros.areaMin) : true;
       const matchesAreaMax = filtros.areaMax ? area <= parseFloat(filtros.areaMax) : true;
 
-      const result = matchesProyecto && matchesEtapa && matchesAreaMin && matchesAreaMax;
+      const result = matchesProyecto && matchesEtapa && matchesBloque && matchesAreaMin && matchesAreaMax;
       return result;
     });
   }, [lotes, filtros]);
@@ -149,8 +174,7 @@ export default function LotesDisponibles() {
   console.log("Lotes disponibles:", lotes);
 
   const columns = [
-    { key: "id", label: "ID" },
-    { key: "codigo_lote", label: "Número" },
+    { key: "codigo_lote", label: "Número de Lote" },
     { key: "proyecto", label: "Proyecto" },
     { key: "etapa", label: "Etapa" },
     { key: "bloque", label: "Bloque" },
@@ -163,7 +187,7 @@ export default function LotesDisponibles() {
       },
     },
     {
-      key: "valor_total",
+      key: "precio_final",
       label: "Precio Final",
       render: (v) => {
         const numValue = parseFloat(v) || 0;
@@ -173,11 +197,6 @@ export default function LotesDisponibles() {
           </span>
         );
       },
-    },
-    {
-      key: "estado",
-      label: "Estado",
-      render: (v) => <Badge variant={ESTADO_COLORS[v] ?? "default"}>{v}</Badge>,
     },
     {
       key: "actions",
@@ -212,7 +231,7 @@ export default function LotesDisponibles() {
               <Select value={draftFiltros.proyectoId} onChange={handleChange("proyectoId")}>
                 <option value="">Todos</option>
                 {proyectos.map((p) => (
-                  <option key={p.ProyectoID} value={p.id}>{p.nombre}</option>
+                  <option key={p.ProyectoID} value={p.ProyectoID}>{p.Nombre}</option>
                 ))}
               </Select>
             </FormField>
@@ -225,7 +244,20 @@ export default function LotesDisponibles() {
               >
                 <option value="">Todas</option>
                 {etapas.map((e) => (
-                  <option key={e.EtapaID} value={e.id}>{e.nombre}</option>
+                  <option key={e.EtapaID} value={e.EtapaID}>{e.Etapa}</option>
+                ))}
+              </Select>
+            </FormField>
+
+            <FormField label="Bloque">
+              <Select
+                value={draftFiltros.bloqueId}
+                onChange={handleChange("bloqueId")}
+                disabled={!draftFiltros.etapaId}
+              >
+                <option value="">Todos</option>
+                {bloques.map((b) => (
+                  <option key={b.BloqueID} value={b.BloqueID}>{b.Nombre}</option>
                 ))}
               </Select>
             </FormField>
@@ -277,7 +309,7 @@ export default function LotesDisponibles() {
                 <h3 className="font-semibold mb-2">Detalles del Lote</h3>
                 <p><strong>Lote:</strong> {ventaModal.lote.codigo_lote}</p>
                 <p><strong>Proyecto:</strong> {ventaModal.lote.proyecto}</p>
-                <p><strong>Precio:</strong> L {parseFloat(ventaModal.lote.valor_total).toLocaleString("es-HN", { minimumFractionDigits: 2 })}</p>
+                <p><strong>Precio:</strong> L {parseFloat(ventaModal.lote.precio_final).toLocaleString("es-HN", { minimumFractionDigits: 2 })}</p>
               </div>
 
               <FormField label="DNI del Cliente">
