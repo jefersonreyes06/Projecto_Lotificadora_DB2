@@ -73,20 +73,38 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT
-        v.VentaID,
+        v.VentaID AS VentaId,
         v.ClienteID,
         c.NombreCompleto AS ClienteNombre,
-        v.LoteID,
-        l.NumeroLote,
-        v.FechaVenta,
-        v.TipoVenta,
-        v.MontoTotal,
-        v.Prima,
-        v.MontoFinanciado,
-        v.AniosPlazo,
-        v.TasaInteresAplicada,
-        v.CuotaMensualEstimada,
-        v.Estado
+        l.NumeroLote AS lote,
+        v.FechaVenta AS fecha_venta,
+        v.TipoVenta AS tipo_venta,
+        v.MontoTotal AS monto_total,
+        v.Estado,
+        -- Calcular cuotas pendientes para ventas a crédito
+        CASE
+            WHEN v.TipoVenta = 'Credito' THEN
+                ISNULL((
+                    SELECT COUNT(*)
+                    FROM PlanPagos pp
+                    WHERE pp.VentaID = v.VentaID
+                      AND pp.Estado <> 'Pagada'
+                ), 0)
+            ELSE 0
+        END AS cuotas_pendientes,
+        -- Determinar estado de cuenta basado en cuotas pendientes
+        CASE
+            WHEN v.TipoVenta = 'Contado' THEN 'Pagado'
+            WHEN v.Estado = 'Cancelada' THEN 'Cancelada'
+            WHEN EXISTS(
+                SELECT 1
+                FROM PlanPagos pp
+                WHERE pp.VentaID = v.VentaID
+                  AND pp.Estado <> 'Pagada'
+                  AND pp.FechaVencimiento < GETDATE()
+            ) THEN 'En mora'
+            ELSE 'Al día'
+        END AS estado_cuenta
     FROM Ventas v
     INNER JOIN Clientes c ON v.ClienteID = c.ClienteID
     INNER JOIN Lotes l ON v.LoteID = l.LoteID
@@ -236,31 +254,81 @@ END;
 GO
 
 -- =====================================================
--- TRIGGER PARA ACTUALIZAR ESTADO DEL LOTE AL VENDER
+-- PROCEDIMIENTOS PARA ESTADÍSTICAS DE VENTAS
 -- =====================================================
 
-CREATE TRIGGER trg_venta_actualizar_lote
-ON Ventas
-AFTER INSERT
+-- Contar ventas de contado
+CREATE PROCEDURE sp_ventas_contar_contado
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    DECLARE @LoteID INT;
-    DECLARE @TipoVenta VARCHAR(20);
-
-    SELECT @LoteID = LoteID, @TipoVenta = TipoVenta
-    FROM inserted;
-
-    -- Actualizar estado del lote
-    UPDATE Lotes
-    SET
-        Estado = CASE
-            WHEN @TipoVenta = 'Contado' THEN 'Vendido'
-            WHEN @TipoVenta = 'Financiado' THEN 'Reservado'
-            ELSE Estado
-        END,
-        FechaVenta = GETDATE()
-    WHERE LoteID = @LoteID;
+    SELECT COUNT(*) AS total_contado
+    FROM Ventas
+    WHERE TipoVenta = 'Contado'
+      AND Estado <> 'Cancelada';
 END;
 GO
+
+-- Contar ventas a crédito
+CREATE PROCEDURE sp_ventas_contar_credito
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT COUNT(*) AS total_credito
+    FROM Ventas
+    WHERE TipoVenta = 'Credito'
+      AND Estado <> 'Cancelada';
+END;
+GO
+
+-- Contar ventas en mora (crédito con cuotas vencidas)
+CREATE PROCEDURE sp_ventas_contar_mora
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT COUNT(DISTINCT v.VentaID) AS total_mora
+    FROM Ventas v
+    INNER JOIN PlanPagos pp ON v.VentaID = pp.VentaID
+    WHERE v.TipoVenta = 'Credito'
+      AND v.Estado = 'Activa'
+      AND pp.Estado <> 'Pagada'
+      AND pp.FechaVencimiento < GETDATE();
+END;
+GO
+
+-- Obtener estadísticas completas de ventas
+CREATE PROCEDURE sp_ventas_estadisticas
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        -- Total de ventas
+        (SELECT COUNT(*) FROM Ventas WHERE Estado <> 'Cancelada') AS total_ventas,
+
+        -- Ventas de contado
+        (SELECT COUNT(*) FROM Ventas WHERE TipoVenta = 'Contado' AND Estado <> 'Cancelada') AS total_contado,
+
+        -- Ventas a crédito
+        (SELECT COUNT(*) FROM Ventas WHERE TipoVenta = 'Credito' AND Estado <> 'Cancelada') AS total_credito,
+
+        -- Ventas en mora
+        (
+            SELECT COUNT(DISTINCT v.VentaID)
+            FROM Ventas v
+            INNER JOIN PlanPagos pp ON v.VentaID = pp.VentaID
+            WHERE v.TipoVenta = 'Credito'
+              AND v.Estado = 'Activa'
+              AND pp.Estado <> 'Pagada'
+              AND pp.FechaVencimiento < GETDATE()
+        ) AS total_mora;
+END;
+GO
+
+-- NOTA: El trigger 'trg_venta_actualizar_lote' ha sido eliminado de este archivo
+-- porque causaba duplicación de registros de Lotes. La funcionalidad se consolidó
+-- en el trigger 'tr_Ventas_Insert_UpdateLoteStatus' del archivo Triggers.sql
+-- Ver: ConsolidacionCorrecciones.sql para más detalles.

@@ -1,7 +1,7 @@
 // ════════════════════════════════════════
 // ClientesList.jsx
 // ════════════════════════════════════════
-import { useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router";
 
 import { clientesApi } from "../../services/api.js";
@@ -12,10 +12,26 @@ import {
 export function ClientesList() {
   const [dni, setDni] = useState("");
   const [clienteId, setClienteId] = useState("");
+  const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [cliente, setCliente] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  const cargarClientes = useCallback(() => {
+    setLoading(true);
+    setError(null);
+
+    clientesApi
+      .list()
+      .then((data) => setClientes(data))
+      .catch((err) => setError(err.message || "Error al cargar clientes"))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    cargarClientes();
+  }, [cargarClientes]);
 
   // Buscar cliente por DNI
   const buscarPorDni = useCallback(() => {
@@ -76,16 +92,13 @@ export function ClientesList() {
   }, [clienteId]);
 
   const cols = [
-    { key: "nombre", label: "Nombre", render: (v, r) => `${v} ${r.apellido}` },
-    { key: "dni", label: "DNI / Identidad" },
+    { key: "nombreCompleto", label: "Nombre" },
+    { key: "dni", label: "DNI" },
     { key: "telefono", label: "Teléfono" },
-    { key: "correo", label: "Correo" },
-    { key: "empresa", label: "Empresa / Empleador" },
-    {
-      key: "total_compras",
-      label: "Compras",
-      render: (v) => <Badge variant={v > 0 ? "success" : "default"}>{v ?? 0}</Badge>,
-    },
+    { key: "email", label: "Correo" },
+    { key: "nombreEmpresa", label: "Empresa" },
+    { key: "estado", label: "Estado", render: (v) => <Badge variant={v === "Activo" ? "success" : "warning"}>{v}</Badge> },
+    { key: "fechaRegistro", label: "Registrado", render: (v) => new Date(v).toLocaleDateString("es-HN") },
     {
       key: "id",
       label: "",
@@ -210,16 +223,22 @@ export function ClientesList() {
           {/* Mostrar loading */}
           {loading && (
             <div className="text-center text-stone-400 py-8">
-              Buscando cliente...
+              Cargando clientes...
             </div>
           )}
 
-          {/* Mostrar si no hay cliente seleccionado */}
-          {!cliente && !loading && !error && dni && (
-            <div className="text-center text-stone-500 py-8">
-              Ingrese un DNI válido
+          <Card className="p-6">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold text-stone-200">Listado completo de clientes</p>
+                <p className="text-xs text-stone-500">Muestra todos los clientes activos por defecto.</p>
+              </div>
+              <Button onClick={cargarClientes} disabled={loading} variant="secondary">
+                Actualizar listado
+              </Button>
             </div>
-          )}
+            <DataTable columns={cols} data={clientes} loading={loading} />
+          </Card>
         </div>
       </PageContent>
     </div>

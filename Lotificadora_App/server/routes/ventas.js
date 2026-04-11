@@ -13,6 +13,34 @@ router.get(
 );
 
 router.get(
+  "/estadisticas",
+  asyncHandler(async (req, res) => {
+    // Use direct SQL queries since procedures might not exist
+    const [totalResult, contadoResult, creditoResult, moraResult] = await Promise.all([
+      querySql("SELECT COUNT(*) as total FROM Ventas WHERE Estado <> 'Cancelada'"),
+      querySql("SELECT COUNT(*) as total FROM Ventas WHERE TipoVenta = 'Contado' AND Estado <> 'Cancelada'"),
+      querySql("SELECT COUNT(*) as total FROM Ventas WHERE TipoVenta = 'Credito' AND Estado <> 'Cancelada'"),
+      querySql(`
+        SELECT COUNT(DISTINCT v.VentaID) as total
+        FROM Ventas v
+        INNER JOIN PlanPagos pp ON v.VentaID = pp.VentaID
+        WHERE v.TipoVenta = 'Credito'
+          AND v.Estado = 'Activa'
+          AND pp.Estado <> 'Pagada'
+          AND pp.FechaVencimiento < GETDATE()
+      `)
+    ]);
+
+    res.json({
+      total_ventas: totalResult.recordset[0].total,
+      total_contado: contadoResult.recordset[0].total,
+      total_credito: creditoResult.recordset[0].total,
+      total_mora: moraResult.recordset[0].total
+    });
+  })
+);
+
+router.get(
   "/:id",
   asyncHandler(async (req, res) => {
     const result = await executeProcedure("sp_ventas_obtener_por_id", { VentaID: req.params.id });
@@ -112,6 +140,47 @@ router.get(
   asyncHandler(async (req, res) => {
     const result = await querySql("SELECT * FROM fn_tabla_pagos_pendientes(@id)", { id: req.params.id });
     res.json(result.recordset);
+  })
+);
+
+// ====================
+// ESTADÍSTICAS DE VENTAS
+// ====================
+
+router.get(
+  "/estadisticas/contado",
+  asyncHandler(async (req, res) => {
+    const result = await executeProcedure("sp_ventas_contar_contado");
+    res.json({ total: result.recordset[0]?.total_contado ?? 0 });
+  })
+);
+
+router.get(
+  "/estadisticas/credito",
+  asyncHandler(async (req, res) => {
+    const result = await executeProcedure("sp_ventas_contar_credito");
+    res.json({ total: result.recordset[0]?.total_credito ?? 0 });
+  })
+);
+
+router.get(
+  "/estadisticas/mora",
+  asyncHandler(async (req, res) => {
+    const result = await executeProcedure("sp_ventas_contar_mora");
+    res.json({ total: result.recordset[0]?.total_mora ?? 0 });
+  })
+);
+
+router.get(
+  "/estadisticas",
+  asyncHandler(async (req, res) => {
+    const result = await executeProcedure("sp_ventas_estadisticas");
+    res.json(result.recordset[0] ?? {
+      total_ventas: 0,
+      total_contado: 0,
+      total_credito: 0,
+      total_mora: 0
+    });
   })
 );
 

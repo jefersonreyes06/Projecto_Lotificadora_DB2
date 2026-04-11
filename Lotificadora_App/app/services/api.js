@@ -98,6 +98,20 @@ export const lotesApi = {
 };
 
 // ──────────────────────────────────────────────
+// PAGOS — sp_pagos_*
+// ──────────────────────────────────────────────
+export const pagosApi = {
+  list: (ventaId) =>
+    request(`/pagos${ventaId ? `?ventaId=${ventaId}` : ""}`),
+  get: (id) => request(`/pagos/${id}`),
+  registrar: (data) => request("/pagos", { method: "POST", body: JSON.stringify(data) }),
+  update: (id, data) => request(`/pagos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  remove: (id) => request(`/pagos/${id}`, { method: "DELETE" }),
+  // sp_cierre_caja_diario — cursor
+  cierreDiario: (fecha) => request(`/pagos/cierre?fecha=${fecha}`),
+  // Factura de pago
+  factura: (id) => request(`/pagos/${id}/factura`),
+};
 // CLIENTES — sp_clientes_*
 // ──────────────────────────────────────────────
 export const clientesApi = {
@@ -135,30 +149,13 @@ export const ventasApi = {
   planPagos: (ventaId) => request(`/ventas/${ventaId}/plan-pagos`),
   // fn_tabla_amortizacion(ventaId) — función tipo tabla
   amortizacion: (ventaId) => request(`/ventas/${ventaId}/amortizacion`),
+  // Estadísticas de ventas
+  estadisticas: () => request("/ventas/estadisticas"),
+  estadisticasContado: () => request("/ventas/estadisticas/contado"),
+  estadisticasCredito: () => request("/ventas/estadisticas/credito"),
+  estadisticasMora: () => request("/ventas/estadisticas/mora"),
 };
 
-// ──────────────────────────────────────────────
-// PAGOS — sp_pagos_*
-// ──────────────────────────────────────────────
-export const pagosApi = {
-  list: (ventaId) =>
-    request(`/pagos${ventaId ? `?ventaId=${ventaId}` : ""}`),
-  get: (id) => request(`/pagos/${id}`),
-  // sp_registrar_pago_completo — transaccional
-  registrar: (data) =>
-    request("/pagos", { method: "POST", body: JSON.stringify(data) }),
-  // sp_cierre_caja_diario — cursor
-  cierreDiario: (fecha) =>
-    request("/pagos/cierre-diario", {
-      method: "POST",
-      body: JSON.stringify({ fecha }),
-    }),
-  // fn_tabla_pagos_pendientes(ventaId) — función tipo tabla
-  pendientes: (ventaId) => request(`/ventas/${ventaId}/cuotas-pendientes`),
-  factura: (pagoId) => request(`/pagos/${pagoId}/factura`),
-};
-
-// ──────────────────────────────────────────────
 // TRANSACCIONES — Procedimientos con manejo transaccional
 // ──────────────────────────────────────────────
 export const transaccionesApi = {
