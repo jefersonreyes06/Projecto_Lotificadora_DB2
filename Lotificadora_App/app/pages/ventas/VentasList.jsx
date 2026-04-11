@@ -15,11 +15,25 @@ export default function VentasList() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch]   = useState("");
   const [tipoFiltro, setTipo] = useState("");
+  const [estadisticas, setEstadisticas] = useState({
+    total_ventas: 0,
+    total_contado: 0,
+    total_credito: 0,
+    total_mora: 0
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
-    ventasApi.list()
-      .then((d) => { setData(d); setFiltered(d); })
+    // Cargar datos de ventas y estadísticas en paralelo
+    Promise.all([
+      ventasApi.list(),
+      ventasApi.estadisticas()
+    ])
+      .then(([ventasData, statsData]) => {
+        setData(ventasData);
+        setFiltered(ventasData);
+        setEstadisticas(statsData);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -27,29 +41,27 @@ export default function VentasList() {
   useEffect(() => {
     let d = data;
     if (search) d = d.filter((r) =>
-      `${r.cliente} ${r.lote} ${r.id}`.toLowerCase().includes(search.toLowerCase())
+      `${r.ClienteNombre} ${r.lote} ${r.VentaId}`.toLowerCase().includes(search.toLowerCase())
     );
     if (tipoFiltro) d = d.filter((r) => r.tipo_venta === tipoFiltro);
     setFiltered(d);
   }, [search, tipoFiltro, data]);
 
   const columns = [
-    { key: "VentaId",           label: "#",        width: 60, render: (v) => <span className="text-stone-500 font-mono text-xs">{v}</span> },
+    { key: "VentaID",           label: "#",        width: 60, render: (v) => <span className="text-stone-500 font-mono text-xs">{v}</span> },
     { key: "ClienteNombre",      label: "Cliente" },
-    { key: "lote",         label: "Lote" },
-    { key: "fecha_venta",  label: "Fecha", render: (v) => new Date(v).toLocaleDateString("es-HN") },
-    { key: "TipoVenta",   label: "Tipo",  render: (v) => <Badge variant={TIPO_COLORS[v] ?? "default"}>{v}</Badge> },
-    { key: "monto_total",  label: "Monto",
-      render: (v) => <span className="text-amber-400 font-medium">L {Number(v).toLocaleString("es-HN", { minimumFractionDigits: 2 })}</span> },
-    { key: "cuotas_pendientes", label: "Cuotas pend.",
-      render: (v) => <span className={v > 0 ? "text-red-400" : "text-stone-500"}>{v ?? "—"}</span> },
+    { key: "NumeroLote",         label: "Lote" },
+    { key: "FechaVenta",  label: "Fecha", render: (v) => new Date(v).toLocaleDateString("es-HN") },
+    { key: "TipoVenta",   label: "Tipo",  render: (v) => <Badge variant={TIPO_COLORS[v] ?? "default"}>{v === "Credito" ? "Crédito" : v}</Badge> },
     { key: "Estado", label: "Estado",
       render: (v) => <Badge variant={ESTADO_COLORS[v] ?? "default"}>{v ?? "—"}</Badge> },
-    { key: "id", label: "", width: 130,
+    { key: "MontoTotal", label: "Monto Total",
+      render: (v) => <span className={v > 0 ? "text-red-400" : "text-stone-500"}>{v ?? "—"}</span> },
+    { key: "VentaID", label: "", width: 130,
       render: (id, row) => (
         <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
           <Link to={`/ventas/${id}`}><Button size="sm" variant="ghost">Detalle</Button></Link>
-          {row.tipo_venta === "Credito" && (
+          {row.tipo_venta === "Crédito" && (
             <Link to={`/ventas/${id}/plan-pagos`}><Button size="sm" variant="ghost">Plan</Button></Link>
           )}
         </div>
@@ -58,10 +70,10 @@ export default function VentasList() {
   ];
 
   const totales = {
-    total:   data.length,
-    contado: data.filter((d) => d.tipo_venta === "Contado").length,
-    credito: data.filter((d) => d.tipo_venta === "Credito").length,
-    mora:    data.filter((d) => d.estado_cuenta === "En mora").length,
+    total: estadisticas.total_ventas,
+    contado: estadisticas.total_contado,
+    credito: estadisticas.total_credito,
+    mora: estadisticas.total_mora
   };
 
   return (
@@ -97,7 +109,7 @@ export default function VentasList() {
           <Select value={tipoFiltro} onChange={(e) => setTipo(e.target.value)} className="w-44">
             <option value="">Todos los tipos</option>
             <option value="Contado">Contado</option>
-            <option value="Credito">Crédito</option>
+            <option value="Crédito">Crédito</option>
           </Select>
           {(search || tipoFiltro) && (
             <Button variant="ghost" onClick={() => { setSearch(""); setTipo(""); }}>
@@ -111,7 +123,7 @@ export default function VentasList() {
             columns={columns}
             data={filtered}
             loading={loading}
-            onRowClick={(row) => navigate(`/ventas/${row.id}`)}
+            onRowClick={(row) => navigate(`/ventas/${row.VentaId}`)}
           />
         </Card>
       </PageContent>
