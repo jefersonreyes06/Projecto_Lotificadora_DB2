@@ -168,6 +168,35 @@ BEGIN
 END
 GO
 
+-- Obtener cliente por DNI
+CREATE PROCEDURE sp_clientes_obtener_por_dni
+    @dni VARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        ClienteID AS id,
+        NombreCompleto AS nombre_completo,
+        DNI AS dni,
+        RTN AS rtn,
+        Telefono AS telefono,
+        Email AS email,
+        Direccion AS direccion,
+        Departamento AS departamento,
+        Municipio AS municipio,
+        Ocupacion AS ocupacion,
+        IngresoMensual AS ingreso_mensual,
+        NombreEmpresa AS nombre_empresa,
+        TelefonoEmpresa AS telefono_empresa,
+        AniosEmpleo AS anios_empleo,
+        Estado AS estado,
+        FechaRegistro AS fecha_registro
+    FROM Clientes
+    WHERE DNI = @dni AND Estado = 'Activo'
+END
+GO
+
 -- Actualizar cliente
 CREATE PROCEDURE sp_clientes_actualizar
     @id INT,
