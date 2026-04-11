@@ -37,7 +37,7 @@ export default function EtapasList() {
   }, [data, filters]);
 
   const columns = [
-    { key: "Nombre", label: "Etapa" },
+    { key: "Etapa", label: "Etapa" },
     { key: "Proyecto", label: "Proyecto" },
     { key: "AreaTotalVaras", label: "Area Total" },
     { key: "PrecioVaraCuadrada", label: "Precio v²", render: (v) => `L ${Number(v).toLocaleString("es-HN")}` },

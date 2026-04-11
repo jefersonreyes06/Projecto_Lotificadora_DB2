@@ -39,17 +39,17 @@ export default function ProyectosList() {
     { key: "Nombre", label: "Proyecto" },
     { key: "UbicacionLegal", label: "Ubicación" },
     {
-      key: "total_etapas",
+      key: "TotalEtapas",
       label: "Etapas",
       render: (v) => <Badge>{v ?? 0}</Badge>,
     },
     {
-      key: "total_lotes",
+      key: "TotalLotes",
       label: "Lotes",
       render: (v) => <span className="text-stone-400">{v ?? 0}</span>,
     },
     {
-      key: "lotes_disponibles",
+      key: "LotesDisponibles",
       label: "Disponibles",
       render: (v) => <Badge variant="success">{v ?? 0}</Badge>,
     },

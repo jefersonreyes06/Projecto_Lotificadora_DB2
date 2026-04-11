@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
+import { proyectosApi } from "../services/api.js";
 import { StatCard, Card, Badge, PageHeader, PageContent } from "../components/index";
 
 const quickLinks = [

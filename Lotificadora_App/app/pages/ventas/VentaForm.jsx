@@ -5,7 +5,6 @@ import { clientesApi, lotesApi, ventasApi } from "../../services/api.js";
 import {
   PageHeader, PageContent, Button, FormField, Input, Select, Card, Alert, Badge,
 } from "../../components/index";
-import { ventasApi } from "../../../services/api";
 
 export default function VentaForm() {
   const navigate = useNavigate();
