@@ -48,9 +48,19 @@ export const etapasApi = {
 // BLOQUES — sp_bloques_*
 // ──────────────────────────────────────────────
 const normalizeBloquePayload = (data) => ({
-  etapaId: data.etapaId,
+  etapaId:
+    data.etapaId !== undefined && data.etapaId !== null
+      ? Number(data.etapaId)
+      : data.EtapaID !== undefined && data.EtapaID !== null
+      ? Number(data.EtapaID)
+      : null,
   nombre: data.nombre,
-  areaTotalVaras: data.area_total_varas ?? data.areaTotalVaras ?? null,
+  areaTotalVaras:
+    data.area_total_varas !== undefined && data.area_total_varas !== null
+      ? Number(data.area_total_varas)
+      : data.areaTotalVaras !== undefined && data.areaTotalVaras !== null
+      ? Number(data.areaTotalVaras)
+      : null,
   estado: data.estado,
 });
 

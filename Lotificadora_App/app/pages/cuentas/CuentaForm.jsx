@@ -144,7 +144,7 @@ export function CuentaForm() {
                   <option value="">Seleccionar etapa</option>
                   {etapas.map(etapa => (
                     <option key={etapa.EtapaID} value={etapa.EtapaID}>
-                      {etapa.Nombre}
+                      {etapa.Etapa}
                     </option>
                   ))}
                 </Select>

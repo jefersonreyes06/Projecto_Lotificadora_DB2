@@ -54,8 +54,13 @@ export default function BloquesForm() {
       .finally(() => setLoading(false));
   }, [id, isEdit]);
 
-  const set = (key) => (event) =>
-    setForm((current) => ({ ...current, [key]: event.target.value }));
+  const set = (key) => (event) => {
+    let value = event.target.value;
+    if (key === "etapaId") {
+      value = value ? Number(value) : "";
+    }
+    setForm((current) => ({ ...current, [key]: value }));
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -102,16 +107,16 @@ export default function BloquesForm() {
             <Card className="p-6 space-y-5 max-w-2xl">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <FormField label="Etapa" required>
-                  <Select value={form.EtapaID} onChange={set("etapaId")} required disabled={isEdit}>
+                  <Select value={form.etapaId} onChange={set("etapaId")} required disabled={isEdit}>
                     {isEdit && (
-                      <option value={form.EtapaID}>
-                        {form.Etapa ?? form.etapa}
+                      <option value={form.etapaId}>
+                        {form.etapa ?? form.Etapa}
                       </option>
                     )}
-                   
+
                     {!isEdit && <option value="">Seleccione etapa...</option>}
                     {!isEdit && etapas.map((etapa) => (
-                      <option key={etapa.id ?? etapa.EtapaID} value={etapa.id ?? etapa.Etapa} >
+                      <option key={etapa.EtapaID ?? etapa.id} value={etapa.EtapaID ?? etapa.id}>
                         {etapa.nombre ?? etapa.Etapa}
                       </option>
                     ))}

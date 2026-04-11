@@ -55,11 +55,12 @@ export function CuentasList() {
   }, [cuentas, filtroEtapa, filtroBanco, filtroTipo]);
 
   // Obtener nombre de etapa
-  const getEtapaNombre = (etapaId) => {
-    const etapa = etapas.find(e => e.EtapaID === etapaId);
-    return etapa ? etapa.Nombre : `Etapa ${etapaId}`;
+  const getEtapaNombre = (EtapaID) => {
+    const etapa = etapas.find(e => e.EtapaID === EtapaID);
+    return etapa ? etapa.Etapa : `Etapa ${EtapaID}`;
   };
 
+  console.log(etapas)
   // Tipos de cuenta disponibles
   const tiposCuenta = [
     { value: "", label: "Todos los tipos" },
@@ -68,6 +69,7 @@ export function CuentasList() {
     { value: "Plazo Fijo", label: "Plazo Fijo" },
   ];
 
+  console.log("Cuentas cargadas:", cuentas); // DEBUG: Ver cuentas cargadas
   const cols = [
     { key: "CuentaID", label: "ID", width: 80 },
     {
@@ -145,7 +147,7 @@ export function CuentasList() {
                   <option value="">Todas las etapas</option>
                   {etapas.map(etapa => (
                     <option key={etapa.EtapaID} value={etapa.EtapaID}>
-                      {etapa.Nombre}
+                      {etapa.Etapa}
                     </option>
                   ))}
                 </Select>
