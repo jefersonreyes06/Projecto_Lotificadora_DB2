@@ -15,7 +15,7 @@ router.get(
 router.get(
   "/:id",
   asyncHandler(async (req, res) => {
-    const result = await executeProcedure("sp_ventas_obtener", { id: req.params.id });
+    const result = await executeProcedure("sp_ventas_obtener_por_id", { VentaID: req.params.id });
     res.json(result.recordset[0] ?? null);
   })
 );
@@ -23,11 +23,38 @@ router.get(
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    const result = await executeProcedure("sp_crear_venta", req.body);
+    const result = await executeProcedure("sp_ventas_insertar", req.body);
     res.json(result.recordset ?? result.returnValue);
   })
 );
 
+router.put(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const payload = { VentaID: req.params.id, ...req.body };
+    const result = await executeProcedure("sp_ventas_actualizar", payload);
+    res.json(result.recordset ?? result.returnValue);
+  })
+);
+
+router.delete(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const result = await executeProcedure("sp_ventas_eliminar", { VentaID: req.params.id });
+    res.json(result.recordset ?? result.returnValue);
+  })
+);
+
+// Ruta para listar lotes disponibles
+router.get(
+  "/lotes/disponibles",
+  asyncHandler(async (req, res) => {
+    const result = await executeProcedure("sp_lotes_disponibles");
+    res.json(result.recordset);
+  })
+);
+
+// ------------------
 router.post(
   "/:id/plan-pagos",
   asyncHandler(async (req, res) => {

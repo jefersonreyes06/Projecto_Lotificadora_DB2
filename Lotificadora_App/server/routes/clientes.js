@@ -17,9 +17,9 @@ router.get(
 router.get(
   "/dni/:dni",
   asyncHandler(async (req, res) => {
-    console.log("📍 GET /dni/ called with dni:", req.params.dni);
+    //console.log("GET /dni/ called with dni:", req.params.dni);
     const result = await executeProcedure("sp_clientes_obtener_por_dni", { dni: req.params.dni });
-    console.log("Result:", result.recordset);
+    //console.log("Result:", result.recordset);
     res.json(result.recordset[0] ?? null);
   })
 );

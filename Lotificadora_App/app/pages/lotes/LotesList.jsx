@@ -47,14 +47,14 @@ export default function LotesList() {
   }, [data, filters]);
 
   const cols = [
-    { key: "codigo_lote", label: "Código" },
-    { key: "bloque", label: "Bloque" },
-    { key: "etapa", label: "Etapa" },
-    { key: "proyecto", label: "Proyecto" },
-    { key: "area_m2", label: "Área v²" },
-    { key: "es_esquina", label: "Esquina", render: (v) => (v ? <Badge variant="warning">Sí</Badge> : "—") },
+    { key: "numeroLote", label: "Código" },
+    { key: "Bloque", label: "Bloque" },
+    { key: "Etapa", label: "Etapa" },
+    { key: "Proyecto", label: "Proyecto" },
+    { key: "areaVaras", label: "Área v²", render: (v) => (v != null ? Number(v).toLocaleString("es-HN") : "") },
+    //{ key: "es_esquina", label: "Esquina", render: (v) => (v ? <Badge variant="warning">Sí</Badge> : "—") },
     { key: "estado", label: "Estado", render: (v) => <Badge variant={v === "Disponible" ? "success" : v === "Vendido" ? "danger" : "warning"}>{v}</Badge> },
-    { key: "valor_total", label: "Valor", render: (v) => <span className="text-amber-400">L {Number(v).toLocaleString("es-HN")}</span> },
+    { key: "precioFinal", label: "Valor", render: (v) => <span className="text-amber-400">L {Number(v).toLocaleString("es-HN")}</span> },
     { key: "id", label: "", width: 80, render: (id) => <Link to={`/lotes/${id}/editar`}><Button size="sm" variant="ghost">Editar</Button></Link> },
   ];
 

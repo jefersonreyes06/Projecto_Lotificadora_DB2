@@ -73,18 +73,25 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT
-        LoteID AS id,
-        BloqueID AS bloqueId,
-        NumeroLote AS numeroLote,
-        AreaVaras AS areaVaras,
-        PrecioBase AS precioBase,
-        PrecioFinal AS precioFinal,
-        Estado AS estado,
-        FechaReserva AS fechaReserva,
-        FechaVenta AS fechaVenta
-    FROM Lotes
-    WHERE (@bloqueId IS NULL OR BloqueID = @bloqueId)
-    ORDER BY NumeroLote ASC;
+        l.LoteID AS id,
+        l.NumeroLote AS codigo_lote,
+        b.Nombre AS bloque,
+        e.Nombre AS etapa,
+        p.Nombre AS proyecto,
+        l.AreaVaras AS area_m2,
+        0 AS es_esquina, -- Campo no implementado, asumir false
+        l.Estado AS estado,
+        l.PrecioFinal AS valor_total,
+        l.BloqueID AS bloqueId,
+        l.PrecioBase AS precioBase,
+        l.FechaReserva AS fechaReserva,
+        l.FechaVenta AS fechaVenta
+    FROM Lotes l
+    INNER JOIN Bloques b ON l.BloqueID = b.BloqueID
+    INNER JOIN Etapas e ON b.EtapaID = e.EtapaID
+    INNER JOIN Proyectos p ON e.ProyectoID = p.ProyectoID
+    WHERE (@bloqueId IS NULL OR l.BloqueID = @bloqueId)
+    ORDER BY p.Nombre, e.Nombre, b.Nombre, l.NumeroLote ASC;
 END
 GO
 
