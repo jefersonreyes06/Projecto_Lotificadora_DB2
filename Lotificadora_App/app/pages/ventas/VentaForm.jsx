@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router";
+import { clientesApi, lotesApi, ventasApi } from "../../services/api.js";
 
 import {
   PageHeader, PageContent, Button, FormField, Input, Select, Card, Alert, Badge,

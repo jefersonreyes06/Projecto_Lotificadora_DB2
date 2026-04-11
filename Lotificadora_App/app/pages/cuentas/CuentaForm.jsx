@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
-import { cuentasApi, etapasApi } from "../../../services/api.js";
+import { cuentasApi, etapasApi } from "../../services/api.js";
 import {
   PageHeader, PageContent, Button, Card, Input, Select, FormField,
 } from "../../components/index";

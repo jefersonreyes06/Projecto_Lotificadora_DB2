@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
 
+import { etapasApi } from "../../services/api.js";
 import { PageHeader, PageContent, Button, DataTable, Badge, Card, Input } from "../../components/index";
 
 export default function EtapasList() {
@@ -13,9 +14,9 @@ export default function EtapasList() {
 
   useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:3001/api/etapas")
-      .then((res) => res.json())
-      .then(setData)
+    etapasApi
+      .list()
+      .then((d) => { setData(d); })
       .catch((err) => setError(err.message || "Error al cargar etapas"))
       .finally(() => setLoading(false));
   }, []);
@@ -97,7 +98,7 @@ export default function EtapasList() {
           </div>
         </Card>
         <Card>
-          <DataTable columns={columns} data={filteredData} loading={loading} onRowClick={(r) => navigate(`/etapas/${r.id}/editar`)} />
+          <DataTable columns={columns} data={filteredData} loading={loading} onRowClick={(r) => navigate(`/etapas/${r.EtapaID}/editar`)} />
         </Card>
       </PageContent>
     </div>

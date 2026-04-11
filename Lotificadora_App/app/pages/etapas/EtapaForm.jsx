@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 
 import { PageHeader, PageContent, Button, FormField, Input, Select, Card } from "../../components/index";
+import { etapasApi, proyectosApi } from "../../services/api.js";
 
 const EMPTY = { nombre: "", proyectoId: "", precio_vara2: "", tasa_interes: "", limite_anios: 20 };
 
@@ -14,11 +15,11 @@ export default function EtapaForm() {
   const [proyectos, setProyectos] = useState([]);
   const [saving, setSaving] = useState(false);
 
-  // useEffect(() => { proyectosApi.list().then(setProyectos).catch(() => {}); }, []);
-  // useEffect(() => {
-  //   if (!isEdit) return;
-  //   etapasApi.get(id).then(setForm).catch(() => {});
-  // }, [id]);
+  useEffect(() => { proyectosApi.list().then(setProyectos).catch(() => {}); }, []);
+  useEffect(() => {
+    if (!isEdit) return;
+    etapasApi.get(id).then(setForm).catch(() => {});
+  }, [id, isEdit]);
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 

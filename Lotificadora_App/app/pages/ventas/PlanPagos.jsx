@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
+import { ventasApi } from "../../services/api.js";
 import {
   PageHeader, PageContent, Card, DataTable, Badge, StatCard, Button,
 } from "../../components/index";

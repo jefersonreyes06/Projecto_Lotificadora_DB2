@@ -4,7 +4,7 @@
 import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router";
 
-import { clientesApi } from "../../../services/api.js";
+import { clientesApi } from "../../services/api.js";
 import {
   PageHeader, PageContent, Button, Card, DataTable, Badge, Input,
 } from "../../components/index";

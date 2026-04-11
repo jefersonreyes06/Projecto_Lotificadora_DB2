@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { StatCard, Card, Badge, PageHeader, PageContent } from "../components/index";
+import { proyectosApi } from "../services/api.js";
 
 const quickLinks = [
   { to: "/lotes/disponibles", label: "Ver lotes disponibles", icon: "◉", desc: "Consulta en tiempo real" },
@@ -13,6 +14,25 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    let mounted = true;
+
+    proyectosApi
+      .dashboard()
+      .then((result) => {
+        if (mounted) setStats(result);
+      })
+      .catch(() => {
+        if (mounted) setStats({});
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const s = stats || {};
 

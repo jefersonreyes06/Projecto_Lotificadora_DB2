@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
-// import { lotesApi, bloquesApi, etapasApi, proyectosApi } from "../../services/api";
+import { lotesApi, bloquesApi, etapasApi, proyectosApi } from "../../services/api.js";
 import {
   PageHeader, PageContent, Button, FormField, Input, Select, Card, Alert,
 } from "../../components/index";
@@ -33,7 +33,7 @@ export default function LoteForm() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    proyectosApi.list().then(setProyectos).catch(() => {});
+    // proyectosApi.list().then(setProyectos).catch(() => {});
   }, []);
 
   useEffect(() => {

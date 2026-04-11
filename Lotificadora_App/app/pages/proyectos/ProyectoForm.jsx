@@ -4,8 +4,7 @@ import { useNavigate, useParams, Link } from "react-router";
 import {
   PageHeader, PageContent, Button, FormField, Input, Select, Card, Alert,
 } from "../../components/index";
-//import { proyectosApi } from "../../services/api";
-import { lotesApi, proyectosApi, etapasApi } from "../../../services/api";
+import { proyectosApi } from "../../services/api.js";
 
 const EMPTY = {
   Nombre: "",
@@ -33,7 +32,7 @@ export default function ProyectoForm() {
       .then((d) => setForm(d))
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, isEdit]);
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 

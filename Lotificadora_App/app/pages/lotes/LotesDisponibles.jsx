@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   PageHeader, PageContent, Card, DataTable, Badge, FormField, Select, Button, Input,
 } from "../../components/index";
-import { lotesApi, proyectosApi, etapasApi } from "../../../services/api";
+import { lotesApi, proyectosApi, etapasApi } from "../../services/api";
 
 const ESTADO_COLORS = {
   Disponible: "success",

@@ -1,0 +1,163 @@
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router";
+import { pagosApi } from "../../services/api.js";
+
+import {
+  PageHeader, PageContent, Button, DataTable, Badge, Card, Input, Select, Alert, StatCard,
+} from "../../components/index";
+
+const fmtLps  = (v) => `L ${Number(v ?? 0).toLocaleString("es-HN", { minimumFractionDigits: 2 })}`;
+const fmtDate = (v) => v ? new Date(v).toLocaleDateString("es-HN") : "—";
+
+export default function PagosList() {
+  const [searchParams]          = useSearchParams();
+  const ventaIdParam            = searchParams.get("ventaId") ?? "";
+  const [data, setData]         = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [search, setSearch]     = useState("");
+  const [tipoFiltro, setTipo]   = useState("");
+  const [cierreFecha, setCierre] = useState(new Date().toISOString().split("T")[0]);
+  const [cierreLoading, setCierreLoading] = useState(false);
+  const [cierreMsg, setCierreMsg]         = useState(null);
+  const navigate = useNavigate();
+
+  const load = () => {
+    setLoading(true);
+    pagosApi.list(ventaIdParam || undefined)
+      .then((d) => { setData(d); setFiltered(d); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(load, [ventaIdParam]);
+
+  useEffect(() => {
+    let d = data;
+    if (search)     d = d.filter((r) => `${r.cliente} ${r.id} ${r.factura_id}`.toLowerCase().includes(search.toLowerCase()));
+    if (tipoFiltro) d = d.filter((r) => r.tipo_pago === tipoFiltro);
+    setFiltered(d);
+  }, [search, tipoFiltro, data]);
+
+  const handleCierreDiario = async () => {
+    setCierreLoading(true);
+    setCierreMsg(null);
+    try {
+      const res = await pagosApi.cierreDiario(cierreFecha); // sp_cierre_caja_diario — cursor
+      setCierreMsg({ type: "success", text: `Cierre realizado: ${res.total_depositos} depósito(s) por ${fmtLps(res.monto_total)}` });
+      load();
+    } catch (e) {
+      setCierreMsg({ type: "danger", text: e.message });
+    } finally {
+      setCierreLoading(false);
+    }
+  };
+
+  const totalEfectivo = data.filter((p) => p.tipo_pago === "Efectivo").reduce((s, p) => s + Number(p.monto_pagado ?? 0), 0);
+  const totalBanco    = data.filter((p) => p.tipo_pago !== "Efectivo").reduce((s, p) => s + Number(p.monto_pagado ?? 0), 0);
+
+  const columns = [
+    { key: "id",           label: "#", width: 60, render: (v) => <span className="text-stone-500 font-mono text-xs">{v}</span> },
+    { key: "fecha_pago",   label: "Fecha",    render: fmtDate },
+    { key: "cliente",      label: "Cliente" },
+    { key: "lote",         label: "Lote" },
+    { key: "tipo_pago",    label: "Tipo",
+      render: (v) => <Badge variant={v === "Efectivo" ? "success" : v === "Deposito" ? "info" : "warning"}>{v}</Badge> },
+    { key: "monto_pagado", label: "Monto",
+      render: (v) => <span className="text-emerald-400 font-medium">{fmtLps(v)}</span> },
+    { key: "capital",      label: "Capital",  render: (v) => <span className="text-blue-400">{fmtLps(v)}</span> },
+    { key: "interes",      label: "Interés",  render: (v) => <span className="text-amber-400">{fmtLps(v)}</span> },
+    { key: "factura_id",   label: "Factura",  render: (v) => v ? <Badge variant="default">#{v}</Badge> : "—" },
+    { key: "depositado",   label: "Depositado",
+      render: (v, row) => row.tipo_pago !== "Efectivo"
+        ? <span className="text-stone-600">N/A</span>
+        : v ? <Badge variant="success">Sí</Badge> : <Badge variant="warning">Pendiente</Badge> },
+    { key: "id", label: "", width: 80,
+      render: (id) => (
+        <div onClick={(e) => e.stopPropagation()}>
+          <Link to={`/pagos/${id}/factura`}><Button size="sm" variant="ghost">Factura</Button></Link>
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <div>
+      <PageHeader
+        title={ventaIdParam ? `Pagos — Venta #${ventaIdParam}` : "Pagos & Caja"}
+        subtitle="sp_pagos_listar — procesamiento en servidor"
+        actions={<Link to="/pagos/nuevo"><Button>+ Registrar pago</Button></Link>}
+      />
+
+      <PageContent>
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <StatCard label="Total recaudado"  value={fmtLps(totalEfectivo + totalBanco)} accent />
+          <StatCard label="En caja (efectivo)" value={fmtLps(totalEfectivo)} sub="Por depositar al banco" />
+          <StatCard label="Bancarios"        value={fmtLps(totalBanco)} sub="Depósitos y transferencias" />
+          <StatCard label="Registros"        value={data.length} />
+        </div>
+
+        {/* Cierre de caja diario */}
+        <Card className="p-5 mb-6 border-amber-400/20 bg-amber-400/5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-amber-400/70 mb-3">
+            Cierre de caja diario — sp_cierre_caja_diario (cursor)
+          </p>
+          {cierreMsg && (
+            <Alert variant={cierreMsg.type} className="mb-3">{cierreMsg.text}</Alert>
+          )}
+          <div className="flex gap-3 items-end flex-wrap">
+            <div>
+              <label className="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1.5">
+                Fecha de cierre
+              </label>
+              <input
+                type="date"
+                value={cierreFecha}
+                onChange={(e) => setCierre(e.target.value)}
+                className="bg-stone-800 border border-stone-700 rounded-md px-3 py-2 text-sm text-stone-100 focus:outline-none focus:border-amber-400/60 transition-all"
+              />
+            </div>
+            <Button onClick={handleCierreDiario} disabled={cierreLoading}>
+              {cierreLoading ? "Procesando..." : "Ejecutar cierre"}
+            </Button>
+            <p className="text-xs text-stone-500 self-center">
+              Deposita los cobros en efectivo del día a las cuentas bancarias de cada etapa.
+            </p>
+          </div>
+        </Card>
+
+        {/* Filtros */}
+        <div className="flex gap-3 mb-4 flex-wrap">
+          <Input
+            placeholder="Buscar por cliente, factura o #..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="max-w-xs"
+          />
+          <Select value={tipoFiltro} onChange={(e) => setTipo(e.target.value)} className="w-44">
+            <option value="">Todos los tipos</option>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Deposito">Depósito</option>
+            <option value="Transferencia">Transferencia</option>
+          </Select>
+          {(search || tipoFiltro) && (
+            <Button variant="ghost" onClick={() => { setSearch(""); setTipo(""); }}>Limpiar</Button>
+          )}
+          {ventaIdParam && (
+            <Button variant="ghost" onClick={() => navigate("/pagos")}>Ver todos los pagos</Button>
+          )}
+        </div>
+
+        <Card>
+          <DataTable
+            columns={columns}
+            data={filtered}
+            loading={loading}
+            onRowClick={(row) => navigate(`/pagos/${row.id}/factura`)}
+          />
+        </Card>
+      </PageContent>
+    </div>
+  );
+}

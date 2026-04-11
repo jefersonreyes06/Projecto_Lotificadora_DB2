@@ -20,7 +20,11 @@ export default [
     ]),
 
     // Bloques
-    route("bloques", "pages/bloques/BloquesList.jsx"),
+    ...prefix("bloques", [
+      index("pages/bloques/BloquesList.jsx"),
+      route("nuevo", "pages/bloques/BloquesForm.jsx", { id: "bloque-nuevo" }),
+      route(":id/editar", "pages/bloques/BloquesForm.jsx", { id: "bloque-editar" }),
+    ]),
 
     // Lotes
     ...prefix("lotes", [
@@ -39,14 +43,14 @@ export default [
 
     // Ventas
     ...prefix("ventas", [
-      // index("pages/ventas/VentasList.jsx"),
+      index("pages/ventas/VentasList.jsx"),
       route("nueva", "pages/ventas/VentaForm.jsx"),
-      // route(":id/plan-pagos", "pages/ventas/PlanPagos.jsx"),
+      route(":id/plan-pagos", "pages/ventas/PlanPagos.jsx"),
     ]),
 
     // Pagos
     ...prefix("pagos", [
-      // index("pages/pagos/PagosList.jsx"),
+      index("pages/pagos/PagosList.jsx"),
       route("nuevo", "pages/pagos/PagoForm.jsx"),
     ]),
 

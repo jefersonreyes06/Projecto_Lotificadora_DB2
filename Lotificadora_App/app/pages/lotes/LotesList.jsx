@@ -12,7 +12,7 @@ import {
   Input,
   FormField,
 } from "../../components/index";
-import { lotesApi } from "../../../services/api";
+import { lotesApi } from "../../services/api";
 
 export default function LotesList() {
   const [data, setData] = useState([]);
