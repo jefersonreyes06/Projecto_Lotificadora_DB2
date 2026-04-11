@@ -33,7 +33,7 @@ router.post(
 router.put(
   "/:id",
   asyncHandler(async (req, res) => {
-    const payload = { id: req.params.id, ...req.body };
+    const payload = { EtapaID: req.params.id, ...req.body };
     const result = await executeProcedure("sp_etapas_actualizar", payload);
     res.json(result.recordset ?? result.returnValue);
   })

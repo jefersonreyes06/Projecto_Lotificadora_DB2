@@ -2,7 +2,7 @@
 // BloquesList.jsx
 // ════════════════════════════════════════
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 import { bloquesApi } from "../../services/api.js";
 import { PageHeader, PageContent, Card, DataTable, Badge, Button, Input } from "../../components/index";
@@ -12,6 +12,7 @@ export function BloquesList() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(true);
@@ -40,10 +41,18 @@ export function BloquesList() {
   const cols = [
     { key: "BloqueID", label: "ID" },
     { key: "Nombre", label: "Nombre" },
-    { key: "Proyecto", label: "Proyecto" },
+    { key: "NombreProyecto", label: "Proyecto" },
     { key: "EtapaID", label: "Etapa ID" },
     { key: "AreaTotalVaras", label: "Área (varas)" },
     { key: "Estado", label: "Estado" },
+    {
+      key: "id", label: "", width: 100,
+      render: (id) => (
+        <Link to={`/bloques/${id}/editar`}>
+          <Button size="sm" variant="ghost">Editar</Button>
+        </Link>
+      ),
+    },
   ];
 
   return (
@@ -90,7 +99,7 @@ export function BloquesList() {
           </div>
         </Card>
         <Card>
-          <DataTable columns={cols} data={filteredData} loading={loading} />
+          <DataTable columns={cols} data={filteredData} loading={loading} onRowClick={(r) => navigate(`/bloques/${r.BloqueID}/editar`)} />
         </Card>
       </PageContent>
     </div>

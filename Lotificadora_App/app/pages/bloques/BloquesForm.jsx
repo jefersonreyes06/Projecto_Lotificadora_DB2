@@ -33,7 +33,7 @@ export default function BloquesForm() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    etapasApi.list().then(setEtapas).catch(() => {});
+    etapasApi.list().then((d) => setEtapas(d)).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -101,11 +101,11 @@ export default function BloquesForm() {
             <Card className="p-6 space-y-5 max-w-2xl">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <FormField label="Etapa" required>
-                  <Select value={form.etapaId} onChange={set("etapaId")} required>
+                  <Select value={form.EtapaID} onChange={set("etapaId")} required>
                     <option value="">Seleccione etapa...</option>
                     {etapas.map((etapa) => (
-                      <option key={etapa.id ?? etapa.EtapaID} value={etapa.id ?? etapa.EtapaID}>
-                        {etapa.nombre ?? etapa.Nombre}
+                      <option key={etapa.id ?? etapa.EtapaID} value={etapa.id ?? etapa.Etapa} selected={etapa.EtapaID === form.EtapaID}>
+                        {etapa.nombre ?? etapa.Etapa}
                       </option>
                     ))}
                   </Select>
