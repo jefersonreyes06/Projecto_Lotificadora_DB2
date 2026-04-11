@@ -44,7 +44,7 @@ export default function ProyectosList() {
       render: (v) => <Badge>{v ?? 0}</Badge>,
     },
     {
-      key: "total_lotes",
+      key: "TotalLotes",
       label: "Lotes",
       render: (v) => <span className="text-stone-400">{v ?? 0}</span>,
     },

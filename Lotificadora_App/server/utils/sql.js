@@ -29,6 +29,14 @@ export const querySql = async (sql, params = {}) => {
   return request.query(sql);
 };
 
+export const executeScalarFunction = async (functionName) => {
+  await poolConnect;
+  const request = pool.request();
+  const safeName = sanitizeSqlName(functionName);
+  const result = await request.query(`SELECT dbo.${safeName}() AS value`);
+  return result.recordset[0]?.value ?? null;
+};
+
 export const buildViewQuery = (viewName, filters = {}) => {
   const safeView = sanitizeSqlName(viewName);
   const filterKeys = Object.keys(filters).filter((key) => /^[A-Za-z0-9_]+$/.test(key));

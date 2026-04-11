@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { executeProcedure, querySql } from "../utils/sql.js";
+import { executeProcedure, querySql, executeScalarFunction } from "../utils/sql.js";
 import { asyncHandler } from "../middleware/errorHandler.js";
 
 const router = Router();
@@ -7,14 +7,16 @@ const router = Router();
 router.get(
   "/dashboard",
   asyncHandler(async (req, res) => {
-    const result = await querySql("SELECT * FROM vw_dashboard_proyectos");
-    res.json(result.recordset);
+    const result = await executeScalarFunction("fn_ContarProyectosActivos");
+    res.json({ total: result });
   })
 );
+
 
 router.get(
   "/",
   asyncHandler(async (req, res) => {
+    
     const result = await executeProcedure("sp_proyectos_listar", {
       proyectoId: req.query.proyectoId,
     });
