@@ -31,4 +31,22 @@ router.get(
   })
 );
 
+// Contar pagos pendientes
+router.get(
+  "/pagos-pendientes",
+  asyncHandler(async (req, res) => {
+    const result = await executeScalarFunction("fn_PagosPendientes");
+    res.json({ total: result });
+  })
+);
+
+// Calcular ingresos del mes actual
+router.get(
+  "/ingresos-mes-actual",
+  asyncHandler(async (req, res) => {
+    const result = await executeScalarFunction("fn_IngresosMesActual");
+    res.json({ total: result });
+  })
+);
+
 export default router;

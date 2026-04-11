@@ -24,6 +24,9 @@ router.post(
   "/",
   asyncHandler(async (req, res) => {
     const { clienteId, loteId, tipoVenta, prima = 0, aniosPlazo = 0, tasaInteresAplicada = 0 } = req.body;
+    
+    // Transaccional: sp_crear_venta_completa
+    // Valida lote y cliente, crea venta, genera plan de pagos y actualiza lote.
     const result = await executeProcedure("sp_crear_venta_completa", {
       ClienteID: clienteId,
       LoteID: loteId,
@@ -80,6 +83,9 @@ router.post(
   "/:id/plan-pagos",
   asyncHandler(async (req, res) => {
     const payload = { ventaId: req.params.id, ...req.body };
+    
+    // Transaccional: sp_generar_plan_pagos
+    // Genera el plan de pagos completo para la venta.
     const result = await executeProcedure("sp_generar_plan_pagos", payload);
     res.json(result.recordset);
   })
@@ -89,7 +95,7 @@ router.get(
   "/:id/plan-pagos",
   asyncHandler(async (req, res) => {
     const result = await querySql("SELECT * FROM fn_plan_pagos(@id)", { id: req.params.id });
-    res.json(result.recordset);
+    res.json(result.recordset[0] ?? null);
   })
 );
 

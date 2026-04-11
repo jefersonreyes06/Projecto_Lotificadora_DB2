@@ -9,6 +9,7 @@ import pagosRouter from "./pagos.js";
 import cuentasRouter from "./cuentas.js";
 import reportesRouter from "./reportes.js";
 import dashboardRouter from "./dashboard.js";
+import triggersRouter from "./triggers.js";
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use("/pagos", pagosRouter);
 router.use("/cuentas", cuentasRouter);
 router.use("/reportes", reportesRouter);
 router.use("/dashboard", dashboardRouter);
+router.use("/triggers", triggersRouter);
 
 export default router;

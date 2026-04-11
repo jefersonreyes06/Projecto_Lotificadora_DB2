@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { proyectosApi } from "../services/api.js";
+import { dashboardApi } from "../services/api.js";
 import { StatCard, Card, Badge, PageHeader, PageContent } from "../components/index";
 
 const quickLinks = [
@@ -17,17 +17,34 @@ export default function Dashboard() {
   useEffect(() => {
     let mounted = true;
 
-    proyectosApi
-      .dashboard()
-      .then((result) => {
-        if (mounted) setStats(result);
-      })
-      .catch(() => {
+    const loadDashboardData = async () => {
+      try {
+        const [proyectosActivos, lotesDisponibles, ventasMes, pagosPendientes, ingresosMes] = await Promise.all([
+          dashboardApi.proyectosActivos(),
+          dashboardApi.lotesDisponibles(),
+          dashboardApi.ventasMesActual(),
+          dashboardApi.pagosPendientes(),
+          dashboardApi.ingresosMesActual()
+        ]);
+
+        if (mounted) {
+          setStats({
+            proyectos: proyectosActivos.total,
+            lotes_disponibles: lotesDisponibles.total,
+            ventas_mes: ventasMes.total,
+            cuotas_vencidas: pagosPendientes.total,
+            ingresos_mes: ingresosMes.total
+          });
+        }
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
         if (mounted) setStats({});
-      })
-      .finally(() => {
+      } finally {
         if (mounted) setLoading(false);
-      });
+      }
+    };
+
+    loadDashboardData();
 
     return () => {
       mounted = false;
@@ -44,7 +61,7 @@ export default function Dashboard() {
       />
       <PageContent>
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           <StatCard
             label="Proyectos activos"
             value={loading ? "—" : s.proyectos ?? 0}
@@ -58,13 +75,18 @@ export default function Dashboard() {
           />
           <StatCard
             label="Ventas este mes"
-            value={loading ? "—" : `L ${Number(s.ventas_mes ?? 0).toLocaleString()}`}
-            sub="Ingresos registrados"
+            value={loading ? "—" : s.ventas_mes ?? 0}
+            sub="Ventas realizadas"
           />
           <StatCard
             label="Pagos pendientes"
             value={loading ? "—" : s.cuotas_vencidas ?? 0}
-            sub="Cuotas en mora"
+            sub="Cuotas por cobrar"
+          />
+          <StatCard
+            label="Ingresos este mes"
+            value={loading ? "—" : `L ${Number(s.ingresos_mes ?? 0).toLocaleString("es-HN")}`}
+            sub="Total recibido"
           />
         </div>
 

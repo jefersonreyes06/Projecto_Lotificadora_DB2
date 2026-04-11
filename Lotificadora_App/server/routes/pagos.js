@@ -24,6 +24,9 @@ router.post(
   "/",
   asyncHandler(async (req, res) => {
     const { cuotaId, montoRecibido, metodoPago, numeroDeposito, cuentaBancariaId, usuarioCajaId, observaciones } = req.body;
+    
+    // Transaccional: sp_registrar_pago_completo
+    // Valida cuota, registra pago, actualiza saldos y genera factura en una sola transacción.
     const result = await executeProcedure("sp_registrar_pago_completo", {
       CuotaID: cuotaId,
       MontoRecibido: montoRecibido,

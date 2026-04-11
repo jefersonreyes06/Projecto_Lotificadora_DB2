@@ -36,7 +36,8 @@ router.post(
   asyncHandler(async (req, res) => {
     const { bloqueId, numeroLote, areaVaras, precioBase, estado = 'Disponible', caracteristicas } = req.body;
     
-    // Convertir array de características a XML si existe
+    // Transaccional: sp_crear_lote_completo
+    // Crea lote, asigna características y actualiza el bloque en una sola transacción.
     let caracteristicasXML = null;
     if (caracteristicas && caracteristicas.length > 0) {
       const xmlParts = ['<caracteristicas>'];

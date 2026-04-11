@@ -159,6 +159,25 @@ export const pagosApi = {
 };
 
 // ──────────────────────────────────────────────
+// TRANSACCIONES — Procedimientos con manejo transaccional
+// ──────────────────────────────────────────────
+export const transaccionesApi = {
+  crearVentaCompleta: (data) => ventasApi.create(data),
+  cancelarVentaCompleta: (ventaId, motivo) => ventasApi.cancelar(ventaId, motivo),
+  crearLoteCompleto: (data) => lotesApi.create(data),
+  registrarPagoCompleto: (data) => pagosApi.registrar(data),
+  generarPlanPagos: (ventaId, params) => ventasApi.generarPlan(ventaId, params),
+  cierreCajaDiario: (fecha) => pagosApi.cierreDiario(fecha),
+};
+
+// ──────────────────────────────────────────────
+// TRIGGERS — consulta de triggers activos en la base de datos
+// ──────────────────────────────────────────────
+export const triggersApi = {
+  list: () => request("/triggers"),
+};
+
+// ──────────────────────────────────────────────
 // CUENTAS BANCARIAS — sp_cuentas_*
 // ──────────────────────────────────────────────
 export const cuentasApi = {
@@ -169,6 +188,17 @@ export const cuentasApi = {
   update: (id, data) => request(`/cuentas/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   remove: (id) => request(`/cuentas/${id}`, { method: "DELETE" }),
   movimientos: (id) => request(`/cuentas/${id}/movimientos`),
+};
+
+// ──────────────────────────────────────────────
+// DASHBOARD — Funciones escalares
+// ──────────────────────────────────────────────
+export const dashboardApi = {
+  proyectosActivos: () => request("/dashboard/proyectos-activos"),             // fn_ContarProyectosActivos
+  lotesDisponibles: () => request("/dashboard/lotes-disponibles"),             // fn_LotesDisponibles
+  ventasMesActual: () => request("/dashboard/ventas-mes-actual"),              // fn_VentasMesActual
+  pagosPendientes: () => request("/dashboard/pagos-pendientes"),               // fn_PagosPendientes
+  ingresosMesActual: () => request("/dashboard/ingresos-mes-actual"),          // fn_IngresosMesActual
 };
 
 // ──────────────────────────────────────────────
