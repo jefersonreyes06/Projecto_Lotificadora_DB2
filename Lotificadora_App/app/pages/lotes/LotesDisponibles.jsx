@@ -143,7 +143,7 @@ export default function LotesDisponibles() {
       cerrarVentaModal();
       alert("Venta creada exitosamente");
     } catch (err) {
-      alert("Error creando venta: " + err.message);
+      console.log(err.message)
     } finally {
       setCreandoVenta(false);
     }
