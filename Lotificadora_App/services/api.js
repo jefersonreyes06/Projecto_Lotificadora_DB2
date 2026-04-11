@@ -71,6 +71,8 @@ export const lotesApi = {
     request(`/lotes/disponibles?${new URLSearchParams(filtros)}`),
   // fn_valor_lote(id) — función escalar SQL
   calcularValor: (id) => request(`/lotes/${id}/valor`),
+  // Lotes disponibles para venta
+  disponiblesVenta: () => request("/ventas/lotes/disponibles"),
 };
 
 // ──────────────────────────────────────────────
@@ -95,6 +97,8 @@ export const ventasApi = {
   get: (id) => request(`/ventas/${id}`),
   // sp_crear_venta — con manejo transaccional
   create: (data) => request("/ventas", { method: "POST", body: JSON.stringify(data) }),
+  update: (id, data) => request(`/ventas/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  remove: (id) => request(`/ventas/${id}`, { method: "DELETE" }),
   // sp_generar_plan_pagos — cursor + transacción
   generarPlan: (ventaId, params) =>
     request(`/ventas/${ventaId}/plan-pagos`, {

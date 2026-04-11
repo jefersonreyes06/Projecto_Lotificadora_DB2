@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router";
 import {
   PageHeader, PageContent, Button, FormField, Input, Select, Card, Alert, Badge,
 } from "../../components/index";
+import { ventasApi } from "../../../services/api";
 
 export default function VentaForm() {
   const navigate = useNavigate();
@@ -203,7 +204,7 @@ export default function VentaForm() {
                     ))}
                   </div>
                 )}
-
+                
                 <FormField label="Tipo de venta" required>
                   <Select value={form.tipo_venta} onChange={set("tipo_venta")}>
                     <option value="Contado">Contado</option>
