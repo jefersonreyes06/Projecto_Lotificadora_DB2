@@ -48,7 +48,7 @@ export default function VentasList() {
   }, [search, tipoFiltro, data]);
 
   const columns = [
-    { key: "VentaID",           label: "#",        width: 60, render: (v) => <span className="text-stone-500 font-mono text-xs">{v}</span> },
+    { key: "VentaID",  label: "#",        width: 60, render: (v) => <span className="text-stone-500 font-mono text-xs">{v}</span> },
     { key: "ClienteNombre",      label: "Cliente" },
     { key: "NumeroLote",         label: "Lote" },
     { key: "FechaVenta",  label: "Fecha", render: (v) => new Date(v).toLocaleDateString("es-HN") },
@@ -123,7 +123,6 @@ export default function VentasList() {
             columns={columns}
             data={filtered}
             loading={loading}
-            onRowClick={(row) => navigate(`/ventas/${row.VentaId}`)}
           />
         </Card>
       </PageContent>

@@ -8,7 +8,7 @@ import {
 const EMPTY = {
   bloqueId: "",
   areaVaras: "",
-  precio_base: "",
+  precio_vara: "",
   es_esquina: false,
   cerca_parque: false,
   calle_cerrada: false,
@@ -105,7 +105,7 @@ export default function LoteForm() {
                           {form.proyecto ?? form.Proyecto ?? "Proyecto actual"}
                         </option>
                       )}
-                      {!isEdit&& <option value="">Seleccione...</option>}
+                      {!isEdit && <option value="">Seleccione...</option>}
                       {!isEdit && proyectos.map((p) => (
                         <option key={p.ProyectoID} value={p.ProyectoID}>{p.Nombre}</option>
                       ))}

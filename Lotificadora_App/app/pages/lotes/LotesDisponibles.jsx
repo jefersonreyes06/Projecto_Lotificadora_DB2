@@ -356,11 +356,11 @@ export default function LotesDisponibles() {
                           onChange={(e) => setVentaForm(prev => ({ ...prev, tipoVenta: e.target.value }))}
                         >
                           <option value="Contado">Contado</option>
-                          <option value="Financiado">Financiado</option>
+                          <option value="Credito">Credito</option>
                         </Select>
                       </FormField>
 
-                      {ventaForm.tipoVenta === "Financiado" && (
+                      {ventaForm.tipoVenta === "Credito" && (
                         <>
                           <FormField label="Prima">
                             <Input
