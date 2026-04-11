@@ -112,7 +112,7 @@ export default function LoteForm() {
                     </Select>
                   </FormField>
                   <FormField label="Etapa" required>
-                    <Select value={etapaId} onChange={(e) => setEtapaId(parseInt(e.target.value))} disabled={!proyectoId} required disabled={isEdit}>
+                    <Select value={etapaId} onChange={(e) => setEtapaId(parseInt(e.target.value))} disabled={!proyectoId} required>
                       <option value="">Seleccione...</option>
                       {etapas.map((e) => (
                         <option key={e.EtapaID} value={e.EtapaID}>{e.Etapa}</option>
