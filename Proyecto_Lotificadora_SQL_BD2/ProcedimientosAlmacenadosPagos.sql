@@ -201,7 +201,7 @@ BEGIN
         END
         ELSE IF @NumeroLote IS NOT NULL
         BEGIN
-            -- Buscar lote específico por número
+            -- Buscar lote específico por número (insensible a mayúsculas/minúsculas)
             SELECT
                 l.LoteID,
                 l.NumeroLote,
@@ -230,7 +230,7 @@ BEGIN
             INNER JOIN Proyectos p ON e.ProyectoID = p.ProyectoID
             LEFT JOIN Ventas v ON l.LoteID = v.LoteID AND v.Estado = 'Activa'
             LEFT JOIN Clientes c ON v.ClienteID = c.ClienteID
-            WHERE l.NumeroLote = @NumeroLote
+            WHERE LOWER(l.NumeroLote) = LOWER(@NumeroLote)
               AND (l.Estado = 'Disponible' OR l.Estado = 'Proceso');
         END
         ELSE IF @DNI IS NOT NULL
@@ -585,4 +585,43 @@ BEGIN
         SELECT 'Error: ' + ERROR_MESSAGE() AS error_message;
     END CATCH;
 END;
+GO
+
+-- =====================================================
+-- VISTA: OCUPACIÓN DE LOTES POR ETAPA
+-- =====================================================
+CREATE OR ALTER VIEW vw_ocupacion_lotes AS
+SELECT
+    e.EtapaID,
+    e.Nombre AS NombreEtapa,
+    p.ProyectoID,
+    p.Nombre AS NombreProyecto,
+    COUNT(CASE WHEN l.Estado = 'Disponible' THEN 1 END) AS LotesDisponibles,
+    COUNT(CASE WHEN l.Estado = 'Proceso' THEN 1 END) AS LotesEnProceso,
+    COUNT(CASE WHEN l.Estado = 'Vendido' THEN 1 END) AS LotesVendidos,
+    COUNT(*) AS TotalLotes
+FROM Lotes l
+INNER JOIN Bloques b ON l.BloqueID = b.BloqueID
+INNER JOIN Etapas e ON b.EtapaID = e.EtapaID
+INNER JOIN Proyectos p ON e.ProyectoID = p.ProyectoID
+GROUP BY e.EtapaID, e.Nombre, p.ProyectoID, p.Nombre;
+GO
+
+-- =====================================================
+-- VISTA: RESUMEN EJECUTIVO DE PROYECTOS
+-- =====================================================
+CREATE OR ALTER VIEW vw_resumen_proyectos AS
+SELECT
+    p.ProyectoID,
+    p.Nombre AS NombreProyecto,
+    COUNT(DISTINCT e.EtapaID) AS TotalEtapas,
+    COUNT(DISTINCT b.BloqueID) AS TotalBloques,
+    COUNT(l.LoteID) AS TotalLotes,
+    SUM(CASE WHEN l.Estado = 'Vendido' THEN l.PrecioFinal ELSE 0 END) AS TotalIngresos,
+    AVG(CASE WHEN l.Estado = 'Vendido' THEN l.PrecioFinal ELSE NULL END) AS PrecioPromedioLotesVendidos
+FROM Proyectos p
+LEFT JOIN Etapas e ON p.ProyectoID = e.ProyectoID
+LEFT JOIN Bloques b ON e.EtapaID = b.EtapaID
+LEFT JOIN Lotes l ON b.BloqueID = l.BloqueID
+GROUP BY p.ProyectoID, p.Nombre;
 GO

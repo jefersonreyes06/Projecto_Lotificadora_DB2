@@ -63,10 +63,9 @@ export default [
       route(":id/movimientos", "pages/cuentas/CuentaMovimientos.jsx", { id: "cuenta-movimientos" }),
     ]),
 
-    ...prefix("reportes", [
-      route("vistas", "pages/reportes/ReporteVistas.jsx"),
-      route("procedimientos", "pages/reportes/ReporteProcedimientos.jsx"),
-      route("funciones", "pages/reportes/ReporteFunciones.jsx"),
-      route("funciones-tabla", "pages/reportes/ReporteFuncionesTabla.jsx"),
+    // Vistas
+    ...prefix("vistas", [
+      route("ocupacion-lotes", "pages/reportes/ReporteOcupacionLotes.jsx"),
+      route("resumen-proyectos", "pages/reportes/ReporteResumenProyectos.jsx"),
     ]),
   ]),] satisfies RouteConfig;

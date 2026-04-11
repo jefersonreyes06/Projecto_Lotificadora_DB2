@@ -10,6 +10,7 @@ import cuentasRouter from "./cuentas.js";
 import reportesRouter from "./reportes.js";
 import dashboardRouter from "./dashboard.js";
 import triggersRouter from "./triggers.js";
+import vistasRouter from "./vistas.js";
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use("/cuentas", cuentasRouter);
 router.use("/reportes", reportesRouter);
 router.use("/dashboard", dashboardRouter);
 router.use("/triggers", triggersRouter);
+router.use("/vistas", vistasRouter);
 
 export default router;
