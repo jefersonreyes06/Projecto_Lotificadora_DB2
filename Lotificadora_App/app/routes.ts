@@ -45,6 +45,7 @@ export default [
     ...prefix("ventas", [
       index("pages/ventas/VentasList.jsx"),
       route("nueva", "pages/ventas/VentaForm.jsx"),
+      route(":id", "pages/ventas/VentaDetalle.jsx"),
       route(":id/plan-pagos", "pages/ventas/PlanPagos.jsx"),
     ]),
 

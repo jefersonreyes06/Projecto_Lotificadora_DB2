@@ -148,14 +148,23 @@ export const clientesApi = {
 };
 
 // ──────────────────────────────────────────────
+const normalizeVentaPayload = (data) => ({
+  ClienteId: data.clienteId ?? data.ClienteId ?? data.cliente_id ?? data.ClienteID ?? null,
+  LoteId: data.loteId ?? data.LoteId ?? data.lote_id ?? data.LoteID ?? null,
+  TipoVenta: data.tipo_venta ?? data.TipoVenta ?? data.tipoVenta ?? null,
+  Prima: data.prima !== undefined && data.prima !== null ? data.prima : 0,
+  AniosPlazo: data.anios_financiamiento ?? data.aniosPlazo ?? data.AniosPlazo ?? 0,
+  TasaInteresAplicada: data.tasaInteresAplicada ?? data.TasaInteresAplicada ?? data.interes ?? null,
+});
+
 // VENTAS — sp_ventas_*
 // ──────────────────────────────────────────────
 export const ventasApi = {
   list: () => request("/ventas"),
   get: (id) => request(`/ventas/${id}`),
   // sp_crear_venta_completa — con manejo transaccional
-  create: (data) => request("/ventas", { method: "POST", body: JSON.stringify(data) }),
-  update: (id, data) => request(`/ventas/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  create: (data) => request("/ventas", { method: "POST", body: JSON.stringify(normalizeVentaPayload(data)) }),
+  update: (id, data) => request(`/ventas/${id}`, { method: "PUT", body: JSON.stringify(normalizeVentaPayload(data)) }),
   remove: (id) => request(`/ventas/${id}`, { method: "DELETE" }),
   // Cancelar venta completa (transaccional)
   cancelar: (id, motivo) => request(`/ventas/${id}/cancelar`, { 

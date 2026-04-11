@@ -126,6 +126,7 @@ export default function LotesDisponibles() {
       const montoFinanciado = ventaForm.tipoVenta === "Financiado" ? montoTotal - prima : 0;
       const aniosPlazo = ventaForm.tipoVenta === "Contado" ? 0 : ventaForm.aniosPlazo;
 
+      console.log(clienteData, ventaModal.lote, ventaForm);
       await ventasApi.create({
         ClienteID: clienteData.id,
         LoteID: ventaModal.lote.id,
@@ -170,8 +171,6 @@ export default function LotesDisponibles() {
       return result;
     });
   }, [lotes, filtros]);
-
-  console.log("Lotes disponibles:", lotes);
 
   const columns = [
     { key: "codigo_lote", label: "Número de Lote" },
@@ -328,7 +327,7 @@ export default function LotesDisponibles() {
               {clienteData && (
                 <div className="bg-green-900/20 border border-green-500/30 p-4 rounded">
                   <h4 className="font-semibold mb-2">Cliente Encontrado</h4>
-                  <p><strong>Nombre:</strong> {clienteData.nombre_completo}</p>
+                  <p><strong>Nombre:</strong> {clienteData.nombreCompleto}</p>
                   <p><strong>DNI:</strong> {clienteData.dni}</p>
                   <p><strong>Teléfono:</strong> {clienteData.telefono || clienteData.telefono}</p>
                   <p><strong>Empresa:</strong> {clienteData.nombreEmpresa || clienteData.NombreEmpresa}</p>

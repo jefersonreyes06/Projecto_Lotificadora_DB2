@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router";
 import { ventasApi, pagosApi } from "../../services/api";
 import {
   PageHeader, PageContent, Card, Badge, Button, DataTable, Alert, StatCard,
-} from "../../components/ui";
+} from "../../components/index";
 
 const fmtLps  = (v) => `L ${Number(v ?? 0).toLocaleString("es-HN", { minimumFractionDigits: 2 })}`;
 const fmtDate = (v) => v ? new Date(v).toLocaleDateString("es-HN") : "—";

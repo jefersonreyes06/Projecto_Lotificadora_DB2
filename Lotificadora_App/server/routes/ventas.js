@@ -51,17 +51,17 @@ router.get(
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    const { clienteId, loteId, tipoVenta, prima = 0, aniosPlazo = 0, tasaInteresAplicada = 0 } = req.body;
-    
+    const { ClienteId, LoteId, TipoVenta, Prima = 0, AniosPlazo = 0, TasaInteresAplicada = 0 } = req.body;
+
     // Transaccional: sp_crear_venta_completa
     // Valida lote y cliente, crea venta, genera plan de pagos y actualiza lote.
     const result = await executeProcedure("sp_crear_venta_completa", {
-      ClienteID: clienteId,
-      LoteID: loteId,
-      TipoVenta: tipoVenta,
-      Prima: prima,
-      AniosPlazo: aniosPlazo,
-      TasaInteresAplicada: tasaInteresAplicada
+      ClienteID: ClienteId,
+      LoteID: LoteId,
+      TipoVenta: TipoVenta,
+      Prima: Prima,
+      AniosPlazo: AniosPlazo,
+      TasaInteresAplicada: TasaInteresAplicada
     });
     res.json(result.recordset[0]);
   })
