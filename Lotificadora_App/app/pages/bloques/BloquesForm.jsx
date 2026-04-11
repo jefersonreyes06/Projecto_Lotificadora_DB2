@@ -43,8 +43,9 @@ export default function BloquesForm() {
       .get(id)
       .then((data) => {
         setForm({
+          etapa: data.etapa ?? data.Etapa ?? "",
           etapaId: data.etapaId ?? data.EtapaID ?? "",
-          nombre: data.nombre ?? data.Nombre ?? "",
+          nombre: data.nombre ?? data.Bloque ?? "",
           area_total_varas: data.area_total_varas ?? data.AreaTotalVaras ?? "",
           estado: data.estado ?? data.Estado ?? "Disponible",
         });
@@ -101,10 +102,16 @@ export default function BloquesForm() {
             <Card className="p-6 space-y-5 max-w-2xl">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <FormField label="Etapa" required>
-                  <Select value={form.EtapaID} onChange={set("etapaId")} required>
-                    <option value="">Seleccione etapa...</option>
-                    {etapas.map((etapa) => (
-                      <option key={etapa.id ?? etapa.EtapaID} value={etapa.id ?? etapa.Etapa} selected={etapa.EtapaID === form.EtapaID}>
+                  <Select value={form.EtapaID} onChange={set("etapaId")} required disabled={isEdit}>
+                    {isEdit && (
+                      <option value={form.EtapaID}>
+                        {form.Etapa ?? form.etapa}
+                      </option>
+                    )}
+                   
+                    {!isEdit && <option value="">Seleccione etapa...</option>}
+                    {!isEdit && etapas.map((etapa) => (
+                      <option key={etapa.id ?? etapa.EtapaID} value={etapa.id ?? etapa.Etapa} >
                         {etapa.nombre ?? etapa.Etapa}
                       </option>
                     ))}
@@ -120,7 +127,7 @@ export default function BloquesForm() {
                   />
                 </FormField>
 
-                <FormField label="Área total (varas²)">
+                {/* <FormField label="Área total (varas²)">
                   <Input
                     type="number"
                     value={form.area_total_varas}
@@ -129,7 +136,7 @@ export default function BloquesForm() {
                     min={0}
                     step="0.01"
                   />
-                </FormField>
+                </FormField> */}
 
                 <FormField label="Estado">
                   <Select value={form.estado} onChange={set("estado")}>

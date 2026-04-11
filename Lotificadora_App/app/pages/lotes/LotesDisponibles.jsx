@@ -146,6 +146,8 @@ export default function LotesDisponibles() {
     });
   }, [lotes, filtros]);
 
+  console.log("Lotes disponibles:", lotes);
+
   const columns = [
     { key: "id", label: "ID" },
     { key: "codigo_lote", label: "Número" },
@@ -210,7 +212,7 @@ export default function LotesDisponibles() {
               <Select value={draftFiltros.proyectoId} onChange={handleChange("proyectoId")}>
                 <option value="">Todos</option>
                 {proyectos.map((p) => (
-                  <option key={p.id} value={p.id}>{p.nombre}</option>
+                  <option key={p.ProyectoID} value={p.id}>{p.nombre}</option>
                 ))}
               </Select>
             </FormField>
@@ -223,7 +225,7 @@ export default function LotesDisponibles() {
               >
                 <option value="">Todas</option>
                 {etapas.map((e) => (
-                  <option key={e.id} value={e.id}>{e.nombre}</option>
+                  <option key={e.EtapaID} value={e.id}>{e.nombre}</option>
                 ))}
               </Select>
             </FormField>

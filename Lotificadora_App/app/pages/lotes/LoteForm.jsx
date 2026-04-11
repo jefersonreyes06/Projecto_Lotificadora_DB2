@@ -7,7 +7,6 @@ import {
 
 const EMPTY = {
   bloqueId: "",
-  codigo_lote: "",
   area_m2: "",
   es_esquina: false,
   cerca_parque: false,
@@ -26,25 +25,25 @@ export default function LoteForm() {
   const [proyectos, setProyectos] = useState([]);
   const [etapas, setEtapas] = useState([]);
   const [bloques, setBloques] = useState([]);
-  const [proyectoId, setProyectoId] = useState("");
+  const [proyectoId, setProyectoId] = useState(0);
   const [etapaId, setEtapaId] = useState("");
   const [valorCalculado, setValorCalculado] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // proyectosApi.list().then(setProyectos).catch(() => {});
+    proyectosApi.list().then(setProyectos).catch(() => {});
   }, []);
 
   useEffect(() => {
     if (!proyectoId) { setEtapas([]); setBloques([]); return; }
-    etapasApi.list(proyectoId).then(setEtapas).catch(() => {});
+    etapasApi.list().then((etapas) => setEtapas(etapas.filter((e) => e.ProyectoID === proyectoId))).catch(() => {});
   }, [proyectoId]);
 
   useEffect(() => {
-    if (!etapaId) { setBloques([]); return; }
-    bloquesApi.list(etapaId).then(setBloques).catch(() => {});
-  }, [etapaId]);
+    if (!etapaId || !proyectoId) { setBloques([]); return; }
+    bloquesApi.list().then((bloques) => setBloques(bloques.filter((b) => b.EtapaID === etapaId))).catch(() => {});
+  }, [etapaId, proyectoId]);
 
   useEffect(() => {
     if (!isEdit) return;
@@ -107,42 +106,42 @@ export default function LoteForm() {
                 <p className="text-xs font-semibold uppercase tracking-widest text-stone-500">
                   Ubicación del lote
                 </p>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <FormField label="Proyecto" required>
-                    <Select value={proyectoId} onChange={(e) => setProyectoId(e.target.value)} required>
+                    <Select value={proyectoId} onChange={(e) => setProyectoId(parseInt(e.target.value))} required>
                       <option value="">Seleccione...</option>
                       {proyectos.map((p) => (
-                        <option key={p.id} value={p.id}>{p.nombre}</option>
+                        <option key={p.ProyectoID} value={p.ProyectoID}>{p.Nombre}</option>
                       ))}
                     </Select>
                   </FormField>
                   <FormField label="Etapa" required>
-                    <Select value={etapaId} onChange={(e) => setEtapaId(e.target.value)} disabled={!proyectoId} required>
+                    <Select value={etapaId} onChange={(e) => setEtapaId(parseInt(e.target.value))} disabled={!proyectoId} required>
                       <option value="">Seleccione...</option>
                       {etapas.map((e) => (
-                        <option key={e.id} value={e.id}>{e.nombre}</option>
+                        <option key={e.EtapaID} value={e.EtapaID}>{e.Etapa}</option>
                       ))}
                     </Select>
                   </FormField>
-                  <FormField label="Bloque" required>
+                  
+                </div>
+
+                <div className="grid grid-cols-2 gap-4"><FormField label="Bloque" required>
                     <Select value={form.bloqueId} onChange={set("bloqueId")} disabled={!etapaId} required>
                       <option value="">Seleccione...</option>
                       {bloques.map((b) => (
-                        <option key={b.id} value={b.id}>{b.codigo}</option>
+                        <option key={b.BloqueID} value={b.BloqueID}>{b.Nombre}</option>
                       ))}
                     </Select>
                   </FormField>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField label="Código del lote" required>
+                  {/* <FormField label="Código del lote" required>
                     <Input
                       value={form.codigo_lote}
                       onChange={set("codigo_lote")}
                       placeholder="Ej. A-001"
                       required
                     />
-                  </FormField>
+                  </FormField> */}
                   <FormField label="Área (varas²)" required>
                     <Input
                       type="number"
