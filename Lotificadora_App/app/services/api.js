@@ -152,6 +152,7 @@ export const pagosApi = {
   cierreDiario: (fecha) => request(`/pagos/cierre?fecha=${fecha}`),
   // Factura de pago
   factura: (id) => request(`/pagos/${id}/factura`),
+  cuentasPendientes: () => request("/pagos/prestamos-activos"),
 };
 // CLIENTES — sp_clientes_*
 // ──────────────────────────────────────────────
@@ -249,30 +250,48 @@ export const dashboardApi = {
 };
 
 // ──────────────────────────────────────────────
-// REPORTES — Vistas, SPs, Funciones tipo tabla
+// REPORTES — vw_reportes*
 // ──────────────────────────────────────────────
 export const reportesApi = {
-  // Vistas
-  ocupacionLotes: (params) =>
-    request(`/reportes/ocupacion-lotes?${new URLSearchParams(params)}`),       // vw_ocupacion_lotes
-  resumenProyectos: () => request("/reportes/resumen-proyectos"),               // vw_resumen_proyectos
-
-  // Procedimientos almacenados
-  morosos: (diasMora) => request(`/reportes/morosos?dias=${diasMora}`),        // sp_reporte_morosos
-  ingresosMes: (año, mes) =>
-    request(`/reportes/ingresos?anio=${año}&mes=${mes}`),                       // sp_ingresos_mes
-
-  // Funciones tipo tabla
-  lotesPorEtapa: (etapaId) => request(`/reportes/lotes-etapa/${etapaId}`),    // fn_lotes_por_etapa
-  clientesPorProyecto: (proyectoId) =>
-    request(`/reportes/clientes-proyecto/${proyectoId}`),                       // fn_clientes_por_proyecto
-
-  // NUEVAS FUNCIONES TIPO TABLA
-  lotesDisponiblesProyecto: (proyectoId) =>
-    request(`/reportes/lotes-disponibles-proyecto/${proyectoId}`),             // fn_lotes_disponibles_por_proyecto
-  historialPagosCliente: (clienteId) =>
-    request(`/reportes/historial-pagos-cliente/${clienteId}`),                  // fn_historial_pagos_cliente
-  cuotasVencidas: () => request("/reportes/cuotas-vencidas"),                   // fn_cuotas_vencidas
-  ventasPorMes: (anio) => request(`/reportes/ventas-por-mes/${anio}`),         // fn_ventas_por_mes
-  estadisticasLotesEstado: () => request("/reportes/estadisticas-lotes-estado"), // fn_estadisticas_lotes_por_estado
+  vistas: () => request("/reportes/vistas"),   
+  ocupacionLotes: (estado) => request(`/reportes/ocupacion-lotes?estado=${estado || ""}`), // Vista vw_ocupacion_lotes
+  resumenProyectos: () => request("/reportes/resumen-proyectos"), // Vista vw_resumen_proyectos
 };
+/*
+export const proyectosApi = {
+  list: () => request("/proyectos"),                         // EXEC sp_proyectos_listar
+  get: (id) => request(`/proyectos/${id}`),                  // EXEC sp_proyectos_obtener @id
+  create: (data) => request("/proyectos", { method: "POST", body: JSON.stringify(data) }),
+  update: (id, data) => request(`/proyectos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  remove: (id) => request(`/proyectos/${id}`, { method: "DELETE" }),
+  dashboard: () => request("/proyectos/dashboard"),          // Vista vw_dashboard_proyectos
+};*/
+
+// ──────────────────────────────────────────────
+// VISTAS
+// ──────────────────────────────────────────────
+export const vistasApi = {
+  list: () => request("/vistas"),   
+  ocupacionLotes: (estado) => request(`/reportes/ocupacion-lotes?estado=${estado || ""}`), // Vista vw_ocupacion_lotes
+  resumenProyectos: () => request("/reportes/resumen-proyectos"), // Vista vw_resumen_proyectos
+  prestamosActivos: () => request("/vistas/prestamos-activos"), // Vista vw_prestamos_activos
+};
+/*
+// ──────────────────────────────────────────────
+// PROCEDIMIENTOS
+// ──────────────────────────────────────────────
+export const procedimienApi = {
+  list: () => request("/vistas"),   
+  ocupacionLotes: (estado) => request(`/reportes/ocupacion-lotes?estado=${estado || ""}`), // Vista vw_ocupacion_lotes
+  resumenProyectos: () => request("/reportes/resumen-proyectos"), // Vista vw_resumen_proyectos
+};*/
+
+// ──────────────────────────────────────────────
+// FUNCIONES
+// ──────────────────────────────────────────────
+export const funcionesApi = {
+  list: () => request("/funciones"),   
+  //ocupacionLotes: (estado) => request(`/reportes/ocupacion-lotes?estado=${estado || ""}`), // Vista vw_ocupacion_lotes
+  //resumenProyectos: () => request("/reportes/resumen-proyectos"), // Vista vw_resumen_proyectos
+};
+

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { reportesApi } from "../../services/api.js";
+import { vistasApi } from "../../services/api.js";
 
 import {
   PageHeader, PageContent, Card, DataTable, Badge, Button, FormField, Select, StatCard,
@@ -21,16 +21,16 @@ function OcupacionLotes() {
   };
 
   const cols = [
-    { key: "proyecto", label: "Proyecto" },
-    { key: "etapa", label: "Etapa" },
-    { key: "total_lotes", label: "Total" },
+    { key: "Proyecto", label: "Proyecto" },
+    { key: "Etapa", label: "Etapa" },
+    { key: "TotaLotes", label: "Total" },
     {
-      key: "disponibles",
+      key: "Disponibles",
       label: "Disponibles",
       render: (v) => <Badge variant="success">{v}</Badge>,
     },
     {
-      key: "vendidos",
+      key: "Vendidos",
       label: "Vendidos",
       render: (v) => <Badge variant="danger">{v}</Badge>,
     },

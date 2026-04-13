@@ -30,9 +30,9 @@ const navGroups = [
   {
     label: "Consultas",
     items: [
-      { to: "/reportes/vistas", label: "Vistas SQL", icon: "◐" },
-      { to: "/reportes/procedimientos", label: "Procedimientos", icon: "◑" },
-      { to: "/reportes/funciones", label: "Funciones", icon: "◒" },
+      { to: "/vistas", label: "Vistas SQL", icon: "◐" },
+      { to: "/procedimientos", label: "Procedimientos", icon: "◑" },
+      { to: "/funciones", label: "Funciones", icon: "◒" },
     ],
   },
 ];

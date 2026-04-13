@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { executeProcedure } from "../utils/sql.js";
 import { asyncHandler } from "../middleware/errorHandler.js";
+import { poolConnect, pool } from "../config/db.js";
 
 const router = Router();
-
 /**
  * LISTAR PAGOS CON FILTROS OPCIONALES
  * GET /pagos
@@ -20,6 +20,17 @@ router.get(
       FechaFin: fechaFin || null,
       MetodoPago: metodoPago || null
     });
+    res.json(result.recordset);
+  })
+);
+
+
+// OBTENER UNA VISTA CON TODAS LAS CUENTAS PENDIENTES DE PAGO (CRÉDITOS ACTIVOS)
+router.get(
+  "/prestamos-activos",
+  asyncHandler(async (req, res) => {
+    const pool = await poolConnect;
+    const result = await pool.request().query("SELECT * FROM vw_prestamos_activos");
     res.json(result.recordset);
   })
 );

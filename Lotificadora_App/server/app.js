@@ -4,13 +4,11 @@ import dotenv from "dotenv";
 import routes from "./routes/index.js";
 import { apiErrorHandler } from "./middleware/errorHandler.js";
 import { notFoundHandler } from "./middleware/notFound.js";
-const vistasRoutes = require('./routes/vistas');
 
 
 dotenv.config();
 
 const app = express();
-app.use('/api/vistas', vistasRoutes);
 // { origin: process.env.CORS_ORIGIN ?? "*" }
 app.use(cors());
 app.use(express.json());

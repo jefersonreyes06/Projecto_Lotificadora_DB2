@@ -59,6 +59,11 @@ export default function PagosList() {
     navigate(`/pagos/nuevo?numeroLote=${encodeURIComponent(busquedaLote)}`);
   };
 
+  const handlecuentasPendientes = () => {
+    //const res = await pagosApi.cuentasPendientes();
+    navigate("/pagos/cuentas-activas");//, { state: { cuentas: res } });
+  }
+
   const totalEfectivo = data.filter((p) => p.tipo_pago === "Efectivo").reduce((s, p) => s + Number(p.monto_pagado ?? 0), 0);
   const totalBanco    = data.filter((p) => p.tipo_pago !== "Efectivo").reduce((s, p) => s + Number(p.monto_pagado ?? 0), 0);
 
@@ -120,6 +125,18 @@ export default function PagosList() {
             <p className="text-xs text-stone-500 self-center">
               Se valida automáticamente: Crédito + Proceso
             </p>
+          </div>
+        </Card>
+
+        {/* Cuentas Pendientes */}
+        <Card className="p-5 mb-6 border-blue-400/20 bg-blue-400/5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-blue-400/70 mb-3">
+            Ver cuentas pendientes de clientes
+          </p>
+          <div className="flex gap-3 items-end flex-wrap">
+            <Button onClick={handlecuentasPendientes}>
+              Ver cuentas
+            </Button>
           </div>
         </Card>
 

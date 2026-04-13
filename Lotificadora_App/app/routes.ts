@@ -11,6 +11,29 @@ export default [
       route("nuevo", "pages/proyectos/ProyectoForm.jsx", { id: "proyecto-nuevo" }),
       route(":id/editar", "pages/proyectos/ProyectoForm.jsx", { id: "proyecto-editar" }),
     ]),
+/*
+    // Reportes
+    ...prefix("reportes", [
+      index("pages/reportes/ReporteVistas.jsx"),
+      //route("vistas", "pages/reportes/ReporteVistas.jsx"),
+      //route("ocupacion-lotes", "pages/reportes/ReporteOcupacionLotes.jsx"),
+      //route("resumen-proyectos", "pages/reportes/ReporteResumenProyectos.jsx"),
+      //route("resumen-proyectos", "pages/reportes/ReporteFunciones.jsx"),
+    ]),
+*/
+    // Vistas
+    ...prefix("vistas", [
+      index("pages/reportes/ReporteVistas.jsx"),
+      //route("ocupacion-lotes", "pages/reportes/ReporteVistas.jsx"),
+      //route("resumen-proyectos", "pages/reportes/ReporteVistas.jsx"),
+    ]),
+
+    // Funciones
+    ...prefix("funciones", [
+      index("pages/reportes/ReporteFunciones.jsx"),
+      //route("ocupacion-lotes", "pages/reportes/ReporteVistas.jsx"),
+      //route("resumen-proyectos", "pages/reportes/ReporteVistas.jsx"),
+    ]),
 
     // Etapas
     ...prefix("etapas", [
@@ -53,6 +76,7 @@ export default [
     ...prefix("pagos", [
       index("pages/pagos/PagosList.jsx"),
       route("nuevo", "pages/pagos/PagoForm.jsx"),
+      route("cuentas-activas", "pages/pagos/VentasActivaList.jsx"),
     ]),
 
     // Cuentas
@@ -63,9 +87,7 @@ export default [
       route(":id/movimientos", "pages/cuentas/CuentaMovimientos.jsx", { id: "cuenta-movimientos" }),
     ]),
 
-    // Vistas
-    ...prefix("vistas", [
-      route("ocupacion-lotes", "pages/reportes/ReporteOcupacionLotes.jsx"),
-      route("resumen-proyectos", "pages/reportes/ReporteResumenProyectos.jsx"),
-    ]),
+    
   ]),] satisfies RouteConfig;
+
+  

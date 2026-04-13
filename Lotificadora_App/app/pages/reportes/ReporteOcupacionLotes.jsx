@@ -1,50 +1,61 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useState } from "react";
+import { reportesApi } from "../../services/api.js";
 
 const ReporteOcupacionLotes = () => {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [estado, setEstado] = useState("");
 
-  useEffect(() => {
-    axios
-      .get("/api/vistas/ocupacion-lotes")
-      .then((response) => {
-        setData(response.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) return <p>Cargando...</p>;
-  if (error) return <p>Error: {error}</p>;
+  const buscar = () => {
+    setLoading(true);
+    setError(null);
+    reportesApi
+      .ocupacionLotes({ estado: estado || "" })
+      .then(setData)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
 
   return (
     <div>
       <h1>Ocupación de Lotes por Etapa</h1>
+
+      <div>
+        <select value={estado} onChange={(e) => setEstado(e.target.value)}>
+          <option value="">Todos</option>
+          <option value="Disponible">Disponible</option>
+          <option value="Vendido">Vendido</option>
+          <option value="Reservado">Reservado</option>
+        </select>
+        <button onClick={buscar}>Consultar</button>
+      </div>
+
+      {loading && <p>Cargando...</p>}
+      {error && <p>Error: {error}</p>}
+
       <table>
         <thead>
           <tr>
-            <th>Etapa</th>
             <th>Proyecto</th>
-            <th>Lotes Disponibles</th>
-            <th>Lotes en Proceso</th>
-            <th>Lotes Vendidos</th>
-            <th>Total Lotes</th>
+            <th>Etapa</th>
+            <th>Total</th>
+            <th>Disponibles</th>
+            <th>Vendidos</th>
+            <th>Reservados</th>
+            <th>% Ocupación</th>
           </tr>
         </thead>
         <tbody>
           {data.map((row, index) => (
             <tr key={index}>
-              <td>{row.NombreEtapa}</td>
-              <td>{row.NombreProyecto}</td>
-              <td>{row.LotesDisponibles}</td>
-              <td>{row.LotesEnProceso}</td>
-              <td>{row.LotesVendidos}</td>
-              <td>{row.TotalLotes}</td>
+              <td>{row.proyecto}</td>
+              <td>{row.etapa}</td>
+              <td>{row.total_lotes}</td>
+              <td>{row.disponibles}</td>
+              <td>{row.vendidos}</td>
+              <td>{row.reservados}</td>
+              <td>{Number(row.pct_ocupacion).toFixed(1)}%</td>
             </tr>
           ))}
         </tbody>
