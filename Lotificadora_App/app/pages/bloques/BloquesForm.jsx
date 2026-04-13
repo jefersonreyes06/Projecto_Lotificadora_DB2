@@ -132,7 +132,7 @@ export default function BloquesForm() {
                   />
                 </FormField>
 
-                {/* <FormField label="Área total (varas²)">
+                <FormField label="Área total (varas²)">
                   <Input
                     type="number"
                     value={form.area_total_varas}
@@ -141,7 +141,7 @@ export default function BloquesForm() {
                     min={0}
                     step="0.01"
                   />
-                </FormField> */}
+                </FormField> 
 
                 {/*<FormField label="Estado">
                   <Select value={form.estado} onChange={set("estado")}>

@@ -32,7 +32,7 @@ router.post(
       EtapaID: req.body.etapaId,
       Nombre: req.body.nombre,
       AreaTotalVaras: req.body.areaTotalVaras,
-      Estado: req.body.estado || "Disponible",
+      //Estado: req.body.estado || "Disponible",
     };
 
     const result = await executeProcedure("sp_bloques_crear", params);
