@@ -8,13 +8,12 @@ import {
 const EMPTY = {
   bloqueId: "",
   areaVaras: "",
-  precio_vara: "",
-  es_esquina: false,
-  cerca_parque: false,
-  calle_cerrada: false,
-  frente_avenida: false,
+  //es_esquina: false,
+  //cerca_parque: false,
+  //calle_cerrada: false,
+  //frente_avenida: false,
   estado: "Disponible",
-  descripcion: "",
+  //descripcion: "",
 };
 
 export default function LoteForm() {
@@ -149,7 +148,7 @@ export default function LoteForm() {
                       required
                     />
                   </FormField>
-                  <FormField label="Precio por v2" required>
+                  {/*<FormField label="Precio por v2" required>
                     <Input
                       type="number"
                       value={form.precio_vara}
@@ -159,7 +158,7 @@ export default function LoteForm() {
                       step="0.01"
                       required
                     />
-                  </FormField>
+                  </FormField>*/}
                 </div>
 
                 <FormField label="Estado">

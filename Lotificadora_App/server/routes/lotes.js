@@ -39,12 +39,11 @@ router.post(
     const result = await executeProcedure("sp_lotes_crear", {
       BloqueID: bloqueId,
       AreaVaras: areaVaras,
-      PrecioVara: precioVara,
       Estado: estado,
-      EsEsquina: esEsquina,
+      /*EsEsquina: esEsquina,
       CercaParque: cercaParque,
       CalleCerrada: calleCerrada,
-      FrenteAvenida: frenteAvenida,
+      FrenteAvenida: frenteAvenida,*/
     });
     res.json(result.recordset[0]);
   })
