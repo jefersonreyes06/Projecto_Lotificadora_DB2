@@ -17,8 +17,8 @@ import {
 const EMPTY = {
   etapaId: "",
   nombre: "",
-  area_total_varas: "",
-  estado: "Disponible",
+  //area_total_varas: "",
+  //estado: "Disponible",
 };
 
 export default function BloquesForm() {
@@ -46,8 +46,8 @@ export default function BloquesForm() {
           etapa: data.etapa ?? data.Etapa ?? "",
           etapaId: data.etapaId ?? data.EtapaID ?? "",
           nombre: data.nombre ?? data.Bloque ?? "",
-          area_total_varas: data.area_total_varas ?? data.AreaTotalVaras ?? "",
-          estado: data.estado ?? data.Estado ?? "Disponible",
+          //area_total_varas: data.area_total_varas ?? data.AreaTotalVaras ?? "",
+          //estado: data.estado ?? data.Estado ?? "Disponible",
         });
       })
       .catch((err) => setError(err.message || "No se pudo cargar el bloque."))
@@ -143,13 +143,13 @@ export default function BloquesForm() {
                   />
                 </FormField> */}
 
-                <FormField label="Estado">
+                {/*<FormField label="Estado">
                   <Select value={form.estado} onChange={set("estado")}>
                     <option value="Disponible">Disponible</option>
                     <option value="Reservado">Reservado</option>
                     <option value="Vendido">Vendido</option>
                   </Select>
-                </FormField>
+                </FormField>*/}
               </div>
 
               <div className="flex justify-end gap-3 pt-2 border-t border-stone-800">

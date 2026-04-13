@@ -13,7 +13,7 @@ const EMPTY = {
   PorcentajeAreasComunes: "",
   PrecioVaraCuadrada: "",
   TasaInteresAnual: "",
-  Estado: "EnPlanificacion",
+  //Estado: "EnPlanificacion",
 };
 
 const normalizeEtapa = (data) => ({
@@ -24,7 +24,7 @@ const normalizeEtapa = (data) => ({
   PorcentajeAreasComunes: data.PorcentajeAreasComunes ?? data.porcentaje_areas_comunes ?? "",
   PrecioVaraCuadrada: data.PrecioVaraCuadrada ?? data.precio_vara2 ?? data.precioVaraCuadrada ?? "",
   TasaInteresAnual: data.TasaInteresAnual ?? data.tasa_interes ?? data.tasaInteresAnual ?? "",
-  Estado: data.Estado ?? data.estado ?? "EnPlanificacion",
+  //Estado: data.Estado ?? data.estado ?? "EnPlanificacion",
 });
 
 export default function EtapaForm() {
@@ -88,14 +88,14 @@ export default function EtapaForm() {
               <FormField label="Tasa interés anual %" required>
                 <Input type="number" value={form.TasaInteresAnual} onChange={set("TasaInteresAnual")} placeholder="9.5" required />
               </FormField>
-              <FormField label="Estado" required>
+              {/*<FormField label="Estado" required>
                 <Select value={form.Estado} onChange={set("Estado")} required>
                   <option value="EnPlanificacion">EnPlanificacion</option>
                   <option value="Activo">Activo</option>
                   <option value="Inactivo">Inactivo</option>
                   <option value="Completado">Completado</option>
                 </Select>
-              </FormField>
+              </FormField>*/}
             </div>
             <div className="flex justify-end gap-3 pt-2 border-t border-stone-800">
               <Link to="/etapas"><Button variant="secondary">Cancelar</Button></Link>
