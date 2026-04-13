@@ -13,3 +13,65 @@ body {
     color-scheme: dark;
   }
 }
+
+body {
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+body[data-theme="light"] {
+  background-color: #f8fafc;
+  color: #0f172a;
+  color-scheme: light;
+}
+
+body[data-theme="light"] .bg-stone-950,
+body[data-theme="light"] .bg-stone-900,
+body[data-theme="light"] .bg-stone-800,
+body[data-theme="light"] .bg-stone-700,
+body[data-theme="light"] .bg-stone-600,
+body[data-theme="light"] .bg-stone-950\/50,
+body[data-theme="light"] .bg-stone-900\/50,
+body[data-theme="light"] .bg-stone-800\/50,
+body[data-theme="light"] .bg-stone-700\/50 {
+  background-color: #f8fafc !important;
+}
+
+body[data-theme="light"] .bg-stone-900,
+body[data-theme="light"] .bg-stone-800,
+body[data-theme="light"] .bg-stone-700,
+body[data-theme="light"] .bg-stone-600 {
+  background-color: #ffffff !important;
+}
+
+body[data-theme="light"] .bg-stone-950 {
+  background-color: #f8fafc !important;
+}
+
+body[data-theme="light"] .text-stone-100 {
+  color: #0f172a !important;
+}
+
+body[data-theme="light"] .text-stone-200,
+body[data-theme="light"] .text-stone-300,
+body[data-theme="light"] .text-stone-400,
+body[data-theme="light"] .text-stone-500,
+body[data-theme="light"] .text-stone-600 {
+  color: #475569 !important;
+}
+
+body[data-theme="light"] .text-stone-700,
+body[data-theme="light"] .text-stone-800 {
+  color: #64748b !important;
+}
+
+body[data-theme="light"] .border-stone-900,
+body[data-theme="light"] .border-stone-800,
+body[data-theme="light"] .border-stone-700,
+body[data-theme="light"] .border-stone-600,
+body[data-theme="light"] .border-stone-500 {
+  border-color: #cbd5e1 !important;
+}
+
+body[data-theme="light"] .text-stone-500 {
+  color: #64748b !important;
+}

@@ -1,5 +1,5 @@
 import { Outlet, NavLink, useLocation } from "react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const navGroups = [
   {
@@ -39,10 +39,22 @@ const navGroups = [
 
 export default function MainLayout() {
   const [collapsed, setCollapsed] = useState(false);
+  const [theme, setTheme] = useState("dark");
   const location = useLocation();
 
+  useEffect(() => {
+    const storedTheme = window.localStorage.getItem("lotificadora-theme");
+    const initialTheme = storedTheme === "light" ? "light" : "dark";
+    setTheme(initialTheme);
+  }, []);
+
+  useEffect(() => {
+    document.body.dataset.theme = theme;
+    window.localStorage.setItem("lotificadora-theme", theme);
+  }, [theme]);
+
   return (
-    <div className="flex h-screen bg-stone-950 text-stone-100 font-['Space_Grotesk',sans-serif] overflow-hidden">
+    <div className="flex h-screen bg-stone-950 text-stone-100 font-['Space_Grotesk',sans-serif] overflow-hidden transition-colors duration-300">
       {/* Sidebar */}
       <aside
         className={`flex flex-col border-r border-stone-800 bg-stone-950 transition-all duration-300 ${
@@ -95,15 +107,21 @@ export default function MainLayout() {
                     : location.pathname.startsWith(item.to) &&
                       !(item.to === "/" && location.pathname !== "/");
 
+                  const activeClasses = theme === "light"
+                    ? "bg-amber-200/60 text-amber-700 font-medium"
+                    : "bg-amber-400/10 text-amber-400 font-medium";
+
+                  const normalClasses = theme === "light"
+                    ? "text-slate-600 hover:text-slate-900 hover:bg-slate-200"
+                    : "text-stone-400 hover:text-stone-200 hover:bg-stone-800";
+
                   return (
                     <li key={item.to}>
                       <NavLink
                         to={item.to}
                         end={item.exact}
                         className={`flex items-center gap-3 px-2 py-2 rounded-md text-sm transition-all ${
-                          isActive
-                            ? "bg-amber-400/10 text-amber-400 font-medium"
-                            : "text-stone-400 hover:text-stone-200 hover:bg-stone-800"
+                          isActive ? activeClasses : normalClasses
                         }`}
                       >
                         <span className="text-base w-5 text-center flex-shrink-0">
@@ -135,6 +153,19 @@ export default function MainLayout() {
           <Outlet />
         </div>
       </main>
+
+      <button
+        type="button"
+        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        className={`fixed right-4 bottom-4 z-50 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold transition-all duration-300 shadow-lg ${
+          theme === "dark"
+            ? "bg-stone-900 text-stone-100 border-stone-700 hover:bg-stone-800"
+            : "bg-white/95 text-slate-900 border-slate-300 hover:bg-white"
+        }`}
+      >
+        <span>{theme === "dark" ? "☀" : "🌙"}</span>
+        <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+      </button>
     </div>
   );
 }
