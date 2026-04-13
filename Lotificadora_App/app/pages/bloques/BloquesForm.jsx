@@ -17,7 +17,7 @@ import {
 const EMPTY = {
   etapaId: "",
   nombre: "",
-  //area_total_varas: "",
+  area_total_varas: "",
   //estado: "Disponible",
 };
 
@@ -46,7 +46,7 @@ export default function BloquesForm() {
           etapa: data.etapa ?? data.Etapa ?? "",
           etapaId: data.etapaId ?? data.EtapaID ?? "",
           nombre: data.nombre ?? data.Bloque ?? "",
-          //area_total_varas: data.area_total_varas ?? data.AreaTotalVaras ?? "",
+          area_total_varas: data.area_total_varas ?? data.AreaTotalVaras ?? "",
           //estado: data.estado ?? data.Estado ?? "Disponible",
         });
       })
