@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { etapasApi, bloquesApi } from "../../services/api";
+import { notify, useNotifyError } from "../../utils/notify";
 import {
   PageHeader, PageContent, Card, Badge, Button, DataTable, StatCard, Alert,
 } from "../../components/ui";
@@ -24,6 +25,8 @@ export default function EtapaDetalle() {
   const [cuentas, setCuentas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState(null);
+
+  useNotifyError(error);
 
   useEffect(() => {
     Promise.all([

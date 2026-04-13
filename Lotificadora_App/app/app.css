@@ -75,3 +75,13 @@ body[data-theme="light"] .border-stone-500 {
 body[data-theme="light"] .text-stone-500 {
   color: #64748b !important;
 }
+
+.Toastify__toast-body,
+.Toastify__toast-message {
+  font-size: 0.88rem !important;
+  line-height: 1.35 !important;
+}
+
+:root {
+  --toastify-color-success: #07bc0d64;
+}

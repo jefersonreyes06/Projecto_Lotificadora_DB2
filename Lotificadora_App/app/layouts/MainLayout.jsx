@@ -1,5 +1,7 @@
 import { Outlet, NavLink, useLocation } from "react-router";
+import { ToastContainer } from "react-toastify";
 import { useEffect, useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
 
 const navGroups = [
   {
@@ -163,9 +165,21 @@ export default function MainLayout() {
             : "bg-white/95 text-slate-900 border-slate-300 hover:bg-white"
         }`}
       >
-        <span>{theme === "dark" ? "☀" : "🌙"}</span>
+        <span>{theme === "dark" ? "" : ""}</span>
         <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
       </button>
+
+      <ToastContainer
+        position="bottom-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 }

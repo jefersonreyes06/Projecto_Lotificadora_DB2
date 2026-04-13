@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router";
 import { pagosApi, ventasApi } from "../../services/api.js";
+import { notify, useNotifyError } from "../../utils/notify";
 import {
   PageHeader, PageContent, Button, FormField, Input, Select, Card, Alert,
 } from "../../components/index";
@@ -20,6 +21,8 @@ export default function PagoForm() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [facturaId, setFacturaId] = useState(null);
+
+  useNotifyError(error);
 
   const [form, setForm] = useState({
     numeroLote: numeroLoteParam,
@@ -86,7 +89,9 @@ export default function PagoForm() {
         loadCuotas(loteData.VentaID);
       }
     } catch (err) {
-      setError(err.message || "No se pudo cargar el lote.");
+      const message = err.message || "No se pudo cargar el lote.";
+      setError(message);
+      notify.error(message);
     } finally {
       setLoadingLote(false);
     }
@@ -100,8 +105,10 @@ export default function PagoForm() {
       const pendientes = cuotas.filter(c => c.Estado === 'Pendiente');
       setCuotasPendientes(pendientes);
     } catch (err) {
+      const message = err.message || "No se pudieron cargar las cuotas pendientes.";
       setCuotasPendientes([]);
-      setError(err.message || "No se pudieron cargar las cuotas pendientes.");
+      setError(message);
+      notify.error(message);
     } finally {
       setLoadingCuotas(false);
     }
@@ -120,7 +127,9 @@ export default function PagoForm() {
 
   const handleBuscar = () => {
     if (!form.numeroLote) {
-      setError("Ingrese un número de lote");
+      const message = "Ingrese un número de lote";
+      setError(message);
+      notify.error(message);
       return;
     }
     loadLote(form.numeroLote);
@@ -131,31 +140,45 @@ export default function PagoForm() {
     setError(null);
 
     if (!form.numeroLote) {
-      setError("Debe indicar el número de lote.");
+      const message = "Debe indicar el número de lote.";
+      setError(message);
+      notify.error(message);
       return;
     }
     if (!form.cuotaId) {
-      setError("Seleccione la cuota a pagar.");
+      const message = "Seleccione la cuota a pagar.";
+      setError(message);
+      notify.error(message);
       return;
     }
     if (!form.montoRecibido || Number(form.montoRecibido) <= 0) {
-      setError("Ingrese un monto recibido válido.");
+      const message = "Ingrese un monto recibido válido.";
+      setError(message);
+      notify.error(message);
       return;
     }
     if (!form.usuarioCajaId) {
-      setError("Ingrese el usuario de caja.");
+      const message = "Ingrese el usuario de caja.";
+      setError(message);
+      notify.error(message);
       return;
     }
     if (!isVentaCredito) {
-      setError("Solo se permiten pagos para ventas al crédito.");
+      const message = "Solo se permiten pagos para ventas al crédito.";
+      setError(message);
+      notify.error(message);
       return;
     }
     if (!isLoteProceso) {
-      setError("El lote debe estar en estado 'Proceso' para registrar el pago.");
+      const message = "El lote debe estar en estado 'Proceso' para registrar el pago.";
+      setError(message);
+      notify.error(message);
       return;
     }
     if (!selectedCuota) {
-      setError("La cuota seleccionada no existe o no está pendiente.");
+      const message = "La cuota seleccionada no existe o no está pendiente.";
+      setError(message);
+      notify.error(message);
       return;
     }
 
@@ -179,6 +202,8 @@ export default function PagoForm() {
       });
 
       setFacturaId(res.FacturaID ?? res.facturaId ?? res.factura_id ?? null);
+      notify.success("Pago registrado correctamente");
+      notify.success("Pago registrado correctamente");
     } catch (err) {
       setError(err.message || "Error al registrar el pago.");
     } finally {

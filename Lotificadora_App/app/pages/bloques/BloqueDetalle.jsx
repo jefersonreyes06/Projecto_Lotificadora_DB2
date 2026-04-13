@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { bloquesApi, lotesApi } from "../../services/api";
+import { notify, useNotifyError } from "../../utils/notify";
 import {
   PageHeader, PageContent, Card, Badge, Button, DataTable, StatCard, Alert,
 } from "../../components/ui";

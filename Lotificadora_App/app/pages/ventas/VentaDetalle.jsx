@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import { ventasApi, pagosApi } from "../../services/api";
+import { notify, useNotifyError } from "../../utils/notify";
 import {
   PageHeader, PageContent, Card, Badge, Button, DataTable, Alert, StatCard,
 } from "../../components/index";
@@ -83,6 +84,8 @@ export default function VentaDetalle() {
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState(null);
 
+  useNotifyError(error);
+
   useEffect(() => {
     Promise.all([ventasApi.get(id), pagosApi.list(id)])
       .then(([v, p]) => { setVenta(v); setPagos(p); })
@@ -136,7 +139,7 @@ export default function VentaDetalle() {
 
   // Campos del lote (SP puede devolver PascalCase o snake_case)
   const lote = {
-    codigo:       venta.CodigoLote    ?? venta.lote_codigo    ?? venta.Lote    ?? "—",
+    codigo:       venta.NumeroLote   ?? venta.lote_codigo    ?? venta.Lote    ?? "—",
     bloque:       venta.Bloque        ?? venta.bloque         ?? "—",
     etapa:        venta.Etapa         ?? venta.etapa          ?? "—",
     proyecto:     venta.Proyecto      ?? venta.proyecto       ?? "—",
