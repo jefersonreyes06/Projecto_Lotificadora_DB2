@@ -47,15 +47,15 @@ export default function LotesList() {
   }, [data, filters]);
 
   const cols = [
-    { key: "numeroLote", label: "Código" },
+    { key: "NumeroLote", label: "Código" },
     { key: "Bloque", label: "Bloque" },
     { key: "Etapa", label: "Etapa" },
     { key: "Proyecto", label: "Proyecto" },
-    { key: "areaVaras", label: "Área v²", render: (v) => (v != null ? Number(v).toLocaleString("es-HN") : "") },
+    { key: "AreaVaras", label: "Área v²", render: (v) => (v != null ? Number(v).toLocaleString("es-HN") : "") },
     //{ key: "es_esquina", label: "Esquina", render: (v) => (v ? <Badge variant="warning">Sí</Badge> : "—") },
-    { key: "estado", label: "Estado", render: (v) => <Badge variant={v === "Disponible" ? "success" : v === "Vendido" ? "danger" : "warning"}>{v}</Badge> },
-    { key: "precioFinal", label: "Valor", render: (v) => <span className="text-amber-400">L {Number(v).toLocaleString("es-HN")}</span> },
-    { key: "id", label: "", width: 80, render: (id) => <Link to={`/lotes/${id}/editar`}><Button size="sm" variant="ghost">Editar</Button></Link> },
+    { key: "Estado", label: "Estado", render: (v) => <Badge variant={v === "Disponible" ? "success" : v === "Vendido" ? "danger" : "warning"}>{v}</Badge> },
+    { key: "PrecioFinal", label: "Valor", render: (v) => <span className="text-amber-400">L {Number(v).toLocaleString("es-HN")}</span> },
+    { key: "LoteID", label: "ID", width: 80, render: (id) => <Link to={`/lotes/${id}/editar`}><Button size="sm" variant="ghost">Editar</Button></Link> },
   ];
 
   return (
@@ -105,7 +105,7 @@ export default function LotesList() {
           </div>
         </Card>
         <Card>
-          <DataTable columns={cols} data={filteredData} loading={loading} onRowClick={(r) => navigate(`/lotes/${r.id}/editar`)} />
+          <DataTable columns={cols} data={filteredData} loading={loading} onRowClick={(r) => navigate(`/lotes/${r.LoteID}/editar`)} />
         </Card>
       </PageContent>
     </div>

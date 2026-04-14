@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams, Link } from "react-router";
-
-import { bloquesApi, etapasApi } from "../../services/api.js";
+import { useNavigate, useParams, Link, Form } from "react-router";
+import { bloquesApi, etapasApi, proyectosApi } from "../../services/api.js";
 import { notify, useNotifyError } from "../../utils/notify";
 
 import {
@@ -16,10 +15,10 @@ import {
 } from "../../components/index";
 
 const EMPTY = {
-  etapaId: "",
-  nombre: "",
-  area_total_varas: "",
-  //estado: "Disponible",
+  EtapaID: "",
+  Bloque: "",
+  AreaTotalVaras: "",
+  Proyecto: ""
 };
 
 export default function BloquesForm() {
@@ -28,16 +27,24 @@ export default function BloquesForm() {
   const isEdit = Boolean(id);
 
   const [form, setForm] = useState(EMPTY);
+  const [proyectos, setProyectos] = useState([]);
   const [etapas, setEtapas] = useState([]);
+  const [proyectoId, setProyectoId] = useState(0);
+  const [etapaId, setEtapaId] = useState("");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
   useNotifyError(error);
+  
+  useEffect(() => {
+    proyectosApi.list().then(setProyectos).catch(() => {});
+  }, []);
 
   useEffect(() => {
-    etapasApi.list().then((d) => setEtapas(d)).catch(() => {});
-  }, []);
+    if (!proyectoId) { setEtapas([]); return; }
+    etapasApi.list().then((etapas) => setEtapas(etapas.filter((e) => e.ProyectoID === proyectoId))).catch(() => {});
+  }, [proyectoId]);
 
   useEffect(() => {
     if (!isEdit) return;
@@ -46,23 +53,28 @@ export default function BloquesForm() {
       .get(id)
       .then((data) => {
         setForm({
-          etapa: data.etapa ?? data.Etapa ?? "",
-          etapaId: data.etapaId ?? data.EtapaID ?? "",
-          nombre: data.nombre ?? data.Bloque ?? "",
-          area_total_varas: data.area_total_varas ?? data.AreaTotalVaras ?? "",
-          //estado: data.estado ?? data.Estado ?? "Disponible",
+          Etapa: data.etapa ?? data.Etapa ?? "",
+          Proyecto: data.proyecto ?? data.Proyecto ?? "",
+          EtapaID: data.etapaId ?? data.EtapaID ?? "",
+          Bloque: data.nombre ?? data.Bloque ?? "",
+          AreaTotalVaras: data.areaTotalVaras ?? data.AreaTotalVaras ?? ""
         });
       })
       .catch((err) => setError(err.message || "No se pudo cargar el bloque."))
       .finally(() => setLoading(false));
   }, [id, isEdit]);
 
-  const set = (key) => (event) => {
-    let value = event.target.value;
-    if (key === "etapaId") {
-      value = value ? Number(value) : "";
-    }
+  /*const set = (key) => (event) => {
+    //let value = event.target.value;
+    //if (key === "EtapaID") {
+    //  value = value ? Number(value) : "";
+    //}
+    
     setForm((current) => ({ ...current, [key]: value }));
+  };*/
+
+  const set = (k) => (event) => {
+    setForm((f) => ({ ...f, [k]: event.target.value }));
   };
 
   const handleSubmit = async (event) => {
@@ -113,27 +125,44 @@ export default function BloquesForm() {
           <form onSubmit={handleSubmit}>
             <Card className="p-6 space-y-5 max-w-2xl">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <FormField label="Etapa" required>
-                  <Select value={form.etapaId} onChange={set("etapaId")} required disabled={isEdit}>
-                    {isEdit && (
-                      <option value={form.etapaId}>
-                        {form.etapa ?? form.Etapa}
-                      </option>
-                    )}
+                <FormField label="Proyecto" required isDisabled>
+                  <Select value={proyectoId} onChange={(e) => setProyectoId(parseInt(e.target.value))} required disabled={isEdit}>
+                      {isEdit && (
+                        <option value={proyectoId}>
+                          {form.proyecto ?? form.Proyecto ?? "Proyecto actual"}
+                        </option>
+                      )}
+                      {!isEdit && <option value="">Seleccione...</option>}
+                      {!isEdit && proyectos.map((p) => (
+                        <option key={p.ProyectoID} value={p.ProyectoID}>{p.Nombre}</option>
+                      ))}
 
-                    {!isEdit && <option value="">Seleccione etapa...</option>}
-                    {!isEdit && etapas.map((etapa) => (
-                      <option key={etapa.EtapaID ?? etapa.id} value={etapa.EtapaID ?? etapa.id}>
-                        {etapa.nombre ?? etapa.Etapa}
-                      </option>
-                    ))}
+                    </Select>
+                  {/*<Select value={form.Proyecto} onChange={set("Proyecto")} required disabled={isEdit}>
+                    <option value=''>{isEdit ? form.Proyecto : 'Seleccione proyecto...'}</option>
+                    {proyectos.map((p) => <option key={p.ProyectoID} value={p.ProyectoID}>{p.Nombre}</option>)}
+                  </Select>*/}
+                </FormField>
+                
+                <FormField label="Etapa" required>
+
+                  <Select value={etapaId} onChange={(e) => setEtapaId(parseInt(e.target.value))} disabled={!proyectoId} required>
+                      {isEdit && (
+                        <option value={etapaId}>
+                          {form.etapa ?? form.Etapa ?? "Etapa actual"}
+                        </option>
+                      )}
+                      {!isEdit && <option value="">Seleccione...</option>}
+                      {!isEdit && etapas.map((e) => (
+                        <option key={e.EtapaID} value={e.EtapaID}>{e.Etapa}</option>
+                      ))}
                   </Select>
                 </FormField>
 
                 <FormField label="Nombre del bloque" required>
                   <Input
-                    value={form.nombre}
-                    onChange={set("nombre")}
+                    value={form.Bloque}
+                    onChange={set("Bloque")}
                     placeholder="Bloque A"
                     required
                   />
@@ -142,21 +171,13 @@ export default function BloquesForm() {
                 <FormField label="Área total (varas²)">
                   <Input
                     type="number"
-                    value={form.area_total_varas}
-                    onChange={set("area_total_varas")}
+                    value={form.AreaTotalVaras}
+                    onChange={set("AreaTotalVaras")}
                     placeholder="0.00"
                     min={0}
                     step="0.01"
                   />
                 </FormField> 
-
-                {/*<FormField label="Estado">
-                  <Select value={form.estado} onChange={set("estado")}>
-                    <option value="Disponible">Disponible</option>
-                    <option value="Reservado">Reservado</option>
-                    <option value="Vendido">Vendido</option>
-                  </Select>
-                </FormField>*/}
               </div>
 
               <div className="flex justify-end gap-3 pt-2 border-t border-stone-800">
