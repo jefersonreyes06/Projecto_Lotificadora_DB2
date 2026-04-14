@@ -7,14 +7,15 @@ import {
 } from "../../components/index";
 
 const EMPTY = {
-  bloqueId: "",
-  areaVaras: "",
-  //es_esquina: false,
-  //cerca_parque: false,
-  //calle_cerrada: false,
-  //frente_avenida: false,
-  estado: "Disponible",
-  //descripcion: "",
+  AreaVaras: "",
+  NumeroLote: "",
+  Proyecto: "",
+  Etapa: "",
+  Bloque: "",  
+  BloqueID: "",
+  LoteID: "",
+  FechaReserva: "",
+  Estado: "Disponible",
 };
 
 export default function LoteForm() {
@@ -124,17 +125,43 @@ export default function LoteForm() {
                   </FormField>
                   <FormField label="Etapa" required>
                     <Select value={etapaId} onChange={(e) => setEtapaId(parseInt(e.target.value))} disabled={!proyectoId} required>
+                      {isEdit && (
+                        <option value={etapaId}>
+                          {form.proyecto ?? form.Etapa ?? "Etapa actual"}
+                        </option>
+                      )}
+                      {!isEdit && <option value="">Seleccione...</option>}
+                      {!isEdit && etapas.map((e) => (
+                        <option key={e.EtapaID} value={e.EtapaID}>{e.Nombre}</option>
+                      ))}
+
+{/*
+                      {isEdit && (
+                        <option value={proyectoId}>
+                          {form.proyecto ?? form.Proyecto ?? "Proyecto actual"}
+                        </option>
+                      )}
                       <option value="">Seleccione...</option>
                       {etapas.map((e) => (
                         <option key={e.EtapaID} value={e.EtapaID}>{e.Etapa}</option>
-                      ))}
+                      ))}*/}
                     </Select>
                   </FormField>
                   <FormField label="Bloque" required>
-                    <Select value={form.bloqueId} onChange={set("bloqueId")} disabled={!etapaId} required>
-                      <option value="">Seleccione...</option>
+                    <Select value={form.BloqueID} onChange={set("BloqueID")} disabled={!etapaId} required>
+                      {/*<option value="">Seleccione...</option>
                       {bloques.map((b) => (
                         <option key={b.BloqueID} value={b.BloqueID}>{b.Bloque}</option>
+                      ))}
+*/}
+                      {isEdit && (
+                        <option value={bloqueId}>
+                          {form.proyecto ?? form.Bloque ?? "Bloque actual"}
+                        </option>
+                      )}
+                      {!isEdit && <option value="">Seleccione...</option>}
+                      {!isEdit && bloques.map((b) => (
+                        <option key={b.BloqueID} value={b.BloqueID}>{b.Nombre}</option>
                       ))}
                     </Select>
                   </FormField>
@@ -152,8 +179,8 @@ export default function LoteForm() {
                   <FormField label="Área (varas²)" required>
                     <Input
                       type="number"
-                      value={form.areaVaras}
-                      onChange={set("areaVaras")}
+                      value={form.AreaVaras}
+                      onChange={set("AreaVaras")}
                       placeholder="0.00"
                       min={1}
                       step="0.01"

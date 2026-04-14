@@ -28,13 +28,20 @@ router.get(
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    const params = {
-      EtapaID: parseInt(req.body.etapaId), // Ensure it's a number
-      Nombre: req.body.nombre,
-      AreaTotalVaras: parseFloat(req.body.areaTotalVaras) // Ensure it's a number
+    const etapaId = req.body.EtapaID || req.body.etapaId;
+    const nombreBloque = req.body.Bloque || req.body.nombre || req.body.Bloque;
+    const area = req.body.AreaTotalVaras || req.body.areaTotalVaras;
+
+    const payload = {
+      EtapaID: parseInt(etapaId), 
+      Bloque: nombreBloque,
+      AreaTotalVaras: parseFloat(area)
     };
 
-    const result = await executeProcedure("sp_bloques_crear", params);
+    console.log("Datos que llegan del front:", req.body);
+    console.log("Payload enviado a SQL:", payload);
+
+    const result = await executeProcedure("sp_bloques_crear", payload);
     res.json(result.recordset ?? result.returnValue);
   })
 );
@@ -43,10 +50,9 @@ router.put(
   "/:id",
   asyncHandler(async (req, res) => {
     const params = {
-      id: req.params.id,
-      Nombre: req.body.nombre || null,
-      AreaTotalVaras: req.body.areaTotalVaras || null,
-      Estado: req.body.estado || null,
+      BloqueID: req.params.id,
+      Bloque: req.body.Bloque || null,
+      AreaTotalVaras: req.body.AreaTotalVaras || null
     };
 
     const result = await executeProcedure("sp_bloques_actualizar", params);

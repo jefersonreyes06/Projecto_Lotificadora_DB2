@@ -52,13 +52,13 @@ router.post(
 router.put(
   "/:id",
   asyncHandler(async (req, res) => {
-    const { bloqueId, areaVaras, estado = 'Disponible'} = req.body;
+    const { BloqueID, AreaVaras, Estado = 'Disponible'} = req.body;
 
     const result = await executeProcedure("sp_lotes_actualizar", {
       id: req.params.id,
-      BloqueID: bloqueId,
-      AreaVaras: areaVaras,
-      Estado: estado
+      BloqueID: BloqueID,
+      AreaVaras: AreaVaras,
+      Estado: Estado
     });
     
     /*const params = {

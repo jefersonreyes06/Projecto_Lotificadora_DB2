@@ -48,20 +48,19 @@ export const etapasApi = {
 // BLOQUES — sp_bloques_*
 // ──────────────────────────────────────────────
 const normalizeBloquePayload = (data) => ({
-  etapaId:
+  EtapaID:
     data.etapaId !== undefined && data.etapaId !== null
       ? Number(data.etapaId)
       : data.EtapaID !== undefined && data.EtapaID !== null
       ? Number(data.EtapaID)
       : null,
-  nombre: data.nombre,
-  areaTotalVaras:
-    data.area_total_varas !== undefined && data.area_total_varas !== null
-      ? Number(data.area_total_varas)
+  Bloque: data.Bloque,
+  AreaTotalVaras:
+    data.AreaTotalVaras !== undefined && data.AreaTotalVaras !== null
+      ? Number(data.AreaTotalVaras)
       : data.areaTotalVaras !== undefined && data.areaTotalVaras !== null
       ? Number(data.areaTotalVaras)
-      : null,
-  estado: data.estado,
+      : null
 });
 
 export const bloquesApi = {
@@ -83,17 +82,13 @@ export const bloquesApi = {
 // LOTES — sp_lotes_*
 // ──────────────────────────────────────────────
 const normalizeLotePayload = (data) => ({
-  bloqueId: data.bloqueId ?? data.BloqueID ?? data.bloque_id ?? null,
-  numeroLote: data.numeroLote ?? data.numero_lote ?? data.codigo_lote ?? data.codigoLote ?? null,
-  areaVaras: data.areaVaras ?? data.area_varas ?? data.AreaVaras ?? data.area_m2 ?? data.areaM2 ?? data.areavaras ?? null,
-  precioVara: data.precioVara ?? data.precio_vara ?? data.PrecioVara ?? data.precioVara ?? data.precio_vara ?? null,
-  estado: data.estado ?? data.Estado ?? 'Disponible',
-  caracteristicas: data.caracteristicas ?? [],
-  esEsquina: data.es_esquina ?? data.EsEsquina ?? false,
-  cercaParque: data.cerca_parque ?? data.CercaParque ?? false,
-  calleCerrada: data.calle_cerrada ?? data.CalleCerrada ?? false,
-  frenteAvenida: data.frente_avenida ?? data.FrenteAvenida ?? false,
-  descripcion: data.descripcion ?? data.Descripcion ?? "",
+  BloqueID: data.bloqueId ?? data.BloqueID ?? data.bloque_id ?? null,
+  NumeroLote: data.numeroLote ?? data.numero_lote ?? data.codigo_lote ?? data.codigoLote ?? null,
+  AreaVaras: data.areaVaras ?? data.area_varas ?? data.AreaVaras ?? data.area_m2 ?? data.areaM2 ?? data.areavaras ?? null,
+  PrecioVara: data.precioVara ?? data.precio_vara ?? data.PrecioVara ?? data.precioVara ?? data.precio_vara ?? null,
+  Estado: data.estado ?? data.Estado ?? 'Disponible',
+  FechaReserva: data.fechaReserva ?? data.FechaReserva ?? null,
+  //caracteristicas: data.caracteristicas ?? [],
 });
 
 const normalizeLoteDisponible = (data) => ({
@@ -117,6 +112,7 @@ export const lotesApi = {
     request(`/lotes${bloqueId ? `?bloqueId=${bloqueId}` : ""}`),
   get: (id) => request(`/lotes/${id}`),
   create: (data) => request("/lotes", { method: "POST", body: JSON.stringify(normalizeLotePayload(data)) }),
+  //update: (id, data) => request(`/proyectos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   update: (id, data) => request(`/lotes/${id}`, { method: "PUT", body: JSON.stringify(normalizeLotePayload(data)) }),
   remove: (id) => request(`/lotes/${id}`, { method: "DELETE" }),
   // Vista vw_lotes_disponibles

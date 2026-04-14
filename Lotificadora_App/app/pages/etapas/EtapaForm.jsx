@@ -1,7 +1,7 @@
 // EtapaForm.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
-
+import { notify, useNotifyError } from "../../utils/notify";
 import { PageHeader, PageContent, Button, FormField, Input, Select, Card } from "../../components/index";
 import { etapasApi, proyectosApi } from "../../services/api.js";
 
@@ -32,12 +32,17 @@ export default function EtapaForm() {
   const isEdit = Boolean(id);
   const [form, setForm] = useState(EMPTY);
   const [proyectos, setProyectos] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+
+  useNotifyError(error);
 
   useEffect(() => { proyectosApi.list().then(setProyectos).catch(() => {}); }, []);
   useEffect(() => {
     if (!isEdit) return;
-    etapasApi.get(id).then((d) => setForm(normalizeEtapa(d))).catch(() => {});
+    setLoading(true);
+    etapasApi.get(id).then((d) => setForm(normalizeEtapa(d))).catch((e) => setError(e.message)).finally(() => setLoading(false));
   }, [id, isEdit]);
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -56,12 +61,13 @@ export default function EtapaForm() {
     <div>
       <PageHeader
         title={isEdit ? "Editar Etapa" : "Nueva Etapa"}
-        subtitle={isEdit ? "sp_etapas_actualizar" : "sp_etapas_insertar"}
+        subtitle={isEdit ? `sp_etapas_actualizar @id=${id}` : "sp_etapas_insertar"}
         actions={<Link to="/etapas"><Button variant="ghost">← Volver</Button></Link>}
       />
       <PageContent>
         <form onSubmit={handleSubmit}>
           <Card className="p-6 space-y-5 max-w-xl">
+            <p>Nombre: {form.ProyectoID}</p>
             <FormField label="Proyecto" required isDisabled>
               <Select value={form.ProyectoID} onChange={set("ProyectoID")} required disabled={isEdit}>
                 <option value="">Seleccione proyecto...</option>
