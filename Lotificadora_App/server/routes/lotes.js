@@ -34,7 +34,7 @@ router.get(
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    const { bloqueId, areaVaras, precioVara, estado = 'Disponible', esEsquina, cercaParque, calleCerrada, frenteAvenida } = req.body;
+    const { bloqueId, areaVaras, estado = 'Disponible'} = req.body;
 
     const result = await executeProcedure("sp_lotes_crear", {
       BloqueID: bloqueId,
@@ -52,18 +52,23 @@ router.post(
 router.put(
   "/:id",
   asyncHandler(async (req, res) => {
-    const params = {
+    const { bloqueId, areaVaras, estado = 'Disponible'} = req.body;
+
+    const result = await executeProcedure("sp_lotes_actualizar", {
       id: req.params.id,
-      BloqueID: req.body.bloqueId || null,
-      CodigoLote: req.body.codigoLote || null,
-      AreaM2: req.body.areaM2 || null,
-      EsEsquina: req.body.esEsquina ?? null,
-      CercaParque: req.body.cercaParque ?? null,
-      Estado: req.body.estado || null,
-      ValorTotal: req.body.valorTotal || null,
+      BloqueID: bloqueId,
+      AreaVaras: areaVaras,
+      Estado: estado
+    });
+    
+    /*const params = {
+      //id: req.params.id,
+      BloqueID: bloqueId,
+      AreaVaras: areaVaras,
+      Estado: estado,
     };
 
-    const result = await executeProcedure("sp_lotes_actualizar", params);
+    const result = await executeProcedure("sp_lotes_actualizar", params);*/
     res.json(result.recordset ?? result.returnValue);
   })
 );

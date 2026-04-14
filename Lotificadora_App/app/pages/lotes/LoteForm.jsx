@@ -27,6 +27,7 @@ export default function LoteForm() {
   const [bloques, setBloques] = useState([]);
   const [proyectoId, setProyectoId] = useState(0);
   const [etapaId, setEtapaId] = useState("");
+  const [bloqueId, setBloqueId] = useState("");
   const [valorCalculado, setValorCalculado] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -79,7 +80,7 @@ export default function LoteForm() {
     <div>
       <PageHeader
         title={isEdit ? "Editar Lote" : "Nuevo Lote"}
-        subtitle={isEdit ? "sp_lotes_actualizar" : "sp_lotes_insertar"}
+        subtitle={isEdit ? "sp_lotes_actualizar" : "sp_lotes_crear"}
         actions={
           <Link to="/lotes">
             <Button variant="ghost">← Volver</Button>
@@ -122,7 +123,7 @@ export default function LoteForm() {
                     <Select value={form.bloqueId} onChange={set("bloqueId")} disabled={!etapaId} required>
                       <option value="">Seleccione...</option>
                       {bloques.map((b) => (
-                        <option key={b.BloqueID} value={b.BloqueID}>{b.Nombre}</option>
+                        <option key={b.BloqueID} value={b.BloqueID}>{b.Bloque}</option>
                       ))}
                     </Select>
                   </FormField>

@@ -13,7 +13,6 @@ const EMPTY = {
   PorcentajeAreasComunes: "",
   PrecioVaraCuadrada: "",
   TasaInteresAnual: "",
-  //Estado: "EnPlanificacion",
 };
 
 const normalizeEtapa = (data) => ({

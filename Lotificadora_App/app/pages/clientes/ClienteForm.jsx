@@ -99,7 +99,7 @@ function StepPersonal({ form, set, errors }) {
  
       <SectionLabel>Contacto</SectionLabel>
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Correo electrónico" error={errors.correo}>
+        <FormField label="Correo electrónico" required error={errors.correo}>
           <Input type="email" value={form.correo} onChange={set("correo")} placeholder="juan@ejemplo.com" />
         </FormField>
         <FormField label="Teléfono principal" required error={errors.telefono}>

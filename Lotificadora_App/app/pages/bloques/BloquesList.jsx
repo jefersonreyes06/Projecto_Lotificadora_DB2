@@ -40,11 +40,11 @@ export function BloquesList() {
 
   const cols = [
     { key: "BloqueID", label: "ID" },
-    { key: "Nombre", label: "Nombre" },
-    { key: "NombreProyecto", label: "Proyecto" },
+    { key: "Bloque", label: "Bloque" },
+    { key: "Etapa", label: "Etapa" },
     { key: "EtapaID", label: "Etapa ID" },
+    { key: "Proyecto", label: "Proyecto" },
     { key: "AreaTotalVaras", label: "Área (varas)" },
-    { key: "Estado", label: "Estado" },
     {
       key: "id", label: "", width: 100,
       render: (id) => (

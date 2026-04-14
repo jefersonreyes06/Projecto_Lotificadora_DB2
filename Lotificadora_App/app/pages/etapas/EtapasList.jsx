@@ -37,12 +37,12 @@ export default function EtapasList() {
   }, [data, filters]);
 
   const columns = [
+    { key: "EtapaID", label: "ID" },
     { key: "Etapa", label: "Etapa" },
     { key: "Proyecto", label: "Proyecto" },
     { key: "AreaTotalVaras", label: "Area Total" },
     { key: "PrecioVaraCuadrada", label: "Precio v²", render: (v) => `L ${Number(v).toLocaleString("es-HN")}` },
     { key: "TasaInteresAnual", label: "Tasa %", render: (v) => `${v}%` },
-    { key: "Estado", label: "Estado", render: (v) => <Badge variant={v === "Activo" ? "success" : "default"}>{v}</Badge> },
     {
       key: "id", label: "", width: 100,
       render: (id) => (

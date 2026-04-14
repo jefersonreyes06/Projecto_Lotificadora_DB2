@@ -29,10 +29,9 @@ router.post(
   "/",
   asyncHandler(async (req, res) => {
     const params = {
-      EtapaID: req.body.etapaId,
+      EtapaID: parseInt(req.body.etapaId), // Ensure it's a number
       Nombre: req.body.nombre,
-      AreaTotalVaras: req.body.areaTotalVaras,
-      //Estado: req.body.estado || "Disponible",
+      AreaTotalVaras: parseFloat(req.body.areaTotalVaras) // Ensure it's a number
     };
 
     const result = await executeProcedure("sp_bloques_crear", params);

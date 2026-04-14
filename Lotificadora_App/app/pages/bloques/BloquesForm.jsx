@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router";
 
-import { bloquesApi, etapasApi } from "../../services/api.js";
+import { bloquesApi, etapasApi, proyectosApi } from "../../services/api.js";
 
 import {
   PageHeader,
@@ -17,8 +17,7 @@ import {
 const EMPTY = {
   etapaId: "",
   nombre: "",
-  area_total_varas: "",
-  //estado: "Disponible",
+  areaTotalVaras: ""
 };
 
 export default function BloquesForm() {
@@ -27,10 +26,14 @@ export default function BloquesForm() {
   const isEdit = Boolean(id);
 
   const [form, setForm] = useState(EMPTY);
+  const [proyectos, setProyectos] = useState([]);
   const [etapas, setEtapas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+
+
+  useEffect(() => { proyectosApi.list().then(setProyectos).catch(() => {}); }, []);
 
   useEffect(() => {
     etapasApi.list().then((d) => setEtapas(d)).catch(() => {});
@@ -43,11 +46,10 @@ export default function BloquesForm() {
       .get(id)
       .then((data) => {
         setForm({
-          etapa: data.etapa ?? data.Etapa ?? "",
+          //etapa: data.etapa ?? data.Etapa ?? "",
           etapaId: data.etapaId ?? data.EtapaID ?? "",
           nombre: data.nombre ?? data.Bloque ?? "",
-          area_total_varas: data.area_total_varas ?? data.AreaTotalVaras ?? "",
-          //estado: data.estado ?? data.Estado ?? "Disponible",
+          areaTotaVaras: data.areaTotalVaras ?? data.AreaTotalVaras ?? ""
         });
       })
       .catch((err) => setError(err.message || "No se pudo cargar el bloque."))
@@ -106,6 +108,12 @@ export default function BloquesForm() {
           <form onSubmit={handleSubmit}>
             <Card className="p-6 space-y-5 max-w-2xl">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <FormField label="Proyecto" required isDisabled>
+                  <Select value={form.ProyectoID} onChange={set("ProyectoID")} required disabled={isEdit}>
+                    <option value="">Seleccione proyecto...</option>
+                    {proyectos.map((p) => <option key={p.ProyectoID} value={p.ProyectoID}>{p.Nombre}</option>)}
+                  </Select>
+                </FormField>
                 <FormField label="Etapa" required>
                   <Select value={form.etapaId} onChange={set("etapaId")} required disabled={isEdit}>
                     {isEdit && (
@@ -135,8 +143,8 @@ export default function BloquesForm() {
                 <FormField label="Área total (varas²)">
                   <Input
                     type="number"
-                    value={form.area_total_varas}
-                    onChange={set("area_total_varas")}
+                    value={form.areaTotalVaras}
+                    onChange={set("areaTotalVaras")}
                     placeholder="0.00"
                     min={0}
                     step="0.01"
