@@ -19,7 +19,6 @@ import {
 
 const EMPTY = {
   nombre: "",
-  apellido: "",
   dni: "",
   rtn: "", // Campo agregado
   fecha_nacimiento: "",
@@ -295,7 +294,6 @@ export default function ClienteForm() {
     const errs = {};
     if (s === 1) {
       if (!form.nombre.trim())   errs.nombre   = "El nombre es requerido";
-      if (!form.apellido.trim()) errs.apellido = "El apellido es requerido";
       if (!form.dni.trim())      errs.dni      = "El DNI es requerido";
       if (!form.telefono.trim()) errs.telefono = "El teléfono es requerido";
       if (form.correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.correo))
@@ -441,7 +439,7 @@ export default function ClienteForm() {
                 </div>
                 <div>
                   <p className="font-semibold text-stone-100 leading-snug">
-                    {form.nombre || "Nombre"} {form.apellido || "Apellido"}
+                    {form.nombre || "Nombre"} 
                   </p>
                   <p className="text-xs text-stone-500 mt-0.5">{form.dni || "Sin DNI"}</p>
                 </div>
