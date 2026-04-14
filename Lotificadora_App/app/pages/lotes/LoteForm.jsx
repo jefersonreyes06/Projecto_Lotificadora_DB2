@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { lotesApi, bloquesApi, etapasApi, proyectosApi } from "../../services/api.js";
+import { notify, useNotifyError } from "../../utils/notify";
 import {
   PageHeader, PageContent, Button, FormField, Input, Select, Card, Alert,
 } from "../../components/index";
@@ -31,6 +32,8 @@ export default function LoteForm() {
   const [valorCalculado, setValorCalculado] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+
+  useNotifyError(error);
 
   useEffect(() => {
     proyectosApi.list().then(setProyectos).catch(() => {});
@@ -67,10 +70,18 @@ export default function LoteForm() {
     setError(null);
     console.log(form)
     try {
-      isEdit ? await lotesApi.update(id, form) : await lotesApi.create(form);
+      if (isEdit) {
+        await lotesApi.update(id, form);
+        notify.success("Lote actualizado correctamente");
+      } else {
+        await lotesApi.create(form);
+        notify.success("Lote creado correctamente");
+      }
       navigate("/lotes");
     } catch (err) {
-      setError(err.message);
+      const message = err.message || "Error al guardar el lote";
+      setError(message);
+      notify.error(message);
     } finally {
       setSaving(false);
     }

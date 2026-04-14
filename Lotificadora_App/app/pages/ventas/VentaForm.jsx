@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router";
 import { clientesApi, lotesApi, ventasApi } from "../../services/api.js";
+import { notify, useNotifyError } from "../../utils/notify";
 
 import {
   PageHeader, PageContent, Button, FormField, Input, Select, Card, Alert, Badge,
@@ -24,6 +25,8 @@ export default function VentaForm() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+
+  useNotifyError(error);
   const [step, setStep] = useState(1); // 1: datos, 2: financiamiento, 3: confirmación
 
   useEffect(() => {
@@ -56,7 +59,9 @@ export default function VentaForm() {
       // sp_generar_plan_pagos se llama automáticamente en el SP de venta (transaccional)
       setSuccess(res.VentaID);
     } catch (err) {
-      setError(err.message);
+      const message = err.message || "No se pudo crear la venta";
+      setError(message);
+      notify.error(message);
     } finally {
       setSaving(false);
     }

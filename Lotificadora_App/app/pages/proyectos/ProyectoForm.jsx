@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router";
+import { notify, useNotifyError } from "../../utils/notify";
 
 import {
   PageHeader, PageContent, Button, FormField, Input, Select, Card, Alert,
@@ -24,6 +25,8 @@ export default function ProyectoForm() {
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState(null);
 
+  useNotifyError(error);
+
   useEffect(() => {
     if (!isEdit) return;
     setLoading(true);
@@ -43,12 +46,16 @@ export default function ProyectoForm() {
     try {
       if (isEdit) {
         await proyectosApi.update(id, form);
+        notify.success("Proyecto actualizado correctamente");
       } else {
         await proyectosApi.create(form);
+        notify.success("Proyecto creado correctamente");
       }
       navigate("/proyectos");
     } catch (err) {
-      setError(err.message);
+      const message = err.message || "No se pudo guardar el proyecto";
+      setError(message);
+      notify.error(message);
     } finally {
       setSaving(false);
     }
@@ -62,7 +69,9 @@ export default function ProyectoForm() {
       await proyectosApi.remove(id);
       navigate("/proyectos");
     } catch (err) {
-      setError(err.message);
+      const message = err.message || "No se pudo eliminar el proyecto";
+      setError(message);
+      notify.error(message);
     } finally {
       setDeleting(false);
     }

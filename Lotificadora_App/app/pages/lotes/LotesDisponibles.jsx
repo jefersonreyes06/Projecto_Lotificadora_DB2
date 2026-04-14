@@ -5,6 +5,7 @@ import {
   PageHeader, PageContent, Card, DataTable, Badge, FormField, Select, Button, Input, Modal, Alert,
 } from "../../components/index";
 import { lotesApi, proyectosApi, etapasApi, bloquesApi, clientesApi, ventasApi } from "../../services/api";
+import { notify, useNotifyError } from "../../utils/notify";
 
 const ESTADO_COLORS = {
   Disponible: "success",
@@ -46,6 +47,8 @@ export default function LotesDisponibles() {
   });
   const [buscandoCliente, setBuscandoCliente] = useState(false);
   const [creandoVenta, setCreandoVenta] = useState(false);
+
+  useNotifyError(error);
 
   useEffect(() => {
     setLoading(true);
@@ -141,9 +144,9 @@ export default function LotesDisponibles() {
       // Actualizar la lista de lotes
       setLotes(prev => prev.filter(l => l.id !== ventaModal.lote.id));
       cerrarVentaModal();
-      alert("Venta creada exitosamente");
+      notify.success("Venta creada exitosamente");
     } catch (err) {
-      console.log(err.message)
+      notify.error(err.message || "No se pudo crear la venta");
     } finally {
       setCreandoVenta(false);
     }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { lotesApi } from "../../services/api";
+import { notify, useNotifyError } from "../../utils/notify";
 import {
   PageHeader, PageContent, Card, Badge, Button, StatCard, Alert,
 } from "../../components/ui";
@@ -31,6 +32,8 @@ export default function LoteDetalle() {
   const [lote, setLote]     = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]   = useState(null);
+
+  useNotifyError(error);
 
   useEffect(() => {
     lotesApi.get(id)

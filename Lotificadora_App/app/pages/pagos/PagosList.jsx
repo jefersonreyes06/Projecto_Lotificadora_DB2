@@ -5,6 +5,7 @@ import { pagosApi } from "../../services/api.js";
 import {
   PageHeader, PageContent, Button, DataTable, Badge, Card, Input, Select, Alert, StatCard,
 } from "../../components/index";
+import { notify } from "../../utils/notify";
 
 const fmtLps  = (v) => `L ${Number(v ?? 0).toLocaleString("es-HN", { minimumFractionDigits: 2 })}`;
 const fmtDate = (v) => v ? new Date(v).toLocaleDateString("es-HN") : "—";
@@ -45,10 +46,14 @@ export default function PagosList() {
     setCierreMsg(null);
     try {
       const res = await pagosApi.cierreDiario(cierreFecha);
-      setCierreMsg({ type: "success", text: `Cierre realizado: ${res.total_depositos} depósito(s) por ${fmtLps(res.monto_total)}` });
+      const message = `Cierre realizado: ${res.total_depositos} depósito(s) por ${fmtLps(res.monto_total)}`;
+      setCierreMsg({ type: "success", text: message });
+      notify.success(message);
       load();
     } catch (e) {
-      setCierreMsg({ type: "danger", text: e.message });
+      const message = e.message || "Error al ejecutar el cierre diario.";
+      setCierreMsg({ type: "danger", text: message });
+      notify.error(message);
     } finally {
       setCierreLoading(false);
     }

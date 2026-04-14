@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { pagosApi } from "../../services/api";
+import { notify, useNotifyError } from "../../utils/notify";
 import { PageHeader, PageContent, Card, Badge, Button, Alert } from "../../components/ui";
 
 const fmtLps  = (v) => `L ${Number(v ?? 0).toLocaleString("es-HN", { minimumFractionDigits: 2 })}`;
@@ -20,6 +21,8 @@ export default function PagoDetalle() {
   const [pago, setPago] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
+
+  useNotifyError(error);
 
   useEffect(() => {
     pagosApi.factura(id)

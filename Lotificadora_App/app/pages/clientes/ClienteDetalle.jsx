@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { clientesApi } from "../../services/api";
+import { notify, useNotifyError } from "../../utils/notify";
 import {
   PageHeader, PageContent, Card, Badge, Button, DataTable, StatCard, Alert,
 } from "../../components/ui";
@@ -23,6 +24,8 @@ export default function ClienteDetalle() {
   const [historial, setHistorial] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError]   = useState(null);
+
+  useNotifyError(error);
 
   useEffect(() => {
     Promise.all([

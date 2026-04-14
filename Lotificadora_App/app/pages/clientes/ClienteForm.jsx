@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router";
 
 import { clientesApi } from "../../services/api.js";
+import { notify, useNotifyError } from "../../utils/notify";
 
 import {
   PageHeader,
@@ -273,6 +274,8 @@ export default function ClienteForm() {
   const [loading, setLoading] = useState(false);
   const [saving,  setSaving]  = useState(false);
   const [error,   setError]   = useState(null);
+
+  useNotifyError(error);
  
   // Cargar en modo edición
   useEffect(() => {
@@ -323,12 +326,18 @@ export default function ClienteForm() {
     setSaving(true);
     setError(null);
     try {
-      isEdit
-        ? await clientesApi.update(id, form)
-        : await clientesApi.create(form);
+      if (isEdit) {
+        await clientesApi.update(id, form);
+        notify.success("Cliente actualizado correctamente");
+      } else {
+        await clientesApi.create(form);
+        notify.success("Cliente registrado correctamente");
+      }
       navigate("/clientes");
     } catch (err) {
-      setError(err.message);
+      const message = err.message || "No se pudo guardar el cliente";
+      setError(message);
+      notify.error(message);
       setSaving(false);
     }
   };

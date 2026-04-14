@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router";
-
 import { bloquesApi, etapasApi, proyectosApi } from "../../services/api.js";
+import { notify, useNotifyError } from "../../utils/notify";
 
 import {
   PageHeader,
@@ -32,9 +32,9 @@ export default function BloquesForm() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-
+  useNotifyError(error);
+  
   useEffect(() => { proyectosApi.list().then(setProyectos).catch(() => {}); }, []);
-
   useEffect(() => {
     etapasApi.list().then((d) => setEtapas(d)).catch(() => {});
   }, []);
@@ -72,12 +72,16 @@ export default function BloquesForm() {
     try {
       if (isEdit) {
         await bloquesApi.update(id, form);
+        notify.success("Bloque actualizado correctamente");
       } else {
         await bloquesApi.create(form);
+        notify.success("Bloque creado correctamente");
       }
       navigate("/bloques");
     } catch (err) {
-      setError(err.message || "Error al guardar el bloque.");
+      const message = err.message || "Error al guardar el bloque.";
+      setError(message);
+      notify.error(message);
     } finally {
       setSaving(false);
     }
