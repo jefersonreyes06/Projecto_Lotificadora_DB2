@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
-import { cuentasApi, etapasApi } from "../../services/api.js";
+import { cuentasApi, etapasApi, proyectosApi } from "../../services/api.js";
 import {
   PageHeader, PageContent, Button, Card, Input, Select, FormField,
 } from "../../components/index";
@@ -16,6 +16,8 @@ export function CuentaForm() {
 
   const [formData, setFormData] = useState({
     EtapaID: "",
+    //Proyecto: "",
+    //Etapa: "",
     Banco: "",
     NumeroCuenta: "",
     TipoCuenta: "Corriente",
@@ -24,6 +26,8 @@ export function CuentaForm() {
   });
 
   const [etapas, setEtapas] = useState([]);
+  const [proyectos, setProyectos] = useState([]);
+  const [proyectoId, setProyectoId] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -41,11 +45,16 @@ export function CuentaForm() {
       const etapasData = await etapasApi.list();
       setEtapas(etapasData);
 
+      const proyectosData = await proyectosApi.list();
+      setProyectos(proyectosData);
+
       // Si estamos editando, cargar la cuenta
       if (isEditing) {
         const cuentaData = await cuentasApi.get(id);
         setFormData({
           EtapaID: cuentaData.EtapaID.toString(),
+          Proyecto: cuentaData.Proyecto,
+          Etapa: cuentaData.Etapa,
           Banco: cuentaData.Banco,
           NumeroCuenta: cuentaData.NumeroCuenta,
           TipoCuenta: cuentaData.TipoCuenta,
@@ -59,6 +68,11 @@ export function CuentaForm() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!proyectoId) { setEtapas([]); return; }
+    etapasApi.list().then((etapas) => setEtapas(etapas.filter((e) => e.ProyectoID === proyectoId))).catch(() => {});
+  }, [proyectoId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -135,13 +149,23 @@ export function CuentaForm() {
             )}
 
             <Card className="p-6 space-y-4">
+              <FormField label="Proyecto" required isDisabled>
+                <Select value={proyectoId} onChange={(e) => setProyectoId(parseInt(e.target.value))} required disabled={isEditing}>
+                  {/* <option value="">Seleccione proyecto...</option>*/}
+                  {isEditing ? <option value="">{formData.Proyecto || "Proyecto Actual"}</option> : <option value="">Seleccione proyecto...</option>}
+                  {proyectos.map((p) => <option key={p.ProyectoID} value={p.ProyectoID}>{p.Nombre}</option>)}
+                </Select>
+              </FormField>
               <FormField label="Etapa" required>
                 <Select
                   value={formData.EtapaID}
                   onChange={(e) => handleChange("EtapaID", e.target.value)}
+                  disabled={isEditing}
                   required
                 >
-                  <option value="">Seleccionar etapa</option>
+                  {isEditing ? <option value="">{formData.Etapa || "Etapa Actual"}</option> : <option value="">Seleccione etapa...</option>}
+{/*
+                  <option value="">Seleccionar etapa</option>*/}
                   {etapas.map(etapa => (
                     <option key={etapa.EtapaID} value={etapa.EtapaID}>
                       {etapa.Etapa}

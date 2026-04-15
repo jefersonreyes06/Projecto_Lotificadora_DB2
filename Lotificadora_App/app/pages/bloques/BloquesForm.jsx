@@ -137,7 +137,7 @@ export default function BloquesForm() {
                         <option key={p.ProyectoID} value={p.ProyectoID}>{p.Nombre}</option>
                       ))}
 
-                    </Select>
+                  </Select>
                   {/*<Select value={form.Proyecto} onChange={set("Proyecto")} required disabled={isEdit}>
                     <option value=''>{isEdit ? form.Proyecto : 'Seleccione proyecto...'}</option>
                     {proyectos.map((p) => <option key={p.ProyectoID} value={p.ProyectoID}>{p.Nombre}</option>)}

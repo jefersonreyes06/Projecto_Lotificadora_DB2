@@ -27,7 +27,15 @@ router.get(
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    const result = await executeProcedure("sp_cuentas_crear", req.body);
+    const payload = {
+      EtapaID: parseInt(req.body.EtapaID),
+      Banco: req.body.Banco,
+      NumeroCuenta: req.body.NumeroCuenta,
+      TipoCuenta: req.body.TipoCuenta,
+      SaldoActual: parseFloat(req.body.SaldoActual) || 0,
+      Estado: req.body.Estado
+    }
+    const result = await executeProcedure("sp_cuentas_crear", payload);
     res.json(result.recordset ?? result.returnValue);
   })
 );
@@ -35,7 +43,15 @@ router.post(
 router.put(
   "/:id",
   asyncHandler(async (req, res) => {
-    const payload = { id: req.params.id, ...req.body };
+    const payload = {
+      id: req.params.id,
+      EtapaID: parseInt(req.body.EtapaID),
+      Banco: req.body.Banco,
+      NumeroCuenta: req.body.NumeroCuenta,
+      TipoCuenta: req.body.TipoCuenta,
+      SaldoActual: parseFloat(req.body.SaldoActual) || 0,
+      Estado: req.body.Estado
+    }
     const result = await executeProcedure("sp_cuentas_actualizar", payload);
     res.json(result.recordset ?? result.returnValue);
   })
