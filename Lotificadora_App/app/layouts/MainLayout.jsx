@@ -24,6 +24,7 @@ const navGroups = [
     label: "Comercial",
     items: [
       { to: "/clientes", label: "Clientes", icon: "◌" },
+      { to: "/aval", label: "Avales", icon: "◍" },
       { to: "/ventas", label: "Ventas", icon: "◆" },
       { to: "/pagos", label: "Pagos & Caja", icon: "◎" },
       { to: "/cuentas", label: "Cuentas Bancarias", icon: "◍" },

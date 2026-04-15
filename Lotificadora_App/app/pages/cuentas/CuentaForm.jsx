@@ -16,8 +16,6 @@ export function CuentaForm() {
 
   const [formData, setFormData] = useState({
     EtapaID: "",
-    //Proyecto: "",
-    //Etapa: "",
     Banco: "",
     NumeroCuenta: "",
     TipoCuenta: "Corriente",

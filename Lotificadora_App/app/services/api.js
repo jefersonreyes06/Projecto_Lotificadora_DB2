@@ -163,6 +163,19 @@ export const clientesApi = {
   historial: (id) => request(`/clientes/${id}/historial`), // Vista vw_historial_cliente
 };
 
+// Aval — sp_aval_*
+// ──────────────────────────────────────────────
+export const avalApi = {
+  list: (search) =>
+    request(`/aval${search ? `?q=${encodeURIComponent(search)}` : ""}`),
+  get: (id) => request(`/aval/${id}`),
+  getByDni: (dni) => request(`/aval/dni/${dni}`), // Nuevo: obtener por DNI
+  create: (data) => request("/aval", { method: "POST", body: JSON.stringify(data) }),
+  update: (id, data) => request(`/aval/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  remove: (id) => request(`/aval/${id}`, { method: "DELETE" }),
+  historial: (id) => request(`/aval/${id}/historial`), // Vista vw_historial_cliente
+};
+
 // ──────────────────────────────────────────────
 const normalizeVentaPayload = (data) => ({
   ClienteId: data.clienteId ?? data.ClienteId ?? data.cliente_id ?? data.ClienteID ?? null,

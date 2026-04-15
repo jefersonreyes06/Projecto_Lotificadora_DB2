@@ -64,6 +64,13 @@ export default [
       route(":id/editar", "pages/clientes/ClienteForm.jsx", { id: "cliente-editar" }),
     ]),
 
+    // Avales
+    ...prefix("aval", [
+      index("pages/aval/AvalList.jsx"),
+      route("nuevo", "pages/aval/AvalForm.jsx", { id: "aval-nuevo" }),
+      route(":id/editar", "pages/aval/AvalForm.jsx", { id: "aval-editar" }),
+    ]),
+
     // Ventas
     ...prefix("ventas", [
       index("pages/ventas/VentasList.jsx"),
