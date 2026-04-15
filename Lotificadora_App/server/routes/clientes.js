@@ -40,6 +40,7 @@ router.post(
       ? parseFloat(req.body.ingreso_mensual) * 0.3
       : null;
 
+      console.log('Datos del frontend:', req.body);
     const params = {
       NombreCompleto: `${req.body.nombre} ${req.body.apellido}`,
       DNI: req.body.dni,

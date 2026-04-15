@@ -98,7 +98,9 @@ export function ClientesList() {
     { key: "email", label: "Correo" },
     { key: "nombreEmpresa", label: "Empresa" },
     { key: "estado", label: "Estado", render: (v) => <Badge variant={v === "Activo" ? "success" : "warning"}>{v}</Badge> },
-    { key: "fechaRegistro", label: "Registrado", render: (v) => new Date(v).toLocaleDateString("es-HN") },
+    { key: "fechaRegistro", label: "Registrado"}, //render: (v) => new Date(v).toLocaleDateString("es-HN") }, // el bew Date del render no muestra la fecha correctamente, 
+    // revisa eso Orlando!
+  
     {
       key: "id",
       label: "",
