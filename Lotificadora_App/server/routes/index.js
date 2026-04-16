@@ -10,7 +10,7 @@ import cuentasRouter from "./cuentas.js";
 import reportesRouter from "./reportes.js";
 import dashboardRouter from "./dashboard.js";
 import triggersRouter from "./triggers.js";
-import avalRouter from "./aval.js";
+//import avalRouter from "./aval.js";
 
 const router = Router();
 
@@ -19,7 +19,7 @@ router.use("/etapas", etapasRouter);
 router.use("/bloques", bloquesRouter);
 router.use("/lotes", lotesRouter);
 router.use("/clientes", clientesRouter);
-router.use("/aval", avalRouter);
+//router.use("/aval", avalRouter);
 router.use("/ventas", ventasRouter);
 router.use("/pagos", pagosRouter);
 router.use("/cuentas", cuentasRouter);

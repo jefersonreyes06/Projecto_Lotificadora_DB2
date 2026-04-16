@@ -40,10 +40,15 @@ export default function LotesDisponibles() {
   const [ventaModal, setVentaModal] = useState({ open: false, lote: null });
   const [clienteDni, setClienteDni] = useState("");
   const [clienteData, setClienteData] = useState(null);
+  const [beneficiarioData, setBeneficiarioData] = useState(null);
+  const [beneficiarioDni, setBeneficiarioDni] = useState("");
+  const [avalData, setAvalData] = useState(null);
+  const [avalDni, setAvalDni] = useState("");
+
   const [ventaForm, setVentaForm] = useState({
     tipoVenta: "Contado",
     prima: "",
-    aniosPlazo: 10,
+    aniosPlazo: 0,
   });
   const [buscandoCliente, setBuscandoCliente] = useState(false);
   const [creandoVenta, setCreandoVenta] = useState(false);
@@ -100,21 +105,79 @@ export default function LotesDisponibles() {
     setVentaModal({ open: true, lote });
     setClienteDni("");
     setClienteData(null);
-    setVentaForm({ tipoVenta: "Contado", prima: "", aniosPlazo: 10 });
+    setAvalDni("");
+    setAvalData(null);
+    setBeneficiarioDni("");
+    setBeneficiarioData(null);
+    setVentaForm({ tipoVenta: "Contado", prima: "", aniosPlazo: 0 });
   };
 
   const cerrarVentaModal = () => {
     setVentaModal({ open: false, lote: null });
   };
+/*
+  useEffect(() => {
+    if (clienteDni.trim()) {
+      buscarCliente("cliente");
+    }
+  }, [clienteDni]);
 
-  const buscarCliente = async () => {
+  useEffect(() => {
+    if (beneficiarioDni.trim()) {
+      buscarCliente("beneficiario");
+    }
+  }, [beneficiarioDni]);
+
+  useEffect(() => {
+    if (avalDni.trim()) {
+      buscarCliente("aval");
+    }
+  }, [avalDni]);
+*/
+/*
+  const buscarCliente = async (tipo) => {
     if (!clienteDni.trim()) return;
     setBuscandoCliente(true);
     try {
-      const cliente = await clientesApi.getByDni(clienteDni);
-      setClienteData(cliente);
+      if (tipo === "beneficiario") {
+        const beneficiario = await clientesApi.getByDni(beneficiarioDni);
+        setBeneficiarioData(beneficiario);
+      }
+      else if (tipo === "aval") {
+        const aval = await clientesApi.getByDni(avalDni);
+        setAvalData(aval);
+      }
+      else {
+        const cliente = await clientesApi.getByDni(clienteDni);
+        setClienteData(cliente);
+      }
     } catch (err) {
       setClienteData(null);
+    } finally {
+      setBuscandoCliente(false);
+    }
+  };
+*/
+  
+  const buscarCliente = async (tipo) => {
+    setBuscandoCliente(true);
+    try {
+      if (tipo === "beneficiario" && beneficiarioDni.trim()) {
+        const beneficiario = await clientesApi.getByDni(beneficiarioDni);
+        setBeneficiarioData(beneficiario);
+      }
+      else if (tipo === "aval" && avalDni.trim()) {
+        const aval = await clientesApi.getByDni(avalDni);
+        setAvalData(aval);
+      }
+      else if (tipo === "cliente" && clienteDni.trim()) {
+        const cliente = await clientesApi.getByDni(clienteDni);
+        setClienteData(cliente);
+      }
+    } catch (err) {
+      if (tipo === "cliente") setClienteData(null);
+      if (tipo === "beneficiario") setBeneficiarioData(null);
+      if (tipo === "aval") setAvalData(null);
     } finally {
       setBuscandoCliente(false);
     }
@@ -129,16 +192,20 @@ export default function LotesDisponibles() {
       const montoFinanciado = ventaForm.tipoVenta === "Credito" ? montoTotal - prima : 0;
       const aniosPlazo = ventaForm.tipoVenta === "Contado" ? 0 : ventaForm.aniosPlazo;
 
-      console.log(clienteData, ventaModal.lote, ventaForm);
       await ventasApi.create({
-        ClienteID: clienteData.id,
         LoteID: ventaModal.lote.id,
+        ClienteID: clienteData.id,
+        BeneficiarioID: beneficiarioData.id,
+        AvalID: avalData ? avalData.id : null,
+        UsuarioID: 1,         // Cambiar por ID real del usuario autenticado
         TipoVenta: ventaForm.tipoVenta,
         MontoTotal: montoTotal,
         Prima: prima,
         MontoFinanciado: montoFinanciado,
         AniosPlazo: aniosPlazo,
-        TasaInteresAplicada: 12.0, // Asumiendo tasa fija, ajustar según necesidad
+        //CuotaMensualEstimada: 2, Calcular en api
+        TasaInteresAplicada: ventaForm.TasaInteresAplicada || 12.0,
+        Estado: ventaForm.tipoVenta === "Contado" ? "Finalizada" : "En Proceso",
       });
 
       // Actualizar la lista de lotes
@@ -321,7 +388,7 @@ export default function LotesDisponibles() {
                     onChange={(e) => setClienteDni(e.target.value)}
                     placeholder="Ingrese DNI"
                   />
-                  <Button onClick={buscarCliente} loading={buscandoCliente}>
+                  <Button onClick={() => buscarCliente("cliente")} loading={buscandoCliente} disabled={buscandoCliente}>
                     Buscar
                   </Button>
                 </div>
@@ -330,6 +397,7 @@ export default function LotesDisponibles() {
               {clienteData && (
                 <div className="bg-green-900/20 border border-green-500/30 p-4 rounded">
                   <h4 className="font-semibold mb-2">Cliente Encontrado</h4>
+                  <p><strong>ID:</strong> {clienteData.id} </p>
                   <p><strong>Nombre:</strong> {clienteData.nombreCompleto}</p>
                   <p><strong>DNI:</strong> {clienteData.dni}</p>
                   <p><strong>Teléfono:</strong> {clienteData.telefono || clienteData.telefono}</p>
@@ -383,6 +451,36 @@ export default function LotesDisponibles() {
                           </FormField>
                         </>
                       )}
+
+                      {
+                        <FormField label="DNI del Beneficiario">
+                            <div className="flex gap-2">
+                              <Input
+                                value={beneficiarioDni}
+                                onChange={(e) => setBeneficiarioDni(e.target.value)}
+                                placeholder="Ingrese DNI"
+                              />
+                              <Button onClick={() => buscarCliente("beneficiario")} loading={buscandoCliente} disabled={buscandoCliente}>
+                                Buscar
+                              </Button>
+                            </div>
+                        </FormField>
+                      }
+                      {beneficiarioData && (
+                        <div className="bg-green-900/20 border border-green-500/30 p-4 rounded">
+                          <h4 className="font-semibold mb-2">Cliente Encontrado</h4>
+                          <p><strong>ID Lote:</strong> {ventaModal.lote.id} </p>
+                          <p><strong>ID:</strong> {beneficiarioData.id} </p>
+                          <p><strong>Nombre:</strong> {beneficiarioData.nombreCompleto}</p>
+                          <p><strong>DNI:</strong> {beneficiarioData.dni}</p>
+                          <p><strong>Teléfono:</strong> {beneficiarioData.telefono || beneficiarioData.telefono}</p>
+                          <p><strong>Empresa:</strong> {beneficiarioData.nombreEmpresa || beneficiarioData.NombreEmpresa}</p>
+                          <p><strong>Ocupacion:</strong> {beneficiarioData.ocupacion || beneficiarioData.Ocupacion}</p>
+                          <p><strong>Ingreso Mensual:</strong> {beneficiarioData.ingresoMensual || beneficiarioData.IngresoMensual}</p>
+                          <p><strong>Estado:</strong> {beneficiarioData.estado || beneficiarioData.Estado}</p>
+                        </div>
+                      )}
+                      
 
                       <div className="flex justify-end gap-2">
                         <Button variant="secondary" onClick={cerrarVentaModal}>

@@ -24,20 +24,19 @@ const navGroups = [
     label: "Comercial",
     items: [
       { to: "/clientes", label: "Clientes", icon: "◌" },
-      { to: "/aval", label: "Avales", icon: "◍" },
       { to: "/ventas", label: "Ventas", icon: "◆" },
       { to: "/pagos", label: "Pagos & Caja", icon: "◎" },
       { to: "/cuentas", label: "Cuentas Bancarias", icon: "◍" },
     ],
   },
-  {
+  /*{
     label: "Consultas",
     items: [
       { to: "/vistas", label: "Vistas SQL", icon: "◐" },
       { to: "/procedimientos", label: "Procedimientos", icon: "◑" },
       { to: "/funciones", label: "Funciones", icon: "◒" },
     ],
-  },
+  },*/
 ];
 
 export default function MainLayout() {
@@ -60,7 +59,7 @@ export default function MainLayout() {
     <div className="flex h-screen bg-stone-950 text-stone-100 font-['Space_Grotesk',sans-serif] overflow-hidden transition-colors duration-300">
       {/* Sidebar */}
       <aside
-        className={`flex flex-col border-r border-stone-800 bg-stone-950 transition-all duration-300 ${
+        className={`flex flex-col z-10 border-r border-stone-800 bg-stone-950 transition-all duration-300 ${
           collapsed ? "w-16" : "w-64"
         }`}
         style={{ flexShrink: 0 }}

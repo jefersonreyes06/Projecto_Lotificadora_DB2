@@ -111,7 +111,8 @@ export const lotesApi = {
   list: (bloqueId) =>
     request(`/lotes${bloqueId ? `?bloqueId=${bloqueId}` : ""}`),
   get: (id) => request(`/lotes/${id}`),
-  create: (data) => request("/lotes", { method: "POST", body: JSON.stringify(normalizeLotePayload(data)) }),
+  //create: (data) => request("/lotes", { method: "POST", body: JSON.stringify(normalizeLotePayload(data)) }),
+  create: (data) => request("/lotes", { method: "POST", body: JSON.stringify(data) }),
   //update: (id, data) => request(`/proyectos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   update: (id, data) => request(`/lotes/${id}`, { method: "PUT", body: JSON.stringify(normalizeLotePayload(data)) }),
   remove: (id) => request(`/lotes/${id}`, { method: "DELETE" }),
@@ -177,23 +178,24 @@ export const avalApi = {
 };
 
 // ──────────────────────────────────────────────
-const normalizeVentaPayload = (data) => ({
+/*const normalizeVentaPayload = (data) => ({
   ClienteId: data.clienteId ?? data.ClienteId ?? data.cliente_id ?? data.ClienteID ?? null,
+
   LoteId: data.loteId ?? data.LoteId ?? data.lote_id ?? data.LoteID ?? null,
   TipoVenta: data.tipo_venta ?? data.TipoVenta ?? data.tipoVenta ?? null,
   Prima: data.prima !== undefined && data.prima !== null ? data.prima : 0,
   AniosPlazo: data.tipo_venta === 'Credito' ? (data.anios_financiamiento ?? data.aniosPlazo ?? data.AniosPlazo ?? 0) : 0,
   TasaInteresAplicada: data.tipo_venta === 'Credito' ? (data.tasa_interes ?? data.tasaInteresAplicada ?? data.TasaInteresAplicada ?? data.interes ?? 12.0) : 0,
 });
-
+*/
 // VENTAS — sp_ventas_*
 // ──────────────────────────────────────────────
 export const ventasApi = {
   list: () => request("/ventas"),
   get: (id) => request(`/ventas/${id}`),
   // sp_crear_venta_completa — con manejo transaccional
-  create: (data) => request("/ventas", { method: "POST", body: JSON.stringify(normalizeVentaPayload(data)) }),
-  update: (id, data) => request(`/ventas/${id}`, { method: "PUT", body: JSON.stringify(normalizeVentaPayload(data)) }),
+  create: (data) => request("/ventas", { method: "POST", body: JSON.stringify(data)}),//normalizeVentaPayload(data)) }),
+  update: (id, data) => request(`/ventas/${id}`, { method: "PUT", body: JSON.stringify(data)}),//normalizeVentaPayload(data)) }),
   remove: (id) => request(`/ventas/${id}`, { method: "DELETE" }),
   // Cancelar venta completa (transaccional)
   cancelar: (id, motivo) => request(`/ventas/${id}/cancelar`, { 

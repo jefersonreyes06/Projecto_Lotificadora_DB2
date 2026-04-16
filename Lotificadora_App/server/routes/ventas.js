@@ -44,32 +44,30 @@ router.get(
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    console.log("BODY:", req.body);
-
-    const { 
-      ClienteId: ClienteID, 
-      LoteId: LoteID, 
-      TipoVenta, 
-      Prima = 0, 
-      AniosPlazo: AniosPlazo = 0, 
-      TasaInteresAplicada = 12.0 
-    } = req.body;
+    if (req.body.TipoVenta === "Credito") {
+      var MontoFinanciado = req.body.MontoTotal - (req.body.Prima || 0);
+      var aniosPlazo = req.body.AniosPlazo || 0;
+      var tasaInteres = req.body.TasaInteresAplicada || 12.0;
+      var cuotaMensualEstimada = (MontoFinanciado * (tasaInteres / 100)) / (1 - Math.pow(1 + (tasaInteres / 100), -aniosPlazo * 12));
+    }
 
     const params = {
-      ClienteID,
-      LoteID,
-      TipoVenta,
-      Prima,
-      AniosPlazo,
-      TasaInteresAplicada
+      ClienteID: req.body.ClienteID,
+      BeneficiarioID: req.body.BeneficiarioID,
+      AvalID: req.body.AvalID,
+      UsuarioID: 1, // Cambiar por ID real del usuario autenticado
+      LoteID: req.body.LoteID,
+      TipoVenta: req.body.TipoVenta,
+      MontoTotal: req.body.MontoTotal,
+      Prima: req.body.Prima || 0,
+      MontoFinanciado: MontoFinanciado || 0,
+      AniosPlazo: aniosPlazo || 0,
+      TasaInteresAplicada: tasaInteres || 12.0,
+      CuotaMensualEstimada: cuotaMensualEstimada || 0,
+      Estado: req.body.TipoVenta === "Contado" ? "Finalizada" : "En Proceso"
     };
 
-    console.log("PARAMS:", params);
-
     const result = await executeProcedure("sp_crear_venta_lote", params);
-
-    console.log("RESULT:", result);
-
     res.json(result.recordset[0]);
   })
 );

@@ -38,8 +38,6 @@ router.post(
       AreaTotalVaras: parseFloat(area)
     };
 
-    console.log("Datos que llegan del front:", req.body);
-    console.log("Payload enviado a SQL:", payload);
 
     const result = await executeProcedure("sp_bloques_crear", payload);
     res.json(result.recordset ?? result.returnValue);

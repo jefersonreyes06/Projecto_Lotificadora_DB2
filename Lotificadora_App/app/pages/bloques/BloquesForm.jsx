@@ -138,15 +138,11 @@ export default function BloquesForm() {
                       ))}
 
                   </Select>
-                  {/*<Select value={form.Proyecto} onChange={set("Proyecto")} required disabled={isEdit}>
-                    <option value=''>{isEdit ? form.Proyecto : 'Seleccione proyecto...'}</option>
-                    {proyectos.map((p) => <option key={p.ProyectoID} value={p.ProyectoID}>{p.Nombre}</option>)}
-                  </Select>*/}
                 </FormField>
                 
                 <FormField label="Etapa" required>
 
-                  <Select value={etapaId} onChange={(e) => setEtapaId(parseInt(e.target.value))} disabled={!proyectoId} required>
+                  <Select value={form.EtapaID} onChange={set('EtapaID')} required>
                       {isEdit && (
                         <option value={etapaId}>
                           {form.etapa ?? form.Etapa ?? "Etapa actual"}

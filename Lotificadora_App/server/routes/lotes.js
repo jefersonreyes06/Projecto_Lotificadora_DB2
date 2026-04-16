@@ -34,16 +34,10 @@ router.get(
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    const { bloqueId, areaVaras, estado = 'Disponible'} = req.body;
-
     const result = await executeProcedure("sp_lotes_crear", {
-      BloqueID: bloqueId,
-      AreaVaras: areaVaras,
-      Estado: estado,
-      /*EsEsquina: esEsquina,
-      CercaParque: cercaParque,
-      CalleCerrada: calleCerrada,
-      FrenteAvenida: frenteAvenida,*/
+      BloqueID: req.body.BloqueID,
+      AreaVaras: req.body.AreaVaras,
+      Estado: req.body.Estado || 'Disponible',
     });
     res.json(result.recordset[0]);
   })

@@ -69,7 +69,7 @@ export default function LoteForm() {
     e.preventDefault();
     setSaving(true);
     setError(null);
-    console.log(form)
+
     try {
       if (isEdit) {
         await lotesApi.update(id, form);
@@ -132,50 +132,26 @@ export default function LoteForm() {
                       )}
                       {!isEdit && <option value="">Seleccione...</option>}
                       {!isEdit && etapas.map((e) => (
-                        <option key={e.EtapaID} value={e.EtapaID}>{e.Nombre}</option>
-                      ))}
-
-{/*
-                      {isEdit && (
-                        <option value={proyectoId}>
-                          {form.proyecto ?? form.Proyecto ?? "Proyecto actual"}
-                        </option>
-                      )}
-                      <option value="">Seleccione...</option>
-                      {etapas.map((e) => (
                         <option key={e.EtapaID} value={e.EtapaID}>{e.Etapa}</option>
-                      ))}*/}
+                      ))}
                     </Select>
                   </FormField>
                   <FormField label="Bloque" required>
-                    <Select value={form.BloqueID} onChange={set("BloqueID")} disabled={!etapaId} required>
-                      {/*<option value="">Seleccione...</option>
-                      {bloques.map((b) => (
-                        <option key={b.BloqueID} value={b.BloqueID}>{b.Bloque}</option>
-                      ))}
-*/}
+                    <Select value={form.BloqueID} onChange={set('BloqueID')} required>
                       {isEdit && (
-                        <option value={bloqueId}>
-                          {form.proyecto ?? form.Bloque ?? "Bloque actual"}
+                        <option value={form.BloqueID}>
+                          {form.Bloque ?? "Bloque actual"}
                         </option>
                       )}
                       {!isEdit && <option value="">Seleccione...</option>}
                       {!isEdit && bloques.map((b) => (
-                        <option key={b.BloqueID} value={b.BloqueID}>{b.Nombre}</option>
+                        <option key={b.BloqueID} value={b.BloqueID}>{b.Bloque}</option>
                       ))}
                     </Select>
                   </FormField>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  {/* <FormField label="Código del lote" required>
-                    <Input
-                      value={form.codigo_lote}
-                      onChange={set("codigo_lote")}
-                      placeholder="Ej. A-001"
-                      required
-                    />
-                  </FormField> */}
                   <FormField label="Área (varas²)" required>
                     <Input
                       type="number"
@@ -187,17 +163,6 @@ export default function LoteForm() {
                       required
                     />
                   </FormField>
-                  {/*<FormField label="Precio por v2" required>
-                    <Input
-                      type="number"
-                      value={form.precio_vara}
-                      onChange={set("precio_vara")}
-                      placeholder="0.00"
-                      min={0}
-                      step="0.01"
-                      required
-                    />
-                  </FormField>*/}
                 </div>
 
                 <FormField label="Estado">
