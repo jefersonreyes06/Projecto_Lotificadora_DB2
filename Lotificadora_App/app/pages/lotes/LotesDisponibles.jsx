@@ -261,6 +261,10 @@ export default function LotesDisponibles() {
 
   const filteredLotes = useMemo(() => lotes.filter((item) => {
     const area = parseFloat(item.area_m2 ?? 0);
+    console.log("Filtering item:", item);
+    console.log("Filtering:", filtros.proyectoId);
+
+
     return (
       (!filtros.proyectoId || String(item.proyectoId ?? "") === filtros.proyectoId) &&
       (!filtros.etapaId    || String(item.etapaId    ?? "") === filtros.etapaId) &&
