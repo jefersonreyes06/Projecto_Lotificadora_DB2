@@ -34,11 +34,12 @@ router.get(
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    console.log(req.body)
+    console.log(req.body);
     const result = await executeProcedure("sp_lotes_crear", {
       BloqueID: req.body.BloqueID,
       AreaVaras: req.body.AreaVaras,
       Estado: req.body.Estado || 'Disponible',
+      Caracteristicas: req.body.Caracteristicas || null,
     });
     res.json(result.recordset[0]);
   })
@@ -55,15 +56,7 @@ router.put(
       AreaVaras: AreaVaras,
       Estado: Estado
     });
-    
-    /*const params = {
-      //id: req.params.id,
-      BloqueID: bloqueId,
-      AreaVaras: areaVaras,
-      Estado: estado,
-    };
 
-    const result = await executeProcedure("sp_lotes_actualizar", params);*/
     res.json(result.recordset ?? result.returnValue);
   })
 );
