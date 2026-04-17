@@ -56,7 +56,7 @@ export default function LoteForm() {
   useEffect(() => {
     if (!isEdit) return;
     lotesApi.get(id).then((d) => {
-      console.log("Lote data:", d);
+      console.log(d)
       setForm(d);
       setProyectoId(d.proyectoId ?? "");
       setEtapaId(d.etapaId ?? "");
@@ -182,6 +182,8 @@ export default function LoteForm() {
               </Card>
 
               {/* Características */}
+              {
+              !isEdit && 
               <Card className="p-6">
                 <p className="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-4">
                   Características que afectan el valor
@@ -218,7 +220,7 @@ export default function LoteForm() {
                     </label>
                   ))}
                 </div>
-              </Card>
+              </Card>}
 
               <div className="flex justify-end gap-3">
                 <Link to="/lotes">
