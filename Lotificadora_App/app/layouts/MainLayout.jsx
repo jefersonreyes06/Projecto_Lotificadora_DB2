@@ -67,7 +67,7 @@ export default function MainLayout() {
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 py-5 border-b border-stone-800">
           <div className="w-8 h-8 bg-amber-400 rounded-sm flex items-center justify-center flex-shrink-0">
-            <span className="text-stone-950 font-bold text-sm">PH</span>
+            <span className="text-stone-950 font-bold text-sm">LT</span>
           </div>
           {!collapsed && (
             <div>
