@@ -16,6 +16,7 @@ const EMPTY = {
   LoteID: "",
   FechaReserva: "",
   Estado: "Disponible",
+  Caracteristicas: [],
 };
 
 export default function LoteForm() {
@@ -65,8 +66,10 @@ export default function LoteForm() {
   const set = (k) => (e) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
-  const setCheck = (k) => (e) =>
-    setForm((f) => ({ ...f, [k]: e.target.checked }));
+  const setCheck = (k) => (e) => {
+        setForm((f) => ({ ...f, Caracteristicas: e.target.checked ? [...f.Caracteristicas, k] : f.Caracteristicas.filter((c) => c !== k) }));
+        setForm((f) => ({ ...f, [k]: e.target.checked }));
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,10 +78,10 @@ export default function LoteForm() {
 
     try {
       if (isEdit) {
-        await lotesApi.update(id, form);
+        await lotesApi.update(id, {...form, Caracteristicas: form.Caracteristicas.join(",")});
         notify.success("Lote actualizado correctamente");
       } else {
-        await lotesApi.create(form);
+        await lotesApi.create({...form, Caracteristicas: form.Caracteristicas.join(",")});
         notify.success("Lote creado correctamente");
       }
       navigate("/lotes");
@@ -191,10 +194,10 @@ export default function LoteForm() {
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { key: "es_esquina", label: "Lote de esquina" },
-                    { key: "cerca_parque", label: "Cerca de parque" },
-                    { key: "calle_cerrada", label: "Calle cerrada" },
-                    { key: "frente_avenida", label: "Frente a avenida" },
+                    { key: 1, label: "Lote de esquina" },
+                    { key: 2, label: "Cerca de parque" },
+                    { key: 6, label: "Calle cerrada" },
+                    { key: 4, label: "Frente a avenida" },
                   ].map(({ key, label }) => (
                     <label
                       key={key}
