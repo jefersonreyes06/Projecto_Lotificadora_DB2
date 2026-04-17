@@ -128,7 +128,7 @@ export default function VentaDetalle() {
 
   // ── Cálculos derivados ───────────────────────────────────────────────────
   const montoTotal    = Number(venta.MontoTotal    ?? venta.monto_total    ?? 0);
-  const montoPagado   = Number(venta.MontoPagado   ?? venta.monto_pagado   ?? 0);
+  const montoPagado   = venta.TipoVenta == "Contado" ? montoTotal : Number(venta.MontoPagado   ?? venta.monto_pagado   ?? 0);
   const saldoPendiente = montoTotal - montoPagado;
   const pctPagado     = montoTotal > 0 ? (montoPagado / montoTotal) * 100 : 0;
 
@@ -144,13 +144,13 @@ export default function VentaDetalle() {
     etapa:        venta.Etapa         ?? venta.etapa          ?? "—",
     proyecto:     venta.Proyecto      ?? venta.proyecto       ?? "—",
     areaVaras:    venta.AreaVaras     ?? venta.area_m2        ?? venta.areaVaras ?? null,
-    valorBase:    venta.ValorBase     ?? venta.valor_base     ?? null,
-    valorLote:    venta.ValorLote     ?? venta.valor_lote     ?? null,
+    valorBase:    venta.PrecioBase    ?? venta.valor_base     ?? null,
+    valorLote:    venta.PrecioFinal     ?? venta.valor_lote     ?? null,
     esEsquina:    venta.EsEsquina     ?? venta.es_esquina     ?? false,
     cercaParque:  venta.CercaParque   ?? venta.cerca_parque   ?? false,
     calleCerrada: venta.CalleCerrada  ?? venta.calle_cerrada  ?? false,
     frenteAvenida:venta.FrenteAvenida ?? venta.frente_avenida ?? false,
-    precioVara:   venta.PrecioVara    ?? venta.precio_vara    ?? null,
+    precioVara:   venta.PrecioVaraCuadrada    ?? venta.precio_vara    ?? null,
   };
 
   // Campos del cliente
@@ -192,6 +192,7 @@ export default function VentaDetalle() {
     cuotasPagadas: Number(venta.CuotasPagadas ?? venta.cuotas_pagadas ?? 0),
     cuotasTotales: Number(venta.CuotasTotales ?? venta.cuotas_totales ?? 0),
   };
+  console.log(venta)
 
   // Cuenta bancaria
   const cuenta = {
