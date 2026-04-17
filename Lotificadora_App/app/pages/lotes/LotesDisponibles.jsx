@@ -372,6 +372,8 @@ export default function LotesDisponibles() {
       ) },
   ];
 
+  console.log(ventaForm)
+
   // ════════════════════════════════════════════════════════════════════════
   return (
     <div>
@@ -540,7 +542,7 @@ export default function LotesDisponibles() {
                         <Input
                           type="number"
                           value={ventaForm.tasaInteres}
-                          onChange={(e) => setVentaForm((f) => ({ ...f, tasaInteres: parseFloat(e.target.value) || 0 }))}
+                          onChange={(e) => setVentaForm((f) => ({ ...f, tasaInteres: parseFloat(e.target.value)|| 0 }))}
                           min={0} step="0.1"
                         />
                       </FormField>
