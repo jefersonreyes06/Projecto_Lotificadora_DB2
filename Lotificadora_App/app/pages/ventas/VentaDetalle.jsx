@@ -186,9 +186,9 @@ export default function VentaDetalle() {
   const credito = {
     prima:       venta.Prima             ?? venta.prima              ?? 0,
     financiado:  venta.MontoFinanciado   ?? venta.monto_financiado   ?? 0,
-    tasa:        venta.TasaInteres       ?? venta.tasa_interes       ?? 0,
-    anios:       venta.AniosFinanciamiento ?? venta.anios_financiamiento ?? 0,
-    cuotaMensual:venta.CuotaMensual      ?? venta.cuota_mensual      ?? 0,
+    tasa:        venta.TasaInteresAplicada       ?? venta.tasa_interes       ?? 0,
+    anios:       venta.AniosPlazo ?? venta.anios_financiamiento ?? 0,
+    cuotaMensual:venta.CuotaMensualEstimada      ?? venta.cuota_mensual      ?? 0,
     cuotasPagadas: Number(venta.CuotasPagadas ?? venta.cuotas_pagadas ?? 0),
     cuotasTotales: Number(venta.CuotasTotales ?? venta.cuotas_totales ?? 0),
   };
