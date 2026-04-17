@@ -34,7 +34,6 @@ router.get(
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    console.log(req.body);
     const result = await executeProcedure("sp_lotes_crear", {
       BloqueID: req.body.BloqueID,
       AreaVaras: req.body.AreaVaras,
