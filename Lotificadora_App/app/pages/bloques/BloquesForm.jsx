@@ -42,9 +42,10 @@ export default function BloquesForm() {
   }, []);
 
   useEffect(() => {
-    if (!proyectoId) { setEtapas([]); return; }
-    etapasApi.list().then((etapas) => setEtapas(etapas.filter((e) => e.ProyectoID === proyectoId))).catch(() => {});
-  }, [proyectoId]);
+    console.log("ProyectoID cambiado:", form.ProyectoID); // Debug
+    if (!form.ProyectoID) { setEtapas([]); return; }
+    etapasApi.list().then((etapas) => setEtapas(etapas.filter((e) => e.ProyectoID === +form.ProyectoID))).catch(() => {});
+  }, [form.ProyectoID]);
 
   useEffect(() => {
     if (!isEdit) return;
@@ -117,7 +118,7 @@ export default function BloquesForm() {
             <Card className="p-6 space-y-5 max-w-2xl">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <FormField label="Proyecto" required isDisabled>
-                  <Select value={form.Proyecto} onChange={set("Proyecto")} required disabled={isEdit}>
+                  <Select value={form.ProyectoID} onChange={set("ProyectoID")} required disabled={isEdit}>
                       {isEdit && (
                         <option value={form.Proyecto}>
                           {form.Proyecto ?? "Proyecto actual"}
@@ -155,8 +156,9 @@ export default function BloquesForm() {
                   />
                 </FormField>
 
-                <FormField label="Área total (varas²)">
+                <FormField required label="Área total (varas²)">
                   <Input
+                  required
                     type="number"
                     value={form.AreaTotalVaras}
                     onChange={set("AreaTotalVaras")}
