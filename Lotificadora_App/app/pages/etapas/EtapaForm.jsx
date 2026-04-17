@@ -67,7 +67,6 @@ export default function EtapaForm() {
       <PageContent>
         <form onSubmit={handleSubmit}>
           <Card className="p-6 space-y-5 max-w-xl">
-            <p>Nombre: {form.ProyectoID}</p>
             <FormField label="Proyecto" required isDisabled>
               <Select value={form.ProyectoID} onChange={set("ProyectoID")} required disabled={isEdit}>
                 <option value="">Seleccione proyecto...</option>

@@ -64,15 +64,6 @@ export default function BloquesForm() {
       .finally(() => setLoading(false));
   }, [id, isEdit]);
 
-  /*const set = (key) => (event) => {
-    //let value = event.target.value;
-    //if (key === "EtapaID") {
-    //  value = value ? Number(value) : "";
-    //}
-    
-    setForm((current) => ({ ...current, [key]: value }));
-  };*/
-
   const set = (k) => (event) => {
     setForm((f) => ({ ...f, [k]: event.target.value }));
   };
@@ -126,10 +117,10 @@ export default function BloquesForm() {
             <Card className="p-6 space-y-5 max-w-2xl">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <FormField label="Proyecto" required isDisabled>
-                  <Select value={proyectoId} onChange={(e) => setProyectoId(parseInt(e.target.value))} required disabled={isEdit}>
+                  <Select value={form.Proyecto} onChange={set("Proyecto")} required disabled={isEdit}>
                       {isEdit && (
-                        <option value={proyectoId}>
-                          {form.proyecto ?? form.Proyecto ?? "Proyecto actual"}
+                        <option value={form.Proyecto}>
+                          {form.Proyecto ?? "Proyecto actual"}
                         </option>
                       )}
                       {!isEdit && <option value="">Seleccione...</option>}
@@ -144,7 +135,7 @@ export default function BloquesForm() {
 
                   <Select value={form.EtapaID} onChange={set('EtapaID')} required>
                       {isEdit && (
-                        <option value={etapaId}>
+                        <option value={form.EtapaID}>
                           {form.etapa ?? form.Etapa ?? "Etapa actual"}
                         </option>
                       )}
