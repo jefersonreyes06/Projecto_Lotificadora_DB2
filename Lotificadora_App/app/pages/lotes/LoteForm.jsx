@@ -53,6 +53,7 @@ export default function LoteForm() {
   useEffect(() => {
     if (!isEdit) return;
     lotesApi.get(id).then((d) => {
+      console.log("Lote data:", d);
       setForm(d);
       setProyectoId(d.proyectoId ?? "");
       setEtapaId(d.etapaId ?? "");
