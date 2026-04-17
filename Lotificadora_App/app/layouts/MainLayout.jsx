@@ -17,7 +17,7 @@ const navGroups = [
       { to: "/etapas", label: "Etapas", icon: "◫" },
       { to: "/bloques", label: "Bloques", icon: "▦" },
       { to: "/lotes", label: "Lotes", icon: "▣" },
-      { to: "/lotes/disponibles", label: "Lotes Disponibles", icon: "◉" },
+      { to: "/disponibles", label: "Lotes Disponibles", icon: "◉" },
     ],
   },
   {

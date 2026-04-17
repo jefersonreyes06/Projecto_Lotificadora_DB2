@@ -54,8 +54,8 @@ export default [
       index("pages/lotes/LotesList.jsx"),
       route("nuevo", "pages/lotes/LoteForm.jsx", { id: "lote-nuevo" }),
       route(":id/editar", "pages/lotes/LoteForm.jsx", { id: "lote-editar" }),
-      route("disponibles", "pages/lotes/LotesDisponibles.jsx"),
     ]),
+    route("disponibles", "pages/lotes/LotesDisponibles.jsx"),
 
     // Clientes
     ...prefix("clientes", [
