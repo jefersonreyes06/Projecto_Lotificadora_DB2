@@ -25,24 +25,25 @@ export function BloquesList() {
 
   const filteredData = useMemo(() => {
     return data.filter((row) => {
+      console.log("Filtering row:", row);
       const matchesName = filters.nombre
-        ? String(row.Nombre ?? row.nombre ?? "").toLowerCase().includes(filters.nombre.toLowerCase())
+        ? String(row.Bloque ?? row.bloque ?? "").toLowerCase().includes(filters.nombre.toLowerCase())
         : true;
       const matchesProject = filters.proyecto
         ? String(row.Proyecto ?? row.proyecto ?? "").toLowerCase().includes(filters.proyecto.toLowerCase())
         : true;
       const matchesEtapa = filters.etapa
-        ? String(row.EtapaID ?? row.etapa ?? "").toLowerCase().includes(filters.etapa.toLowerCase())
+        ? String(row.Etapa ?? row.etapa ?? "").toLowerCase().includes(filters.etapa.toLowerCase())
         : true;
       return matchesName && matchesProject && matchesEtapa;
     });
   }, [data, filters]);
 
   const cols = [
-    { key: "BloqueID", label: "ID" },
+    //{ key: "BloqueID", label: "ID" },
     { key: "Bloque", label: "Bloque" },
     { key: "Etapa", label: "Etapa" },
-    { key: "EtapaID", label: "Etapa ID" },
+    //{ key: "EtapaID", label: "Etapa ID" },
     { key: "Proyecto", label: "Proyecto" },
     { key: "AreaTotalVaras", label: "Área (varas)" },
     {
@@ -73,14 +74,6 @@ export function BloquesList() {
         <Card className="mb-6 p-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="text-sm font-semibold text-stone-400 block mb-2">Nombre</label>
-              <Input
-                placeholder="Filtrar por nombre" 
-                value={filters.nombre}
-                onChange={(e) => setFilters((f) => ({ ...f, nombre: e.target.value }))}
-              />
-            </div>
-            <div>
               <label className="text-sm font-semibold text-stone-400 block mb-2">Proyecto</label>
               <Input
                 placeholder="Filtrar por proyecto"
@@ -94,6 +87,14 @@ export function BloquesList() {
                 placeholder="Filtrar por etapa"
                 value={filters.etapa}
                 onChange={(e) => setFilters((f) => ({ ...f, etapa: e.target.value }))}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-semibold text-stone-400 block mb-2">Nombre</label>
+              <Input
+                placeholder="Filtrar por Bloque" 
+                value={filters.nombre}
+                onChange={(e) => setFilters((f) => ({ ...f, nombre: e.target.value }))}
               />
             </div>
           </div>

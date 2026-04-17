@@ -32,7 +32,8 @@ export default function LotesList() {
 
   const filteredData = useMemo(() => {
     return data.filter((item) => {
-      const codigo = String(item.codigo_lote ?? item.codigo ?? "").toLowerCase();
+      console.log("Filtering item:", item);
+      const codigo = String(item.NumeroLote ?? item.codigo ?? "").toLowerCase();
       const bloque = String(item.bloque ?? item.Bloque ?? "").toLowerCase();
       const etapa = String(item.etapa ?? item.Etapa ?? "").toLowerCase();
       const proyecto = String(item.proyecto ?? item.Proyecto ?? "").toLowerCase();
@@ -78,12 +79,12 @@ export default function LotesList() {
                 onChange={(e) => setFilters((prev) => ({ ...prev, codigo: e.target.value }))}
               />
             </FormField>
-            <FormField label="Bloque">
+            <FormField label="Proyecto">
               <Input
                 type="text"
-                placeholder="Buscar por bloque"
-                value={filters.bloque}
-                onChange={(e) => setFilters((prev) => ({ ...prev, bloque: e.target.value }))}
+                placeholder="Buscar por proyecto"
+                value={filters.proyecto}
+                onChange={(e) => setFilters((prev) => ({ ...prev, proyecto: e.target.value }))}
               />
             </FormField>
             <FormField label="Etapa">
@@ -94,12 +95,12 @@ export default function LotesList() {
                 onChange={(e) => setFilters((prev) => ({ ...prev, etapa: e.target.value }))}
               />
             </FormField>
-            <FormField label="Proyecto">
+            <FormField label="Bloque">
               <Input
                 type="text"
-                placeholder="Buscar por proyecto"
-                value={filters.proyecto}
-                onChange={(e) => setFilters((prev) => ({ ...prev, proyecto: e.target.value }))}
+                placeholder="Buscar por bloque"
+                value={filters.bloque}
+                onChange={(e) => setFilters((prev) => ({ ...prev, bloque: e.target.value }))}
               />
             </FormField>
           </div>
