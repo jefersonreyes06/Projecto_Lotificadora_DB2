@@ -2,9 +2,9 @@
 // CuentasList.jsx
 // ════════════════════════════════════════
 import { useEffect, useState, useMemo } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 
-import { cuentasApi, etapasApi } from "../../services/api.js";
+import { cuentasApi } from "../../services/api.js";
 import {
   PageHeader, PageContent, Button, Card, DataTable, Badge, Input, Select,
 } from "../../components/index";
@@ -14,7 +14,6 @@ export function CuentasList() {
   const [etapas, setEtapas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   // Filtros
   const [filtroEtapa, setFiltroEtapa] = useState("");
@@ -30,13 +29,16 @@ export function CuentasList() {
       setLoading(true);
       setError(null);
 
-      // Cargar etapas para el filtro
-      const etapasData = await etapasApi.list();
-      setEtapas(etapasData);
-
-      // Cargar cuentas
+      // Cargar cuentas y derivar etapas desde la información de cada cuenta
       const cuentasData = await cuentasApi.list();
       setCuentas(cuentasData);
+      const etapasUnicas = Array.from(
+        new Map(cuentasData.map((cuenta) => [String(cuenta.Etapa), {
+          Etapa: cuenta.Etapa,
+          EtapaNombre: cuenta.EtapaNombre,
+        }])).values()
+      );
+      setEtapas(etapasUnicas);
     } catch (err) {
       setError(err.message || "Error al cargar los datos");
     } finally {
@@ -47,35 +49,31 @@ export function CuentasList() {
   // Filtrar cuentas
   const filteredCuentas = useMemo(() => {
     return cuentas.filter(cuenta => {
-      const matchEtapa = !filtroEtapa || cuenta.EtapaID.toString() === filtroEtapa;
+      const matchEtapa = !filtroEtapa || String(cuenta.Etapa) === String(filtroEtapa);
       const matchBanco = !filtroBanco || cuenta.Banco.toLowerCase().includes(filtroBanco.toLowerCase());
       const matchTipo = !filtroTipo || cuenta.TipoCuenta === filtroTipo;
       return matchEtapa && matchBanco && matchTipo;
     });
   }, [cuentas, filtroEtapa, filtroBanco, filtroTipo]);
 
-  // Obtener nombre de etapa
-  const getEtapaNombre = (EtapaID) => {
-    const etapa = etapas.find(e => e.EtapaID === EtapaID);
-    return etapa ? etapa.Etapa : `Etapa ${EtapaID}`;
+  // Obtener nombre de etapa desde los datos de cuenta
+  const getEtapaNombre = (EtapaID, EtapaNombre) => {
+    if (EtapaNombre) return EtapaNombre;
+    const etapa = etapas.find(e => String(e.Etapa) === String(EtapaID));
+    return etapa ? etapa.EtapaNombre : `Etapa ${EtapaID}`;
   };
 
-  console.log(etapas)
-  // Tipos de cuenta disponibles
-  const tiposCuenta = [
+  const tiposCuenta = useMemo(() => [
     { value: "", label: "Todos los tipos" },
-    { value: "Corriente", label: "Corriente" },
-    { value: "Ahorro", label: "Ahorro" },
-    { value: "Plazo Fijo", label: "Plazo Fijo" },
-  ];
-
-  console.log("Cuentas cargadas:", cuentas); // DEBUG: Ver cuentas cargadas
+    ...Array.from(new Set(cuentas.map(c => c.TipoCuenta))).sort().map((tipo) => ({ value: tipo, label: tipo })),
+  ], [cuentas]);
   const cols = [
     { key: "CuentaID", label: "ID", width: 80 },
+    { key: "Proyecto", label: "Proyecto" },
     {
-      key: "EtapaID",
+      key: "EtapaNombre",
       label: "Etapa",
-      render: (v) => getEtapaNombre(v)
+      render: (v, row) => getEtapaNombre(row.Etapa, row.EtapaNombre)
     },
     { key: "Banco", label: "Banco" },
     { key: "NumeroCuenta", label: "Número de Cuenta" },
@@ -146,8 +144,8 @@ export function CuentasList() {
                 >
                   <option value="">Todas las etapas</option>
                   {etapas.map(etapa => (
-                    <option key={etapa.EtapaID} value={etapa.EtapaID}>
-                      {etapa.Etapa}
+                    <option key={etapa.Etapa} value={etapa.Etapa}>
+                      {etapa.EtapaNombre || `Etapa ${etapa.Etapa}`}
                     </option>
                   ))}
                 </Select>
