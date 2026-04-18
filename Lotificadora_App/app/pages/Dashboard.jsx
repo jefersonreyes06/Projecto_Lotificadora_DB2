@@ -6,6 +6,8 @@ import { StatCard, Card, Badge, PageHeader, PageContent } from "../components/in
 const quickLinks = [
   { to: "/disponibles", label: "Ver lotes disponibles", icon: "◉", desc: "Consulta en tiempo real" },
   { to: "/pagos/nuevo", label: "Registrar pago", icon: "◎", desc: "Efectivo o depósito" },
+  { to: "/clientes", label: "Ver clientes", icon: "□", desc: "Gestionar compradores" },
+  { to: "/ventas", label: "Ver ventas", icon: "■", desc: "Historial de ventas" },
 ];
 
 export default function Dashboard() {
