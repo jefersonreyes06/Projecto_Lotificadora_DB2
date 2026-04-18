@@ -4,7 +4,7 @@ import { dashboardApi } from "../services/api.js";
 import { StatCard, Card, Badge, PageHeader, PageContent } from "../components/index";
 
 const quickLinks = [
-  { to: "/lotes/disponibles", label: "Ver lotes disponibles", icon: "◉", desc: "Consulta en tiempo real" },
+  { to: "/lotes-disponibles", label: "Ver lotes disponibles", icon: "◉", desc: "Consulta en tiempo real" },
   { to: "/ventas/nueva", label: "Nueva venta", icon: "◆", desc: "Venta contado o crédito" },
   { to: "/pagos/nuevo", label: "Registrar pago", icon: "◎", desc: "Efectivo o depósito" },
   { to: "/reportes/vistas", label: "Reportes de vistas", icon: "◐", desc: "Ocupación y resumen" },

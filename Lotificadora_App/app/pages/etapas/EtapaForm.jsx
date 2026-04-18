@@ -54,6 +54,10 @@ export default function EtapaForm() {
     try {
       isEdit ? await etapasApi.update(id, form) : await etapasApi.create(form);
       navigate("/etapas");
+    }catch (err) {
+      const message = err.message || "Error al crear etapa";
+      setError(message);
+      notify.error(message);
     } finally { setSaving(false); }
   };
 
