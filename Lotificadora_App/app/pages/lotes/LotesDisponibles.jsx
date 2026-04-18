@@ -285,6 +285,7 @@ export default function LotesDisponibles() {
 
   // ── Modal helpers ──────────────────────────────────────────────────────────
   const abrirModal = (lote) => {
+    console.log(lote)
     setVentaModal({ open: true, lote });
     setModalStep(1);
     setCompradorDni(""); setCompradorData(null);
@@ -356,7 +357,7 @@ export default function LotesDisponibles() {
         Prima:                prima,
         MontoFinanciado:      financiado,
         AniosPlazo:           ventaForm.tipoVenta === "Credito" ? Number(ventaForm.aniosPlazo) : 0,
-        TasaInteresAplicada:  ventaForm.tasaInteres,
+        TasaInteresAplicada:  lote.tasa_interes,
         Estado:               ventaForm.tipoVenta === "Contado" ? "Finalizada" : "En Proceso",
       });
 
@@ -376,8 +377,8 @@ export default function LotesDisponibles() {
   const prima       = ventaForm.tipoVenta === "Credito" ? (parseFloat(ventaForm.prima) || 0) : 0;
   const financiado  = ventaForm.tipoVenta === "Credito" ? montoTotal - prima : 0;
   const cuotaEst    = ventaForm.tipoVenta === "Credito" && ventaForm.aniosPlazo > 0
-    ? (financiado * (ventaForm.tasaInteres / 100 / 12)) /
-      (1 - Math.pow(1 + ventaForm.tasaInteres / 100 / 12, -(ventaForm.aniosPlazo * 12)))
+    ? (financiado * (lote.tasa_interes / 100 / 12)) /
+      (1 - Math.pow(1 + lote.tasa_interes / 100 / 12, -(ventaForm.aniosPlazo * 12)))
     : 0;
 
   // ── Columnas tabla ─────────────────────────────────────────────────────────
@@ -395,8 +396,7 @@ export default function LotesDisponibles() {
         <Button size="sm" onClick={() => abrirModal(row)}>Vender</Button>
       ) },
   ];
-
-  console.log(ventaForm)
+  console.log(lotes)
 
   // ════════════════════════════════════════════════════════════════════════
   return (
@@ -567,8 +567,8 @@ export default function LotesDisponibles() {
                       <FormField label="Tasa anual (%)">
                         <Input
                           type="number"
-                          value={ventaForm.tasaInteres}
-                          onChange={(e) => setVentaForm((f) => ({ ...f, tasaInteres: parseFloat(e.target.value)|| 0 }))}
+                          value={lote.tasa_interes}
+                          disabled
                           min={0} step="0.1"
                         />
                       </FormField>
