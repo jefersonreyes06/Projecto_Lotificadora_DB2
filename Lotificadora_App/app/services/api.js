@@ -105,6 +105,7 @@ const normalizeLoteDisponible = (data) => ({
   etapaId: data.etapaId ?? data.EtapaID ?? "",
   bloqueId: data.bloqueId ?? data.BloqueID ?? "",
   valor_total: data.valor_total ?? data.PrecioFinal ?? data.ValorTotal ?? "",
+  tasa_interes: data.TasaInteresAplicada ?? data.TasaInteres ?? data.TasaInteresAplicada ?? 0,
 });
 
 export const lotesApi = {
