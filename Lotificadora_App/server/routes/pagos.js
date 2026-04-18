@@ -191,23 +191,35 @@ router.post(
  * GET /pagos/caja/resumen
  * Query params: fechaCierre, usuarioCajaId
  */
+
+router.get("/cierre", (req, res) => {
+  console.log("🔥 ENTRO AL ENDPOINT /cierre");
+  console.log("QUERY:", req.query);
+
+  res.json({ ok: true });
+});
+/*
 router.get(
   "/cierre",
   asyncHandler(async (req, res) => {
     console.log("Obteniendo resumen de caja diario con params:", req.query);
     const { fechaCierre, usuarioCajaId } = req.query;
 
-    console.log("Params:", { fechaCierre, usuarioCajaId });
+    console.log("QUERY:", req.query);
 
     const result = await executeProcedure("sp_resumen_caja_diario", {
-      FechaCierre: fechaCierre || null,
-      UsuarioCajaID: usuarioCajaId || null
+      fechaCierre: fechaCierre || null,
+      usuarioCajaId: usuarioCajaId || null
     });
 
     console.log("RESULT COMPLETO:", result);
 
     res.json(result.recordset);
   })
-);
+);*/
+router.get("/__test__", (req, res) => {
+  console.log("🔥 ROUTER INDEX FUNCIONA");
+  res.json({ ok: true });
+});
 
 export default router;

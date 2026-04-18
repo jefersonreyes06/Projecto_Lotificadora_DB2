@@ -1,0 +1,75 @@
+USE IngenierosEnProceso
+GO
+
+SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, IS_NULLABLE
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'Aval'
+ORDER BY ORDINAL_POSITION;
+
+SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, IS_NULLABLE
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'Clientes'
+ORDER BY ORDINAL_POSITION;
+
+SELECT * FROM Clientes
+SELECT * FROM Usuarios
+SELECT * FROM Proyectos
+SELECT * FROM Etapas
+SELECT * FROM Bloques
+SELECT * FROM Lotes
+SELECT * FROM Ventas
+SELECT * FROM PlanPagos
+SELECT * FROM Caracteristicas
+SELECT * FROM LoteCaracteristicas
+SELECT * FROM Auditoria
+SELECT * FROM Facturas
+SELECT * FROM Pagos
+SELECT * FROM Aval
+SELECT * FROM Beneficiarios
+SELECT * FROM CuentaBancaria
+SELECT * FROM Gastos
+SELECT * FROM CierreCaja
+
+DELETE FROM CierreCaja
+WHERE CierreID = 3
+
+INSERT INTO LoteCaracteristicas (LoteID, CaracteristicaID) VALUES(7, 2);
+
+ALTER TABLE PlanPagos 
+ADD TipoPago VARCHAR(20) NULL
+
+ALTER TABLE Ventas
+ADD CONSTRAINT uq_Lote UNIQUE (LoteID);
+
+ALTER TABLE Clientes
+ADD CONSTRAINT uq_Email UNIQUE (Email);
+
+ALTER TABLE Aval
+ADD 
+    Estado VARCHAR(20);
+
+ALTER TABLE Aval
+ADD 
+    FechaRegistro DATE CONSTRAINT DF_Aval_FechaRegistro DEFAULT GETDATE();
+
+ALTER TABLE Pagos
+ADD VentaID INT
+
+ALTER TABLE Clientes
+DROP CONSTRAINT UQ__Clientes__C035B8DD8FECF375;
+
+ALTER TABLE Clientes
+ALTER COLUMN DNI VARCHAR(13);
+
+
+ALTER TABLE Pagos
+ADD CONSTRAINT FK_Pagos_Ventas
+FOREIGN KEY (VentaID) REFERENCES Ventas(VentaID);
+
+ALTER TABLE Ventas
+ADD CONSTRAINT CHK_Reglas_Financieras
+CHECK (
+    (TipoVenta = 'Contado' AND Prima = 0 AND AniosPlazo = 0 AND TasaInteresAplicada = 0 AND MontoFinanciado = 0)
+    OR 
+    (TipoVenta = 'Credito' AND Prima >= 0 AND AniosPlazo > 0 AND TasaInteresAplicada > 0 AND MontoFinanciado > 0)
+);
