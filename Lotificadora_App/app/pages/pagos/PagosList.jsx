@@ -26,27 +26,53 @@ export default function PagosList() {
 
   const load = () => {
     setLoading(true);
-    pagosApi.list(ventaIdParam || undefined)
-      .then((d) => { setData(d); setFiltered(d); })
+    pagosApi.cierreDiario(cierreFecha)
+      .then((d) => {
+        // d es un array de cierres
+        setData(d);
+        setFiltered(d);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   };
 
+
   useEffect(load, [ventaIdParam]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     let d = data;
-    if (search)     d = d.filter((r) => `${r.cliente} ${r.id} ${r.factura_id}`.toLowerCase().includes(search.toLowerCase()));
-    if (tipoFiltro) d = d.filter((r) => r.tipo_pago === tipoFiltro);
+    //if (search)     d = d.filter((r) => `${r.cliente} ${r.id} ${r.factura_id}`.toLowerCase().includes(search.toLowerCase()));
+    //if (tipoFiltro) d = d.filter((r) => r.tipo_pago === tipoFiltro);
     setFiltered(d);
   }, [search, tipoFiltro, data]);
+*/
+  const handleVerResumenDiario = async () => {
+    if (!cierreFecha) {
+      notify.error("Por favor, seleccione una fecha para el resumen diario.");
+      return;
+    }
+    setCierreLoading(true);
+    try {
+      console.log("Obteniendo resumen diario para fecha:", cierreFecha);
+      const res = await pagosApi.cierreDiario(cierreFecha);
+      // Aquí podrías mostrar el resumen en un modal o una nueva página
+      console.log("Resumen diario:", res);
+      notify.success("Resumen diario obtenido. Revisa la consola para más detalles.");
+    } catch (e) {
+      const message = e.message || "Error al obtener el resumen diario.";
+      notify.error(message);
+    } finally {
+      setCierreLoading(false);
+    }
+  };
+
 
   const handleCierreDiario = async () => {
     setCierreLoading(true);
     setCierreMsg(null);
     try {
-      const res = await pagosApi.cierreDiario(cierreFecha);
-      const message = `Cierre realizado: ${res.total_depositos} depósito(s) por ${fmtLps(res.monto_total)}`;
+      const res = await pagosApi.crearCierreDiario(cierreFecha);
+      const message = 'Cierre realizado:'; // ${res.total_depositos} depósito(s) por ${fmtLps(res.monto_total)}`;
       setCierreMsg({ type: "success", text: message });
       notify.success(message);
       load();
@@ -69,8 +95,8 @@ export default function PagosList() {
     navigate("/pagos/cuentas-activas");//, { state: { cuentas: res } });
   }
 
-  const totalEfectivo = data.filter((p) => p.tipo_pago === "Efectivo").reduce((s, p) => s + Number(p.monto_pagado ?? 0), 0);
-  const totalBanco    = data.filter((p) => p.tipo_pago !== "Efectivo").reduce((s, p) => s + Number(p.monto_pagado ?? 0), 0);
+  const totalEfectivo = (data ?? []).filter((p) => p?.TipoPago === "Efectivo").reduce((s, p) => s + Number(p.MontoCuota ?? 0), 0);
+  const totalBanco = (data ?? []).filter((p) => p?.TipoPago !== "Efectivo").reduce((s, p) => s + Number(p.MontoCuota ?? 0), 0);
 
   const columns = [
     { key: "id",           label: "#", width: 60, render: (v) => <span className="text-stone-500 font-mono text-xs">{v}</span> },
@@ -150,7 +176,7 @@ export default function PagosList() {
           <StatCard label="Total recaudado"  value={fmtLps(totalEfectivo + totalBanco)} accent />
           <StatCard label="En caja (efectivo)" value={fmtLps(totalEfectivo)} sub="Por depositar al banco" />
           <StatCard label="Bancarios"        value={fmtLps(totalBanco)} sub="Depósitos y transferencias" />
-          <StatCard label="Registros"        value={data.length} />
+          <StatCard label="Registros"        value={data?.length} />
         </div>
 
         {/* Cierre de caja diario */}
@@ -190,11 +216,20 @@ export default function PagosList() {
             onChange={(e) => setSearch(e.target.value)}
             className="max-w-xs"
           />
+          <input
+                type="date"
+                value={cierreFecha}
+                onChange={(e) => setCierre(e.target.value)}
+                className="bg-stone-800 border border-stone-700 rounded-md px-3 py-2 text-sm text-stone-100 focus:outline-none focus:border-amber-400/60 transition-all"
+          />
+              
+          <Button onClick={handleVerResumenDiario} disabled={cierreLoading}>
+            {cierreLoading ? "Procesando..." : "Ver resumen diario"}
+          </Button>
           <Select value={tipoFiltro} onChange={(e) => setTipo(e.target.value)} className="w-44">
             <option value="">Todos los tipos</option>
             <option value="Efectivo">Efectivo</option>
             <option value="Deposito">Depósito</option>
-            <option value="Transferencia">Transferencia</option>
           </Select>
           {(search || tipoFiltro) && (
             <Button variant="ghost" onClick={() => { setSearch(""); setTipo(""); }}>Limpiar</Button>
@@ -209,7 +244,7 @@ export default function PagosList() {
             columns={columns}
             data={filtered}
             loading={loading}
-            onRowClick={(row) => navigate(`/pagos/${row.id}/factura`)}
+            //onRowClick={(row) => navigate(`/pagos/${row.id}/factura`)}
           />
         </Card>
       </PageContent>

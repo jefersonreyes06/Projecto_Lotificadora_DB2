@@ -175,12 +175,12 @@ router.get(
 router.post(
   "/cierre-diario",
   asyncHandler(async (req, res) => {
-    const { usuarioCajaId, fechaCierre, turno } = req.body;
+    const { usuarioCajaId, fechaCierre } = req.body;
+    console.log("Ejecutando cierre diario para fecha:", fechaCierre, "UsuarioCajaID:", usuarioCajaId);
     
     const result = await executeProcedure("sp_cierre_caja_diario", { 
-      UsuarioCajaID: usuarioCajaId || null,
-      FechaCierre: fechaCierre || null,
-      Turno: turno || null
+      UsuarioCajaID: usuarioCajaId || 1,
+      FechaCierre: fechaCierre || null
     });
     res.json(result.recordset[0]);
   })
@@ -192,17 +192,22 @@ router.post(
  * Query params: fechaCierre, usuarioCajaId
  */
 router.get(
-  "/caja/resumen",
+  "/cierre",
   asyncHandler(async (req, res) => {
+    console.log("Obteniendo resumen de caja diario con params:", req.query);
     const { fechaCierre, usuarioCajaId } = req.query;
-    
+
+    console.log("Params:", { fechaCierre, usuarioCajaId });
+
     const result = await executeProcedure("sp_resumen_caja_diario", {
       FechaCierre: fechaCierre || null,
       UsuarioCajaID: usuarioCajaId || null
     });
+
+    console.log("RESULT COMPLETO:", result);
+
     res.json(result.recordset);
   })
 );
-
 
 export default router;

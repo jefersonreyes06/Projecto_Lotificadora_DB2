@@ -148,7 +148,15 @@ export const pagosApi = {
   update: (id, data) => request(`/pagos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   remove: (id) => request(`/pagos/${id}`, { method: "DELETE" }),
   // sp_cierre_caja_diario — cursor
-  cierreDiario: (fecha) => request(`/pagos/cierre?fecha=${fecha}`),
+  cierreDiario: (fecha) =>
+  request(`/pagos/cierre?fechaCierre=${fecha}&usuarioCajaId=1`),
+  crearCierreDiario: (fecha, usuarioCajaId) => 
+  request('/pagos/cierre-diario', {
+    method: 'POST',
+    body: JSON.stringify({ fechaCierre: fecha, usuarioCajaId }),
+    headers: { 'Content-Type': 'application/json' }
+  }),
+
   // Factura de pago
   factura: (id) => request(`/pagos/${id}/factura`),
   cuentasPendientes: () => request("/pagos/prestamos-activos"),
