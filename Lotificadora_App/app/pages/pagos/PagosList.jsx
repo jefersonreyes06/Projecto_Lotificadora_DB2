@@ -109,7 +109,7 @@ export default function PagosList() {
         {/* Búsqueda rápida de lote */}
         <Card className="p-5 mb-6 border-blue-400/20 bg-blue-400/5">
           <p className="text-xs font-semibold uppercase tracking-widest text-blue-400/70 mb-3">
-            🔍 Buscar lote para pagar
+            Buscar lote para pagar
           </p>
           <div className="flex gap-3 items-end flex-wrap">
             <div className="flex-1 min-w-xs">

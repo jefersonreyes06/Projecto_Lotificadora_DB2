@@ -43,7 +43,7 @@ export default function VentasList() {
     if (search) d = d.filter((r) =>
       `${r.ClienteNombre} ${r.lote} ${r.VentaId}`.toLowerCase().includes(search.toLowerCase())
     );
-    if (tipoFiltro) d = d.filter((r) => r.tipo_venta === tipoFiltro);
+    if (tipoFiltro) d = d.filter((r) => r.TipoVenta === tipoFiltro);
     setFiltered(d);
   }, [search, tipoFiltro, data]);
 
@@ -109,7 +109,7 @@ export default function VentasList() {
           <Select value={tipoFiltro} onChange={(e) => setTipo(e.target.value)} className="w-44">
             <option value="">Todos los tipos</option>
             <option value="Contado">Contado</option>
-            <option value="Crédito">Crédito</option>
+            <option value="Credito">Crédito</option>
           </Select>
           {(search || tipoFiltro) && (
             <Button variant="ghost" onClick={() => { setSearch(""); setTipo(""); }}>
