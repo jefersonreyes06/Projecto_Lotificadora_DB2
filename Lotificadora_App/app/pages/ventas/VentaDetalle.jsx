@@ -128,8 +128,8 @@ export default function VentaDetalle() {
 
   // ── Cálculos derivados ───────────────────────────────────────────────────
   const montoTotal    = Number(venta.MontoTotal    ?? venta.monto_total    ?? 0);
-  const montoPagado   = venta.TipoVenta == "Contado" ? montoTotal : Number(venta.MontoPagado   ?? venta.monto_pagado   ?? 0);
-  const saldoPendiente = montoTotal - montoPagado;
+  const montoPagado   = venta.TipoVenta == "Contado" ? montoTotal : Number(venta.SaldoPagado   ?? venta.monto_pagado   ?? 0);
+  const saldoPendiente = venta.SaldoPendiente;
   const pctPagado     = montoTotal > 0 ? (montoPagado / montoTotal) * 100 : 0;
 
   const esCredito     = (venta.TipoVenta ?? venta.tipo_venta) === "Credito";
