@@ -132,7 +132,7 @@ export default function VentaDetalle() {
   const montoTotal    = Number(venta.MontoTotal    ?? venta.monto_total    ?? 0);
   const montoPagado   = venta.TipoVenta == "Contado" ? montoTotal : Number(venta.SaldoPagado   ?? venta.monto_pagado   ?? 0);
   const saldoPendiente = venta.SaldoPendiente;
-  const pctPagado     = venta.MontoFinanciado > 0 ? (montoPagado / venta.MontoFinanciado) * 100 : 0;
+  const pctPagado     =  venta.TipoVenta == "Contado" ? 100 : venta.MontoFinanciado > 0 ? (montoPagado / venta.MontoFinanciado) * 100 : 0;
 
   const esCredito     = (venta.TipoVenta ?? venta.tipo_venta) === "Credito";
   const estado        = venta.Estado       ?? venta.estado        ?? "—";
@@ -400,19 +400,6 @@ export default function VentaDetalle() {
                   value={`${cliente.municipio ?? ""}, ${cliente.departamento}`}
                 />
               )}
-
-              <div className="mt-3 pt-3 border-t border-stone-800 flex gap-2">
-                <Link to={`/clientes/${cliente.id}`} className="flex-1">
-                  <Button size="sm" variant="secondary" className="w-full justify-center">
-                    Ver perfil
-                  </Button>
-                </Link>
-                <Link to={`/clientes/${cliente.id}/editar`} className="flex-1">
-                  <Button size="sm" variant="ghost" className="w-full justify-center">
-                    Editar
-                  </Button>
-                </Link>
-              </div>
             </Card>
 
             {/* Financiamiento — solo crédito */}
@@ -532,7 +519,7 @@ export default function VentaDetalle() {
             )}
 
             {/* Acciones */}
-            <Card className="p-5">
+            {/* <Card className="p-5">
               <SectionTitle>Acciones</SectionTitle>
               <div className="space-y-2">
                 <Link to={`/pagos/nuevo?ventaId=${id}`} className="block">
@@ -556,7 +543,7 @@ export default function VentaDetalle() {
                   </Button>
                 </Link>
               </div>
-            </Card>
+            </Card> */}
           </div>
         </div>
 
