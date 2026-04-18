@@ -200,17 +200,6 @@ export default function PagoForm() {
           MontoRecibido: form.montoRecibido
         }
       );
-      /*const res = await pagosApi.update({
-        //cuotaId: Number(form.cuotaId),
-        VentaID: venta.VentaID,
-        TipoPago: form.metodoPago,
-        MontoRecibido: form.montoRecibido
-        //numeroDeposito: form.numeroDeposito || null,
-        //cuentaBancariaId: form.cuentaBancariaId ? Number(form.cuentaBancariaId) : null,
-        //usuarioCajaId: 1,
-        //observaciones: form.observaciones || null,
-        //fechaPago: form.fechaPago,
-      });*/
 
       setFacturaId(res.FacturaID ?? res.facturaId ?? res.factura_id ?? null);
       notify.success("Pago registrado correctamente");
