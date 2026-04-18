@@ -275,7 +275,7 @@ export default function VentaDetalle() {
           />
           <StatCard
             label={cuotasVencidas > 0 ? "Cuotas en mora" : "Estado de cuenta"}
-            value={cuotasVencidas > 0 ? cuotasVencidas : estadoCuenta}
+            value={estado}
             sub={cuotasVencidas > 0 ? "Requiere atención" : ""}
           />
         </div>
