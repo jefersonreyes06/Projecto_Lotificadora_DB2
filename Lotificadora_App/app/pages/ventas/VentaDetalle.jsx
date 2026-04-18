@@ -132,7 +132,7 @@ export default function VentaDetalle() {
   const montoTotal    = Number(venta.MontoTotal    ?? venta.monto_total    ?? 0);
   const montoPagado   = venta.TipoVenta == "Contado" ? montoTotal : Number(venta.SaldoPagado   ?? venta.monto_pagado   ?? 0);
   const saldoPendiente = venta.SaldoPendiente;
-  const pctPagado     = venta.MontoFinanciado > 0 ? (montoPagado / venta.MontoFinanciado) * 100 : 0;
+  const pctPagado     =  venta.TipoVenta == "Contado" ? 100 : venta.MontoFinanciado > 0 ? (montoPagado / venta.MontoFinanciado) * 100 : 0;
 
   const esCredito     = (venta.TipoVenta ?? venta.tipo_venta) === "Credito";
   const estado        = venta.Estado       ?? venta.estado        ?? "—";
