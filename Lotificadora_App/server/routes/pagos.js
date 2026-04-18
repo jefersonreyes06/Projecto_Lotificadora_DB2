@@ -81,6 +81,23 @@ router.get(
   })
 );
 
+// ACTUALIZAR UN PAGO EXISTENTE (POR EJEMPLO, PARA REGISTRAR UN PAGO DE CUOTA)
+router.put(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    console.log("Actualizar pago:", req.body);
+
+    const params = {
+      VentaID: req.body.VentaID || null,
+      TipoPago: req.body.TipoPago || null,
+      MontoRecibido: req.body.MontoRecibido || 0
+    };
+
+    const result = await executeProcedure("sp_generar_pago_cuota", params);
+    res.json(result.recordset ?? result.returnValue);
+  })
+);
+
 /**
  * REGISTRAR UN NUEVO PAGO (TRANSACCIONAL)
  * POST /pagos
@@ -186,5 +203,6 @@ router.get(
     res.json(result.recordset);
   })
 );
+
 
 export default router;

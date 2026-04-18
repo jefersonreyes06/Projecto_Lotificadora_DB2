@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router";
-import { pagosApi, ventasApi } from "../../services/api.js";
+import { pagosApi, ventasApi, lotesApi } from "../../services/api.js";
 import { notify, useNotifyError } from "../../utils/notify";
 import {
   PageHeader, PageContent, Button, FormField, Input, Select, Card, Alert,
@@ -56,15 +56,15 @@ export default function PagoForm() {
     setCuotasPendientes([]);
     
     try {
-      const lotes = await pagosApi.lotePorNumero(numeroLote);
-      
+      const lotes = await lotesApi.getByNumero(numeroLote);
+
       if (!lotes || lotes.length === 0) {
         setError("Lote no encontrado. Asegúrese que esté al crédito y en estado Proceso.");
         return;
       }
-
       const loteData = lotes[0];
       setLote(loteData);
+
 
       // Si el lote tiene venta activa, cargar datos de la venta y cuotas
       if (loteData.VentaID) {
@@ -72,16 +72,18 @@ export default function PagoForm() {
         const ventaData = {
           VentaID: loteData.VentaID,
           ClienteID: loteData.ClienteID,
-          ClienteNombre: loteData.ClienteNombre,
+          ClienteNombre: loteData.NombreCompleto,
           DNI: loteData.DNI,
           NumeroLote: loteData.NumeroLote,
           LoteID: loteData.LoteID,
           TipoVenta: loteData.TipoVenta ?? 'Credito',
           Estado: loteData.EstadoVenta ?? 'Activa',
           LoteEstado: loteData.EstadoLote ?? 'Proceso',
+          MontoCuota: loteData.MontoCuota,
           MontoTotal: loteData.MontoTotal,
-          CuotasPendientes: loteData.CuotasPendientes,
+          cuotasPendientes: loteData.CuotasPendientes,
           SaldoPendiente: loteData.SaldoPendiente,
+          CuotasRestantes: loteData.CuotasRestantes,
         };
         setVenta(ventaData);
 
@@ -116,14 +118,14 @@ export default function PagoForm() {
 
   const selectedCuota = cuotasPendientes.find((c) => c.CuotaID === Number(form.cuotaId));
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (selectedCuota && !form.montoRecibido) {
       setForm((prev) => ({ ...prev, montoRecibido: String(selectedCuota.SaldoPendiente) }));
     }
-  }, [selectedCuota]);
+  }, [selectedCuota]);*/
 
   const isVentaCredito = venta?.TipoVenta === "Credito";
-  const isLoteProceso = venta?.LoteEstado === "Proceso";
+  const isLoteProceso = venta?.LoteEstado === "Reservado";
 
   const handleBuscar = () => {
     if (!form.numeroLote) {
@@ -145,60 +147,61 @@ export default function PagoForm() {
       notify.error(message);
       return;
     }
-    if (!form.cuotaId) {
+    /*if (!form.cuotaId) {
       const message = "Seleccione la cuota a pagar.";
       setError(message);
       notify.error(message);
       return;
-    }
+    }*/
     if (!form.montoRecibido || Number(form.montoRecibido) <= 0) {
       const message = "Ingrese un monto recibido válido.";
       setError(message);
       notify.error(message);
       return;
     }
-    if (!form.usuarioCajaId) {
+    /*if (!form.usuarioCajaId) {
       const message = "Ingrese el usuario de caja.";
       setError(message);
       notify.error(message);
       return;
-    }
-    if (!isVentaCredito) {
+    }*/
+    /*if (!isVentaCredito) {
       const message = "Solo se permiten pagos para ventas al crédito.";
       setError(message);
       notify.error(message);
       return;
     }
-    if (!isLoteProceso) {
+    /*if (!isLoteProceso) {
       const message = "El lote debe estar en estado 'Proceso' para registrar el pago.";
       setError(message);
       notify.error(message);
       return;
     }
-    if (!selectedCuota) {
+    /*if (!selectedCuota) {
       const message = "La cuota seleccionada no existe o no está pendiente.";
       setError(message);
       notify.error(message);
       return;
-    }
+    }*/
 
     const montoNumero = Number(form.montoRecibido);
-    if (montoNumero > Number(selectedCuota.SaldoPendiente)) {
+    /*if (montoNumero > Number(selectedCuota.SaldoPendiente)) {
       setError("El monto recibido no puede exceder el saldo pendiente de la cuota.");
       return;
-    }
+    } */
 
     setSaving(true);
     try {
-      const res = await pagosApi.registrar({
-        cuotaId: Number(form.cuotaId),
-        montoRecibido: montoNumero,
-        metodoPago: form.metodoPago,
-        numeroDeposito: form.numeroDeposito || null,
-        cuentaBancariaId: form.cuentaBancariaId ? Number(form.cuentaBancariaId) : null,
-        usuarioCajaId: Number(form.usuarioCajaId),
-        observaciones: form.observaciones || null,
-        fechaPago: form.fechaPago,
+      const res = await pagosApi.update({
+        //cuotaId: Number(form.cuotaId),
+        VentaID: venta.VentaID,
+        TipoPago: form.metodoPago,
+        MontoRecibido: form.montoRecibido
+        //numeroDeposito: form.numeroDeposito || null,
+        //cuentaBancariaId: form.cuentaBancariaId ? Number(form.cuentaBancariaId) : null,
+        //usuarioCajaId: 1,
+        //observaciones: form.observaciones || null,
+        //fechaPago: form.fechaPago,
       });
 
       setFacturaId(res.FacturaID ?? res.facturaId ?? res.factura_id ?? null);
@@ -297,11 +300,19 @@ export default function PagoForm() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                     <div className="rounded-lg border border-stone-800 p-3 bg-stone-950/60">
                       <p className="text-stone-400 text-xs uppercase tracking-wide">Cuotas pendientes</p>
-                      <p className="mt-1 font-medium text-blue-400">{venta.CuotasPendientes}</p>
+                      <p className="mt-1 font-medium text-blue-400">{venta.cuotasPendientes}</p>
                     </div>
                     <div className="rounded-lg border border-stone-800 p-3 bg-stone-950/60">
                       <p className="text-stone-400 text-xs uppercase tracking-wide">Saldo pendiente</p>
                       <p className="mt-1 font-medium text-amber-400">{fmtLps(venta.SaldoPendiente)}</p>
+                    </div>
+                    <div className="rounded-lg border border-stone-800 p-3 bg-stone-950/60">
+                      <p className="text-stone-400 text-xs uppercase tracking-wide">Cuotas restantes</p>
+                      <p className="mt-1 font-medium text-blue-400">{venta.CuotasRestantes}</p>
+                    </div>
+                    <div className="rounded-lg border border-stone-800 p-3 bg-stone-950/60">
+                      <p className="text-stone-400 text-xs uppercase tracking-wide">Monto por cuota</p>
+                      <p className="mt-1 font-medium text-amber-400">{fmtLps(venta.MontoCuota)}</p>
                     </div>
                   </div>
                 )}
@@ -409,7 +420,7 @@ export default function PagoForm() {
                     </div>
                     <div className="flex justify-between">
                       <span>Cuota seleccionada</span>
-                      <span>{selectedCuota ? `#${selectedCuota.NumeroCuota}` : "—"}</span>
+                      <span>{selectedCuota ? `#${selectedCuota.NumeroCuota}` : "Ultima Cuota"}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Saldo pendiente</span>
@@ -425,14 +436,14 @@ export default function PagoForm() {
                     </div>
                   </div>
                 </div>
-                <Button type="submit" disabled={saving || !form.cuotaId || !isVentaCredito || !isLoteProceso} className="w-full justify-center">
+                <Button type="submit" disabled={saving /*|| !form.cuotaId*/ || !isVentaCredito || !isLoteProceso} className="w-full justify-center">
                   {saving ? "Procesando..." : "Registrar pago"}
                 </Button>
                 {venta && !isVentaCredito && (
                   <Alert variant="warning">Solo se permiten pagos para ventas al crédito.</Alert>
                 )}
                 {venta && !isLoteProceso && (
-                  <Alert variant="warning">El lote debe estar en estado Proceso para registrar el pago.</Alert>
+                  <Alert variant="warning">El lote debe estar en estado Reservado para registrar el pago.</Alert>
                 )}
               </Card>
             </div>

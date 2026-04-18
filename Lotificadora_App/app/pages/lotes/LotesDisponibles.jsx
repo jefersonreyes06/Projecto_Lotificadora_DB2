@@ -238,14 +238,27 @@ export default function LotesDisponibles() {
   }, []);
 
   useEffect(() => {
-    if (!draftFiltros.proyectoId) { setEtapas([]); setBloques([]); return; }
-    etapasApi.list(draftFiltros.proyectoId).then(setEtapas).catch(() => setEtapas([]));
+    if (!draftFiltros.proyectoId) { 
+      setEtapas([]); 
+      setBloques([]); 
+      return; 
+    }
+    etapasApi.list()
+      .then((etapas) => {
+        setEtapas(etapas.filter((e) => e.ProyectoID === Number(draftFiltros.proyectoId)));
+      })
+      .catch(() => setEtapas([]));
   }, [draftFiltros.proyectoId]);
 
   useEffect(() => {
-    if (!draftFiltros.etapaId) { setBloques([]); return; }
+    if (!draftFiltros.etapaId) {
+      setBloques([]); 
+      return; 
+    }
     bloquesApi.list()
-      .then((b) => setBloques(b.filter((x) => x.EtapaID === draftFiltros.etapaId)))
+      .then((bloques) => {
+        setBloques(bloques.filter((e) => e.EtapaID === Number(draftFiltros.etapaId)));
+      })
       .catch(() => setBloques([]));
   }, [draftFiltros.etapaId]);
 
@@ -261,14 +274,10 @@ export default function LotesDisponibles() {
 
   const filteredLotes = useMemo(() => lotes.filter((item) => {
     const area = parseFloat(item.area_m2 ?? 0);
-    console.log("Filtering item:", item);
-    console.log("Filtering:", filtros.proyectoId);
-
-
     return (
-      (!filtros.proyectoId || String(item.proyectoId ?? "") === filtros.proyectoId) &&
-      (!filtros.etapaId    || String(item.etapaId    ?? "") === filtros.etapaId) &&
-      (!filtros.bloqueId   || String(item.bloqueId   ?? "") === filtros.bloqueId) &&
+      (!filtros.proyectoId || item.proyectoId === Number(filtros.proyectoId)) &&
+      (!filtros.etapaId    || item.etapaId === Number(filtros.etapaId)) &&
+      (!filtros.bloqueId   || item.bloqueId === Number(filtros.bloqueId)) &&
       (!filtros.areaMin    || area >= parseFloat(filtros.areaMin)) &&
       (!filtros.areaMax    || area <= parseFloat(filtros.areaMax))
     );
@@ -399,7 +408,7 @@ export default function LotesDisponibles() {
               </Select>
             </FormField>
             <FormField label="Etapa">
-              <Select value={draftFiltros.etapaId} onChange={handleChange("etapaId")} disabled={!draftFiltros.proyectoId}>
+              <Select value={draftFiltros.etapaId} onChange={handleChange("etapaId")}> {/*disabled={!draftFiltros.proyectoId}>*/}
                 <option value="">Todas</option>
                 {etapas.map((e) => <option key={e.EtapaID} value={e.EtapaID}>{e.Etapa}</option>)}
               </Select>
@@ -407,7 +416,7 @@ export default function LotesDisponibles() {
             <FormField label="Bloque">
               <Select value={draftFiltros.bloqueId} onChange={handleChange("bloqueId")} disabled={!draftFiltros.etapaId}>
                 <option value="">Todos</option>
-                {bloques.map((b) => <option key={b.BloqueID} value={b.BloqueID}>{b.Nombre}</option>)}
+                {bloques.map((b) => <option key={b.BloqueID} value={b.BloqueID}>{b.Bloque}</option>)}
               </Select>
             </FormField>
             <FormField label="Área mín (v²)">
@@ -422,6 +431,8 @@ export default function LotesDisponibles() {
           </div>
         </Card>
 
+
+        
         {/* ── Tabla ────────────────────────────────────────────────────── */}
         <p className="text-xs text-stone-500 mb-3">
           {filteredLotes.length > 0 ? `${filteredLotes.length} lote(s) disponible(s)` : "Sin resultados"}

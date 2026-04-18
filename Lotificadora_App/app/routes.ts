@@ -64,13 +64,6 @@ export default [
       route(":id/editar", "pages/clientes/ClienteForm.jsx", { id: "cliente-editar" }),
     ]),
 
-    // Avales
-    ...prefix("aval", [
-      index("pages/aval/AvalList.jsx"),
-      route("nuevo", "pages/aval/AvalForm.jsx", { id: "aval-nuevo" }),
-      route(":id/editar", "pages/aval/AvalForm.jsx", { id: "aval-editar" }),
-    ]),
-
     // Ventas
     ...prefix("ventas", [
       index("pages/ventas/VentasList.jsx"),
@@ -82,8 +75,9 @@ export default [
     // Pagos
     ...prefix("pagos", [
       index("pages/pagos/PagosList.jsx"),
-      route("nuevo", "pages/pagos/PagoForm.jsx"),
+      //route("nuevo", "pages/pagos/PagoForm.jsx"),
       route("cuentas-activas", "pages/pagos/VentasActivaList.jsx"),
+      route(":id", "pages/pagos/PagoForm.jsx"),
     ]),
 
     // Cuentas

@@ -112,6 +112,7 @@ export const lotesApi = {
     request(`/lotes${bloqueId ? `?bloqueId=${bloqueId}` : ""}`),
   get: (id) => request(`/lotes/${id}`),
   //create: (data) => request("/lotes", { method: "POST", body: JSON.stringify(normalizeLotePayload(data)) }),
+  getByNumero: (numeroLote) => request(`/lotes/NumeroLote?NumeroLote=${encodeURIComponent(numeroLote)}`),
   create: (data) => request("/lotes", { method: "POST", body: JSON.stringify(data) }),
   //update: (id, data) => request(`/proyectos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   update: (id, data) => request(`/lotes/${id}`, { method: "PUT", body: JSON.stringify(normalizeLotePayload(data)) }),
