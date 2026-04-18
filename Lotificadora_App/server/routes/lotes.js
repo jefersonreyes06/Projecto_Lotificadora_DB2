@@ -4,14 +4,33 @@ import { asyncHandler } from "../middleware/errorHandler.js";
 
 const router = Router();
 
-router.get(
-  "/disponibles",
-  asyncHandler(async (req, res) => {
-    const { sql, params } = buildViewQuery("vw_lotes_disponibles", req.query);
-    const result = await querySql(sql, params);
-    res.json(result.recordset);
-  })
-);
+  router.get(
+    "/disponibles",
+    asyncHandler(async (req, res) => {
+      const proyectoId = req.query.proyectoId ? Number(req.query.proyectoId) : null;
+      const etapaId    = req.query.etapaId    ? Number(req.query.etapaId)    : null;
+      const bloqueId   = req.query.bloqueId   ? Number(req.query.bloqueId)   : null;
+
+      console.log('Received filters: proyectoId=' + proyectoId + ', etapaId=' + etapaId + ', bloqueId=' + bloqueId);
+      console.log('Received filters:' + proyectoId + etapaId + bloqueId );
+      const pool = await sql.connect(config);
+
+      const result = await pool.request()
+        .input('ProyectoID', sql.Int, proyectoId)
+        .input('EtapaID', sql.Int, etapaId)
+        .input('BloqueID', sql.Int, bloqueId)
+        .query(`
+          SELECT *
+          FROM vw_lotes_disponibles
+          WHERE (@ProyectoID IS NULL OR ProyectoID = @ProyectoID)
+            AND (@EtapaID IS NULL OR EtapaID = @EtapaID)
+            AND (@BloqueID IS NULL OR BloqueID = @BloqueID)
+        `);
+
+      res.json(result.recordset);
+    })
+  );
+
 
 router.get(
   "/",
@@ -24,12 +43,22 @@ router.get(
 );
 
 router.get(
+  "/NumeroLote",
+  asyncHandler(async (req, res) => {
+    const result = await executeProcedure("sp_buscar_numero_lote", { NumeroLote: req.query.NumeroLote });
+    res.json(result.recordset ?? null);
+  })
+);
+
+router.get(
   "/:id",
   asyncHandler(async (req, res) => {
     const result = await executeProcedure("sp_lotes_obtener", { id: req.params.id });
     res.json(result.recordset[0] ?? null);
   })
 );
+
+
 
 router.post(
   "/",

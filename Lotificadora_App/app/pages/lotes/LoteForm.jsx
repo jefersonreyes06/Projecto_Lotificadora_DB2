@@ -51,12 +51,9 @@ export default function LoteForm() {
     bloquesApi.list().then((bloques) => setBloques(bloques.filter((b) => b.EtapaID === etapaId))).catch(() => {});
   }, [etapaId, proyectoId]);
 
-  console.log(form)
-
   useEffect(() => {
     if (!isEdit) return;
     lotesApi.get(id).then((d) => {
-      console.log(d)
       setForm(d);
       setProyectoId(d.proyectoId ?? "");
       setEtapaId(d.etapaId ?? "");
@@ -134,7 +131,7 @@ export default function LoteForm() {
                     <Select value={etapaId} onChange={(e) => setEtapaId(parseInt(e.target.value))} disabled={!proyectoId} required>
                       {isEdit && (
                         <option value={etapaId}>
-                          {form.proyecto ?? form.Etapa ?? "Etapa actual"}
+                          {form.Etapa ?? "Etapa actual"}
                         </option>
                       )}
                       {!isEdit && <option value="">Seleccione...</option>}
@@ -172,13 +169,13 @@ export default function LoteForm() {
                   </FormField>
                 </div>
 
-                <FormField label="Estado">
+                {/*<FormField label="Estado">
                   <Select value={form.estado} onChange={set("estado")}>
                     <option value="Disponible">Disponible</option>
                     <option value="Reservado">Reservado</option>
                     <option value="Vendido">Vendido</option>
                   </Select>
-                </FormField>
+                </FormField>*/}
               </Card>
 
               {/* Características */}
