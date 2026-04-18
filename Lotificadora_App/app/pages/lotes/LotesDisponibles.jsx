@@ -221,7 +221,7 @@ export default function LotesDisponibles() {
     tipoVenta:   "Contado",
     prima:       "",
     aniosPlazo:  10,
-    tasaInteres: 12.0,
+    tasa_interes: 12.0,
   });
 
   const [creandoVenta, setCreandoVenta] = useState(false);
@@ -291,7 +291,7 @@ export default function LotesDisponibles() {
     setCompradorDni(""); setCompradorData(null);
     setAvalDni("");      setAvalData(null);
     setBeneficiarioDni("");setBeneficiarioData(null);
-    setVentaForm({ tipoVenta: "Contado", prima: "", aniosPlazo: 10, tasaInteres: 12.0 });
+    setVentaForm({ tipoVenta: "Contado", prima: "", aniosPlazo: 10, tasa_interes: 12.0 });
   };
 
   const cerrarModal = () => setVentaModal({ open: false, lote: null });
@@ -346,7 +346,7 @@ export default function LotesDisponibles() {
         Prima:                prima,
         MontoFinanciado:      financiado,
         AniosPlazo:           ventaForm.tipoVenta === "Credito" ? Number(ventaForm.aniosPlazo) : 0,
-        TasaInteresAplicada:  lote.tasa_interes,
+        TasaInteresAplicada:  ventaModal.lote.tasa_interes,
         Estado:               ventaForm.tipoVenta === "Contado" ? "Finalizada" : "En Proceso",
       });
 
@@ -365,7 +365,7 @@ export default function LotesDisponibles() {
   const montoTotal  = parseFloat(lote?.precio_final ?? lote?.valor_total ?? 0);
   const prima       = ventaForm.tipoVenta === "Credito" ? (parseFloat(ventaForm.prima) || 0) : 0;
   const financiado  = ventaForm.tipoVenta === "Credito" ? montoTotal - prima : 0;
-  const cuotaEst    = ventaForm.tipoVenta === "Credito" && ventaForm.aniosPlazo > 0
+  const cuotaEst    = ventaForm.tipoVenta === "Credito" && ventaForm.aniosPlazo > 0 && lote?.tasa_interes
     ? (financiado * (lote.tasa_interes / 100 / 12)) /
       (1 - Math.pow(1 + lote.tasa_interes / 100 / 12, -(ventaForm.aniosPlazo * 12)))
     : 0;
@@ -556,7 +556,7 @@ export default function LotesDisponibles() {
                       <FormField label="Tasa anual (%)">
                         <Input
                           type="number"
-                          value={lote.tasa_interes}
+                          value={ventaModal.lote?.tasa_interes ?? ""}
                           disabled
                           min={0} step="0.1"
                         />
@@ -658,7 +658,7 @@ export default function LotesDisponibles() {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-stone-400">Tasa anual</span>
-                          <span className="text-stone-200">{ventaForm.tasaInteres}%</span>
+                          <span className="text-stone-200">{lote?.tasa_interes ?? "—"}%</span>
                         </div>
                         <div className="h-px bg-stone-700" />
                         <div className="flex justify-between font-semibold">
