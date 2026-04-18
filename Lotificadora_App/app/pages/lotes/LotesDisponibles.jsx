@@ -341,9 +341,6 @@ export default function LotesDisponibles() {
       } else if (compradorData.id === beneficiarioData?.id) {
         notify.error("El comprador no puede ser el mismo que el beneficiario.");
         return;
-      } else if (avalData && avalData.id === beneficiarioData?.id) {
-        notify.error("El aval no puede ser el mismo que el beneficiario.");
-        return;
       }
 
       await ventasApi.create({
