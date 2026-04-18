@@ -235,6 +235,51 @@ export default function PagoForm() {
     );
   }
 
+  console.log(venta);
+  if (venta && venta.CuotasRestantes === 0) {
+    return (
+      <div>
+        <PageHeader title="Financiación Completada" />
+        <PageContent>
+          <Card className="p-8 text-center space-y-6">
+            <div className="text-6xl text-green-400">✓</div>
+            <div>
+              <p className="text-xl font-semibold text-stone-100">Financiación Completada</p>
+              <p className="text-sm text-stone-400 mt-2">
+                La financiación para el lote {venta.NumeroLote} ha sido finalizada exitosamente.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+              <div className="bg-stone-950/60 p-4 rounded-lg">
+                <p className="text-xs text-stone-500 uppercase">Cliente</p>
+                <p className="text-stone-100 font-medium">{venta.ClienteNombre}</p>
+                <p className="text-xs text-stone-400">{venta.DNI}</p>
+              </div>
+              <div className="bg-stone-950/60 p-4 rounded-lg">
+                <p className="text-xs text-stone-500 uppercase">Lote</p>
+                <p className="text-stone-100 font-medium">{venta.NumeroLote}</p>
+                <p className="text-xs text-stone-400">ID: {venta.LoteID}</p>
+              </div>
+              <div className="bg-stone-950/60 p-4 rounded-lg">
+                <p className="text-xs text-stone-500 uppercase">Monto Total Financiado</p>
+                <p className="text-stone-100 font-medium">{fmtLps(venta.MontoTotal)}</p>
+              </div>
+              <div className="bg-stone-950/60 p-4 rounded-lg">
+                <p className="text-xs text-stone-500 uppercase">Estado</p>
+                <p className="text-green-400 font-medium">Completado</p>
+              </div>
+            </div>
+            <div className="flex gap-3 justify-center">
+              <Link to="/pagos">
+                <Button variant="secondary">Ir a pagos</Button>
+              </Link>
+            </div>
+          </Card>
+        </PageContent>
+      </div>
+    );
+  }
+
   return (
     <div>
       <PageHeader
@@ -312,6 +357,7 @@ export default function PagoForm() {
                     </div>
                   </div>
                 )}
+
 {/*
                 <div className="pt-4">
                   <p className="text-xs text-stone-500 mb-2">Cuotas pendientes</p>
