@@ -148,7 +148,7 @@ export function CuentaForm() {
 
             <Card className="p-6 space-y-4">
               <FormField label="Proyecto" required isDisabled>
-                <Select value={proyectoId} onChange={(e) => setProyectoId(parseInt(e.target.value))} required disabled={isEditing}>
+                <Select value={proyectoId} onChange={(e) => setProyectoId(parseInt(e.target.value))} required>
                   {/* <option value="">Seleccione proyecto...</option>*/}
                   {isEditing ? <option value="">{formData.Proyecto || "Proyecto Actual"}</option> : <option value="">Seleccione proyecto...</option>}
                   {proyectos.map((p) => <option key={p.ProyectoID} value={p.ProyectoID}>{p.Nombre}</option>)}
@@ -158,7 +158,6 @@ export function CuentaForm() {
                 <Select
                   value={formData.EtapaID}
                   onChange={(e) => handleChange("EtapaID", e.target.value)}
-                  disabled={isEditing}
                   required
                 >
                   {isEditing ? <option value="">{formData.Etapa || "Etapa Actual"}</option> : <option value="">Seleccione etapa...</option>}
@@ -211,6 +210,7 @@ export function CuentaForm() {
                   placeholder="0.00"
                   value={formData.SaldoActual}
                   onChange={(e) => handleChange("SaldoActual", e.target.value)}
+                  disabled={!isEditing}
                 />
               </FormField>
 
