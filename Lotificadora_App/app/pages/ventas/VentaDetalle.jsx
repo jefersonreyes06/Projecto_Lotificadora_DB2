@@ -400,19 +400,6 @@ export default function VentaDetalle() {
                   value={`${cliente.municipio ?? ""}, ${cliente.departamento}`}
                 />
               )}
-
-              <div className="mt-3 pt-3 border-t border-stone-800 flex gap-2">
-                <Link to={`/clientes/${cliente.id}`} className="flex-1">
-                  <Button size="sm" variant="secondary" className="w-full justify-center">
-                    Ver perfil
-                  </Button>
-                </Link>
-                <Link to={`/clientes/${cliente.id}/editar`} className="flex-1">
-                  <Button size="sm" variant="ghost" className="w-full justify-center">
-                    Editar
-                  </Button>
-                </Link>
-              </div>
             </Card>
 
             {/* Financiamiento — solo crédito */}
@@ -532,7 +519,7 @@ export default function VentaDetalle() {
             )}
 
             {/* Acciones */}
-            <Card className="p-5">
+            {/* <Card className="p-5">
               <SectionTitle>Acciones</SectionTitle>
               <div className="space-y-2">
                 <Link to={`/pagos/nuevo?ventaId=${id}`} className="block">
@@ -556,7 +543,7 @@ export default function VentaDetalle() {
                   </Button>
                 </Link>
               </div>
-            </Card>
+            </Card> */}
           </div>
         </div>
 
