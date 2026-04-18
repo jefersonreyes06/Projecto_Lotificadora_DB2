@@ -312,14 +312,14 @@ export default function PagoForm() {
                     </div>
                   </div>
                 )}
-
+{/*
                 <div className="pt-4">
                   <p className="text-xs text-stone-500 mb-2">Cuotas pendientes</p>
                   {loadingCuotas && <p className="text-sm text-stone-500 animate-pulse">Cargando cuotas...</p>}
                   {!loadingCuotas && cuotasPendientes.length === 0 && (
                     <p className="text-sm text-stone-500">No hay cuotas pendientes para este lote.</p>
                   )}
-                  {cuotasPendientes.length > 0 && (
+                  {/*cuotasPendientes.length > 0 && (
                     <FormField label="Seleccionar cuota" required>
                       <Select value={form.cuotaId} onChange={setField("cuotaId")}>
                         <option value="">Seleccione una cuota</option>
@@ -330,8 +330,8 @@ export default function PagoForm() {
                         ))}
                       </Select>
                     </FormField>
-                  )}
-                </div>
+                  )
+                </div>*/}
               </Card>
 
               <Card className="p-6 space-y-4">
@@ -361,7 +361,7 @@ export default function PagoForm() {
                       placeholder="Monto pagado"
                     />
                   </FormField>
-                  <FormField label="Usuario caja" required>
+                  <FormField label="Usuario Caja ID" required>
                     <Input
                       type="number"
                       value={form.usuarioCajaId}
@@ -389,13 +389,13 @@ export default function PagoForm() {
                     </FormField>
                   </>
                 )}
-                <FormField label="Observaciones" optional>
+                {/*<FormField label="Observaciones" optional>
                   <Input
                     value={form.observaciones}
                     onChange={setField("observaciones")}
                     placeholder="Notas del pago"
                   />
-                </FormField>
+                </FormField>*/}
               </Card>
             </div>
 
