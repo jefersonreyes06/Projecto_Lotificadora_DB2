@@ -192,7 +192,15 @@ export default function PagoForm() {
 
     setSaving(true);
     try {
-      const res = await pagosApi.update({
+      const res = await pagosApi.update(
+        venta.VentaID, // este es el id que va en la URL
+        {
+          VentaID: venta.VentaID,
+          TipoPago: form.metodoPago,
+          MontoRecibido: form.montoRecibido
+        }
+      );
+      /*const res = await pagosApi.update({
         //cuotaId: Number(form.cuotaId),
         VentaID: venta.VentaID,
         TipoPago: form.metodoPago,
@@ -202,10 +210,9 @@ export default function PagoForm() {
         //usuarioCajaId: 1,
         //observaciones: form.observaciones || null,
         //fechaPago: form.fechaPago,
-      });
+      });*/
 
       setFacturaId(res.FacturaID ?? res.facturaId ?? res.factura_id ?? null);
-      notify.success("Pago registrado correctamente");
       notify.success("Pago registrado correctamente");
     } catch (err) {
       setError(err.message || "Error al registrar el pago.");

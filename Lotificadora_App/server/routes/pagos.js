@@ -88,7 +88,7 @@ router.put(
     console.log("Actualizar pago:", req.body);
 
     const params = {
-      VentaID: req.body.VentaID || null,
+      VentaID: req.params.id, // el id viene de la URL
       TipoPago: req.body.TipoPago || null,
       MontoRecibido: req.body.MontoRecibido || 0
     };
