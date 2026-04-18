@@ -343,7 +343,6 @@ export default function PagoForm() {
                     <Select value={form.metodoPago} onChange={setField("metodoPago")}>
                       <option value="Efectivo">Efectivo</option>
                       <option value="Deposito">Depósito</option>
-                      <option value="Transferencia">Transferencia</option>
                     </Select>
                   </FormField>
                   <FormField label="Fecha de pago" required>

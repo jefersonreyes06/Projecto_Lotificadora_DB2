@@ -12,13 +12,9 @@ export default function PlanPagos() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([
-      ventasApi.planPagos(id),
-      ventasApi.amortizacion(id), // fn_tabla_amortizacion — función tipo tabla
-    ])
-      .then(([planData, amortData]) => {
-        setPlan(planData);
-        setCuotas(amortData);
+    ventasApi.planPagos(id)
+      .then((data) => {
+        setCuotas(data); // data es el array de cuotas
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -26,54 +22,26 @@ export default function PlanPagos() {
 
   const columns = [
     {
-      key: "numero_cuota",
-      label: "#",
-      width: 60,
+      key: "NumeroCuota",
+      label: "# Cuota",
+      width: 100,
       render: (v) => <span className="text-stone-500">{v}</span>,
     },
     {
-      key: "fecha_vencimiento",
+      key: "FechaVencimiento",
       label: "Vencimiento",
       render: (v) => new Date(v).toLocaleDateString("es-HN"),
     },
     {
-      key: "cuota_total",
-      label: "Cuota",
-      render: (v) => (
-        <span className="font-medium text-stone-200">
-          L {Number(v).toLocaleString("es-HN", { minimumFractionDigits: 2 })}
-        </span>
-      ),
+      key: "EstadoCuota",
+      label: "Estado cuota",
     },
     {
-      key: "capital",
-      label: "Capital",
-      render: (v) => (
-        <span className="text-blue-400">
-          L {Number(v).toLocaleString("es-HN", { minimumFractionDigits: 2 })}
-        </span>
-      ),
+      key: "EstadoVenta",
+      label: "Estado venta",
     },
     {
-      key: "interes",
-      label: "Interés",
-      render: (v) => (
-        <span className="text-amber-400">
-          L {Number(v).toLocaleString("es-HN", { minimumFractionDigits: 2 })}
-        </span>
-      ),
-    },
-    {
-      key: "saldo",
-      label: "Saldo",
-      render: (v) => (
-        <span className="text-stone-400">
-          L {Number(v).toLocaleString("es-HN", { minimumFractionDigits: 2 })}
-        </span>
-      ),
-    },
-    {
-      key: "estado",
+      key: "EstadoCuota",
       label: "Estado",
       render: (v) => (
         <Badge
@@ -91,7 +59,7 @@ export default function PlanPagos() {
     <div>
       <PageHeader
         title="Plan de Pagos"
-        subtitle={`fn_tabla_amortizacion(${id}) — función tipo tabla SQL`}
+        subtitle={`fn_plan_pago_cliente(${id}) — función tipo tabla SQL`}
         actions={
           <Link to="/ventas">
             <Button variant="ghost">← Volver</Button>
