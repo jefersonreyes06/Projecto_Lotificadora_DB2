@@ -379,23 +379,8 @@ export default function PagoForm() {
                         placeholder="Ej. 123456789"
                       />
                     </FormField>
-                    <FormField label="Cuenta bancaria (ID)" optional>
-                      <Input
-                        type="number"
-                        value={form.cuentaBancariaId}
-                        onChange={setField("cuentaBancariaId")}
-                        placeholder="ID de cuenta bancaria"
-                      />
-                    </FormField>
                   </>
                 )}
-                <FormField label="Observaciones" optional>
-                  <Input
-                    value={form.observaciones}
-                    onChange={setField("observaciones")}
-                    placeholder="Notas del pago"
-                  />
-                </FormField>
               </Card>
             </div>
 
