@@ -151,18 +151,22 @@ router.get(
 router.get(
   "/:id/plan-pagos",
   asyncHandler(async (req, res) => {
-    const result = await querySql("SELECT * FROM fn_plan_pagos(@id)", { id: req.params.id });
-    res.json(result.recordset[0] ?? null);
+    const result = await querySql(
+      `SELECT * FROM fn_plan_pago_cliente(${parseInt(req.params.id)})`
+    );
+
+    console.log("Plan de pagos para venta ID", req.params.id, ":", result.recordset);
+    res.json(result.recordset ?? null);
   })
 );
 
-router.get(
+/*router.get(
   "/:id/amortizacion",
   asyncHandler(async (req, res) => {
     const result = await querySql("SELECT * FROM fn_tabla_amortizacion(@id)", { id: req.params.id });
     res.json(result.recordset);
   })
-);
+);*/
 
 router.get(
   "/:id/cuotas-pendientes",
