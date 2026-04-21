@@ -6,9 +6,9 @@
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
-    "serve:api": "node server/index.js",
-    "init:db": "node server/scripts/init-db.js",
-    "verify:triggers": "node server/scripts/verificar-triggers.js",
+    "serve:api": "node ../backend/src/index.js",
+    "init:db": "node ../backend/src/scripts/init-db.js",
+    "verify:triggers": "node ../backend/src/scripts/verificar-triggers.js",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {

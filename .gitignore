@@ -7,9 +7,6 @@ npm-debug.log
 .env
 # DB
 *.sql.dump
-*.db
-# IDE
-.vscode/settings.json
 # OS
 .DS_Store
 
@@ -35,5 +32,3 @@ Desktop.ini             # Windows: configuración de carpetas
 # ─────────────────────────────────────────
 logs/
 *.log
-
-#git rm --cached nombre-del-archivo # Desindexa el archivo pero lo deja en tu disco duro
