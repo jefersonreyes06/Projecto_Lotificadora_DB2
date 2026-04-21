@@ -12,6 +12,7 @@ async function request(path, options = {}) {
     headers: { "Content-Type": "application/json" },
     ...options,
   });
+
   if (!res.ok) {
     const err = await res.json().catch(() => ({ message: "Error del servidor" }));
     throw new Error(err.message || `HTTP ${res.status}`);
@@ -52,15 +53,15 @@ const normalizeBloquePayload = (data) => ({
     data.etapaId !== undefined && data.etapaId !== null
       ? Number(data.etapaId)
       : data.EtapaID !== undefined && data.EtapaID !== null
-      ? Number(data.EtapaID)
-      : null,
+        ? Number(data.EtapaID)
+        : null,
   Bloque: data.Bloque,
   AreaTotalVaras:
     data.AreaTotalVaras !== undefined && data.AreaTotalVaras !== null
       ? Number(data.AreaTotalVaras)
       : data.areaTotalVaras !== undefined && data.areaTotalVaras !== null
-      ? Number(data.areaTotalVaras)
-      : null
+        ? Number(data.areaTotalVaras)
+        : null
 });
 
 export const bloquesApi = {
@@ -140,26 +141,46 @@ export const pagosApi = {
   // sp_obtener_plan_pagos — obtener cuotas por VentaID
   planPagos: (ventaId) => request(`/pagos/plan-pagos/${ventaId}`),
   // sp_lotes_disponibles_credito — buscar lote por NumeroLote
-  lotePorNumero: (numeroLote) => 
+  lotePorNumero: (numeroLote) =>
     request(`/pagos/lotes/disponibles?numeroLote=${encodeURIComponent(numeroLote)}`),
   // sp_lotes_disponibles_credito — buscar lotes por DNI
-  lotesPorDni: (dni) => 
+  lotesPorDni: (dni) =>
     request(`/pagos/lotes/disponibles?dni=${encodeURIComponent(dni)}`),
   update: (id, data) => request(`/pagos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   remove: (id) => request(`/pagos/${id}`, { method: "DELETE" }),
   // sp_cierre_caja_diario — cursor
   cierreDiario: (fecha) => request(`/pagos/cierre?fechaCierre=${fecha}&usuarioCajaId=1`),
-  crearCierreDiario: (fecha, usuarioCajaId) => 
-  request('/pagos/cierre-diario', {
-    method: 'POST',
-    body: JSON.stringify({ fechaCierre: fecha, usuarioCajaId }),
-    headers: { 'Content-Type': 'application/json' }
-  }),
+  crearCierreDiario: (fecha, usuarioCajaId) =>
+    request('/pagos/cierre-diario', {
+      method: 'POST',
+      body: JSON.stringify({ fechaCierre: fecha, usuarioCajaId }),
+      headers: { 'Content-Type': 'application/json' }
+    }),
 
   // Factura de pago
   factura: (id) => request(`/pagos/${id}/factura`),
   cuentasPendientes: () => request("/pagos/prestamos-activos"),
 };
+//___________________________________________
+// GASTOS - sp_gastos_*
+//___________________________________________ 
+export const gastosApi = {
+  list: (tipo, proyecto) => {
+    const params = new URLSearchParams();
+    if (tipo !== undefined && tipo !== null && tipo !== "") {
+      params.append("conGastos", tipo);
+    }
+    if (proyecto !== undefined && proyecto !== null && proyecto !== "") {
+      params.append("Proyecto", proyecto);
+    }
+    const query = params.toString();
+    return request(`/gastos${query ? `?${query}` : ""}`);
+  },
+  listTipos: () => request("/gastos/tipos"),
+  create: (data) => request("/gastos", { method: "POST", body: JSON.stringify(data) }),
+};
+
+
 // CLIENTES — sp_clientes_*
 // ──────────────────────────────────────────────
 export const clientesApi = {
@@ -203,13 +224,13 @@ export const ventasApi = {
   list: () => request("/ventas"),
   get: (id) => request(`/ventas/${id}`),
   // sp_crear_venta_completa — con manejo transaccional
-  create: (data) => request("/ventas", { method: "POST", body: JSON.stringify(data)}),//normalizeVentaPayload(data)) }),
-  update: (id, data) => request(`/ventas/${id}`, { method: "PUT", body: JSON.stringify(data)}),//normalizeVentaPayload(data)) }),
+  create: (data) => request("/ventas", { method: "POST", body: JSON.stringify(data) }),//normalizeVentaPayload(data)) }),
+  update: (id, data) => request(`/ventas/${id}`, { method: "PUT", body: JSON.stringify(data) }),//normalizeVentaPayload(data)) }),
   remove: (id) => request(`/ventas/${id}`, { method: "DELETE" }),
   // Cancelar venta completa (transaccional)
-  cancelar: (id, motivo) => request(`/ventas/${id}/cancelar`, { 
-    method: "POST", 
-    body: JSON.stringify({ motivoCancelacion: motivo }) 
+  cancelar: (id, motivo) => request(`/ventas/${id}/cancelar`, {
+    method: "POST",
+    body: JSON.stringify({ motivoCancelacion: motivo })
   }),
   // sp_generar_plan_pagos — cursor + transacción
   generarPlan: (ventaId, params) =>
@@ -273,7 +294,7 @@ export const dashboardApi = {
 // REPORTES — vw_reportes*
 // ──────────────────────────────────────────────
 export const reportesApi = {
-  vistas: () => request("/reportes/vistas"),   
+  vistas: () => request("/reportes/vistas"),
   ocupacionLotes: (estado) => request(`/reportes/ocupacion-lotes?estado=${estado || ""}`), // Vista vw_ocupacion_lotes
   resumenProyectos: () => request("/reportes/resumen-proyectos"), // Vista vw_resumen_proyectos
 };
@@ -291,7 +312,7 @@ export const proyectosApi = {
 // VISTAS
 // ──────────────────────────────────────────────
 export const vistasApi = {
-  list: () => request("/vistas"),   
+  list: () => request("/vistas"),
   ocupacionLotes: (estado) => request(`/reportes/ocupacion-lotes?estado=${estado || ""}`), // Vista vw_ocupacion_lotes
   resumenProyectos: () => request("/reportes/resumen-proyectos"), // Vista vw_resumen_proyectos
   prestamosActivos: () => request("/vistas/prestamos-activos"), // Vista vw_prestamos_activos
@@ -310,7 +331,7 @@ export const procedimienApi = {
 // FUNCIONES
 // ──────────────────────────────────────────────
 export const funcionesApi = {
-  list: () => request("/funciones"),   
+  list: () => request("/funciones"),
   //ocupacionLotes: (estado) => request(`/reportes/ocupacion-lotes?estado=${estado || ""}`), // Vista vw_ocupacion_lotes
   //resumenProyectos: () => request("/reportes/resumen-proyectos"), // Vista vw_resumen_proyectos
 };

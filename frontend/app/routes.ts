@@ -11,16 +11,7 @@ export default [
       route("nuevo", "pages/proyectos/ProyectoForm.jsx", { id: "proyecto-nuevo" }),
       route(":id/editar", "pages/proyectos/ProyectoForm.jsx", { id: "proyecto-editar" }),
     ]),
-/*
-    // Reportes
-    ...prefix("reportes", [
-      index("pages/reportes/ReporteVistas.jsx"),
-      //route("vistas", "pages/reportes/ReporteVistas.jsx"),
-      //route("ocupacion-lotes", "pages/reportes/ReporteOcupacionLotes.jsx"),
-      //route("resumen-proyectos", "pages/reportes/ReporteResumenProyectos.jsx"),
-      //route("resumen-proyectos", "pages/reportes/ReporteFunciones.jsx"),
-    ]),
-*/
+
     // Vistas
     ...prefix("vistas", [
       index("pages/reportes/ReporteVistas.jsx"),
@@ -75,9 +66,16 @@ export default [
     // Pagos
     ...prefix("pagos", [
       index("pages/pagos/PagosList.jsx"),
-      //route("nuevo", "pages/pagos/PagoForm.jsx"),
       route("cuentas-activas", "pages/pagos/VentasActivaList.jsx"),
       route(":id", "pages/pagos/PagoForm.jsx"),
+    ]),
+
+    // Gastos
+    ...prefix("gastos", [
+      index("pages/gastos/GastosList.jsx"),
+      route("nuevo/:id", "pages/gastos/GastoForm.jsx", { id: "gasto-nuevo" }),
+      //route("tipos", "pages/gastos/GastoForm.jsx")
+      //route(":id/editar", "pages/gastos/GastoForm.jsx", { id: "gasto-editar" }),
     ]),
 
     // Cuentas
@@ -88,7 +86,7 @@ export default [
       route(":id/movimientos", "pages/cuentas/CuentaMovimientos.jsx", { id: "cuenta-movimientos" }),
     ]),
 
-    
+
   ]),] satisfies RouteConfig;
 
-  
+

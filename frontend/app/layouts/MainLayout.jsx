@@ -26,17 +26,10 @@ const navGroups = [
       { to: "/clientes", label: "Clientes", icon: "◌" },
       { to: "/ventas", label: "Ventas", icon: "◆" },
       { to: "/pagos", label: "Pagos & Caja", icon: "◎" },
+      { to: "/gastos", label: "Gastos", icon: "◩" },
       { to: "/cuentas", label: "Cuentas Bancarias", icon: "◍" },
     ],
   },
-  /*{
-    label: "Consultas",
-    items: [
-      { to: "/vistas", label: "Vistas SQL", icon: "◐" },
-      { to: "/procedimientos", label: "Procedimientos", icon: "◑" },
-      { to: "/funciones", label: "Funciones", icon: "◒" },
-    ],
-  },*/
 ];
 
 export default function MainLayout() {
@@ -59,9 +52,8 @@ export default function MainLayout() {
     <div className="flex h-screen bg-stone-950 text-stone-100 font-['Space_Grotesk',sans-serif] overflow-hidden transition-colors duration-300">
       {/* Sidebar */}
       <aside
-        className={`flex flex-col z-10 border-r border-stone-800 bg-stone-950 transition-all duration-300 ${
-          collapsed ? "w-16" : "w-64"
-        }`}
+        className={`flex flex-col z-10 border-r border-stone-800 bg-stone-950 transition-all duration-300 ${collapsed ? "w-16" : "w-64"
+          }`}
         style={{ flexShrink: 0 }}
       >
         {/* Logo */}
@@ -107,7 +99,7 @@ export default function MainLayout() {
                   const isActive = item.exact
                     ? location.pathname === item.to
                     : location.pathname.startsWith(item.to) &&
-                      !(item.to === "/" && location.pathname !== "/");
+                    !(item.to === "/" && location.pathname !== "/");
 
                   const activeClasses = theme === "light"
                     ? "bg-amber-200/60 text-amber-700 font-medium"
@@ -122,9 +114,8 @@ export default function MainLayout() {
                       <NavLink
                         to={item.to}
                         end={item.exact}
-                        className={`flex items-center gap-3 px-2 py-2 rounded-md text-sm transition-all ${
-                          isActive ? activeClasses : normalClasses
-                        }`}
+                        className={`flex items-center gap-3 px-2 py-2 rounded-md text-sm transition-all ${isActive ? activeClasses : normalClasses
+                          }`}
                       >
                         <span className="text-base w-5 text-center flex-shrink-0">
                           {item.icon}
@@ -159,11 +150,10 @@ export default function MainLayout() {
       <button
         type="button"
         onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        className={`fixed right-4 bottom-4 z-50 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold transition-all duration-300 shadow-lg ${
-          theme === "dark"
-            ? "bg-stone-900 text-stone-100 border-stone-700 hover:bg-stone-800"
-            : "bg-white/95 text-slate-900 border-slate-300 hover:bg-white"
-        }`}
+        className={`fixed right-4 bottom-4 z-50 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold transition-all duration-300 shadow-lg ${theme === "dark"
+          ? "bg-stone-900 text-stone-100 border-stone-700 hover:bg-stone-800"
+          : "bg-white/95 text-slate-900 border-slate-300 hover:bg-white"
+          }`}
       >
         <span>{theme === "dark" ? "" : ""}</span>
         <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
