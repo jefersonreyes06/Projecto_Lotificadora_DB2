@@ -1,34 +1,48 @@
-# Local Netlify folder
-.netlify
-
-# Node
-node_modules/
-npm-debug.log
+# ─────────────────────────────────────────
+# SECRETOS
+# ─────────────────────────────────────────
 .env
-# DB
+.env.local
+.env.*.local
+
+# ─────────────────────────────────────────
+# NODE
+# ─────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# ─────────────────────────────────────────
+# BASE DE DATOS
+# ─────────────────────────────────────────
 *.sql.dump
-# OS
+*.sqlite
+*.db
+
+# ─────────────────────────────────────────
+# IDE / EDITORES
+# ─────────────────────────────────────────
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.suo
+*.user
+
+# ─────────────────────────────────────────
+# SISTEMA OPERATIVO
+# ─────────────────────────────────────────
 .DS_Store
+Thumbs.db
+Desktop.ini
+*~
 
 # ─────────────────────────────────────────
-# IDE / EDITORES — Específicos de tu máquina
-# ─────────────────────────────────────────
-.vscode/settings.json   # Preferencias personales de VS Code (tema, font, etc.)
-.vscode/launch.json     # Config de debugging personal
-.idea/                  # Carpeta completa de JetBrains (WebStorm, Rider)
-*.suo                   # Visual Studio user options
-*.user                  # Archivos de usuario de Visual Studio
-
-# ─────────────────────────────────────────
-# SISTEMA OPERATIVO — Basura del OS
-# ─────────────────────────────────────────
-.DS_Store               # Mac: metadata de carpetas (thumbnails, posición de iconos)
-Thumbs.db               # Windows: cache de miniaturas
-Desktop.ini             # Windows: configuración de carpetas
-*~                      # Linux: archivos temporales de editores
-
-# ─────────────────────────────────────────
-# LOGS — Se generan en runtime
+# LOGS
 # ─────────────────────────────────────────
 logs/
 *.log
+
+# ─────────────────────────────────────────
+# OTROS
+# ─────────────────────────────────────────
+.netlify
