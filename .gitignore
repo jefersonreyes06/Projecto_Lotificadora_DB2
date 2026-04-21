@@ -1,2 +1,39 @@
 # Local Netlify folder
 .netlify
+
+# Node
+node_modules/
+npm-debug.log
+.env
+# DB
+*.sql.dump
+*.db
+# IDE
+.vscode/settings.json
+# OS
+.DS_Store
+
+# ─────────────────────────────────────────
+# IDE / EDITORES — Específicos de tu máquina
+# ─────────────────────────────────────────
+.vscode/settings.json   # Preferencias personales de VS Code (tema, font, etc.)
+.vscode/launch.json     # Config de debugging personal
+.idea/                  # Carpeta completa de JetBrains (WebStorm, Rider)
+*.suo                   # Visual Studio user options
+*.user                  # Archivos de usuario de Visual Studio
+
+# ─────────────────────────────────────────
+# SISTEMA OPERATIVO — Basura del OS
+# ─────────────────────────────────────────
+.DS_Store               # Mac: metadata de carpetas (thumbnails, posición de iconos)
+Thumbs.db               # Windows: cache de miniaturas
+Desktop.ini             # Windows: configuración de carpetas
+*~                      # Linux: archivos temporales de editores
+
+# ─────────────────────────────────────────
+# LOGS — Se generan en runtime
+# ─────────────────────────────────────────
+logs/
+*.log
+
+#git rm --cached nombre-del-archivo # Desindexa el archivo pero lo deja en tu disco duro
