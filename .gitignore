@@ -11,6 +11,8 @@
 node_modules/
 npm-debug.log*
 yarn-error.log*
+coverage/
+frontend/coverage/
 
 # ─────────────────────────────────────────
 # BASE DE DATOS
@@ -18,6 +20,8 @@ yarn-error.log*
 *.sql.dump
 *.sqlite
 *.db
+*.sql~
+database/backups/
 
 # ─────────────────────────────────────────
 # IDE / EDITORES
@@ -46,3 +50,8 @@ logs/
 # OTROS
 # ─────────────────────────────────────────
 .netlify
+
+
+# DOCKER
+docker-compose.override.yml
+
