@@ -11,12 +11,14 @@ export default function PlanPagos() {
   const [cuotas, setCuotas] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const fmtLps = (v) => v != null ? `L ${Number(v).toLocaleString("es-HN", { minimumFractionDigits: 2 })}` : "—";
+
   useEffect(() => {
     ventasApi.planPagos(id)
       .then((data) => {
         setCuotas(data); // data es el array de cuotas
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -24,8 +26,13 @@ export default function PlanPagos() {
     {
       key: "NumeroCuota",
       label: "# Cuota",
-      width: 100,
-      render: (v) => <span className="text-stone-500">{v}</span>,
+      width: 150,
+      render: (v) => <span className="text-stone-500">Cuota N° {v}</span>,
+    },
+    {
+      key: "MontoCuota",
+      label: "Monto Cuota Pendiente",
+      render: (v) => <span>{fmtLps(v)}</span>,
     },
     {
       key: "FechaVencimiento",

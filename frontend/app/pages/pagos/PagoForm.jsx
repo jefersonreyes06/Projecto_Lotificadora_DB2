@@ -54,7 +54,7 @@ export default function PagoForm() {
     setLote(null);
     setVenta(null);
     setCuotasPendientes([]);
-    
+
     try {
       const lotes = await lotesApi.getByNumero(numeroLote);
 
@@ -114,7 +114,7 @@ export default function PagoForm() {
     } finally {
       setLoadingCuotas(false);
     }
-  }; 
+  };
 
   const selectedCuota = cuotasPendientes.find((c) => c.CuotaID === Number(form.cuotaId));
 
@@ -208,7 +208,7 @@ export default function PagoForm() {
     } finally {
       setSaving(false);
     }
-  }; 
+  };
 
   if (facturaId) {
     return (
@@ -358,7 +358,7 @@ export default function PagoForm() {
                   </div>
                 )}
 
-{/*
+                {/*
                 <div className="pt-4">
                   <p className="text-xs text-stone-500 mb-2">Cuotas pendientes</p>
                   {loadingCuotas && <p className="text-sm text-stone-500 animate-pulse">Cargando cuotas...</p>}
