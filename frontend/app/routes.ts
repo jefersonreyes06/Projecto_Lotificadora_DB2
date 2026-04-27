@@ -67,6 +67,7 @@ export default [
     ...prefix("pagos", [
       index("pages/pagos/PagosList.jsx"),
       route("cuentas-activas", "pages/pagos/VentasActivaList.jsx"),
+      //route("registrar", "pages/pagos/PagoForm.jsx"),
       route(":id", "pages/pagos/PagoForm.jsx"),
     ]),
 

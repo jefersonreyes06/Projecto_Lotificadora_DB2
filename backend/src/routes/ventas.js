@@ -155,18 +155,9 @@ router.get(
       `SELECT * FROM fn_plan_pago_cliente(${parseInt(req.params.id)})`
     );
 
-    console.log("Plan de pagos para venta ID", req.params.id, ":", result.recordset);
     res.json(result.recordset ?? null);
   })
 );
-
-/*router.get(
-  "/:id/amortizacion",
-  asyncHandler(async (req, res) => {
-    const result = await querySql("SELECT * FROM fn_tabla_amortizacion(@id)", { id: req.params.id });
-    res.json(result.recordset);
-  })
-);*/
 
 router.get(
   "/:id/cuotas-pendientes",
@@ -180,7 +171,7 @@ router.post(
   "/:id/plan-pagos",
   asyncHandler(async (req, res) => {
     const payload = { ventaId: req.params.id, ...req.body };
-    
+
     // Transaccional: sp_generar_plan_pagos
     // Genera el plan de pagos completo para la venta.
     const result = await executeProcedure("sp_generar_plan_pagos", payload);

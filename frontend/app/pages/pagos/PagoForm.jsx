@@ -65,7 +65,6 @@ export default function PagoForm() {
       const loteData = lotes[0];
       setLote(loteData);
 
-
       // Si el lote tiene venta activa, cargar datos de la venta y cuotas
       if (loteData.VentaID) {
         // Construir objeto de venta con datos del lote
@@ -118,12 +117,6 @@ export default function PagoForm() {
 
   const selectedCuota = cuotasPendientes.find((c) => c.CuotaID === Number(form.cuotaId));
 
-  /*useEffect(() => {
-    if (selectedCuota && !form.montoRecibido) {
-      setForm((prev) => ({ ...prev, montoRecibido: String(selectedCuota.SaldoPendiente) }));
-    }
-  }, [selectedCuota]);*/
-
   const isVentaCredito = venta?.TipoVenta === "Credito";
   const isLoteProceso = venta?.LoteEstado === "Reservado";
 
@@ -147,61 +140,27 @@ export default function PagoForm() {
       notify.error(message);
       return;
     }
-    /*if (!form.cuotaId) {
-      const message = "Seleccione la cuota a pagar.";
-      setError(message);
-      notify.error(message);
-      return;
-    }*/
     if (!form.montoRecibido || Number(form.montoRecibido) <= 0) {
       const message = "Ingrese un monto recibido válido.";
       setError(message);
       notify.error(message);
       return;
     }
-    /*if (!form.usuarioCajaId) {
-      const message = "Ingrese el usuario de caja.";
-      setError(message);
-      notify.error(message);
-      return;
-    }*/
-    /*if (!isVentaCredito) {
-      const message = "Solo se permiten pagos para ventas al crédito.";
-      setError(message);
-      notify.error(message);
-      return;
-    }
-    /*if (!isLoteProceso) {
-      const message = "El lote debe estar en estado 'Proceso' para registrar el pago.";
-      setError(message);
-      notify.error(message);
-      return;
-    }
-    /*if (!selectedCuota) {
-      const message = "La cuota seleccionada no existe o no está pendiente.";
-      setError(message);
-      notify.error(message);
-      return;
-    }*/
 
     const montoNumero = Number(form.montoRecibido);
-    /*if (montoNumero > Number(selectedCuota.SaldoPendiente)) {
-      setError("El monto recibido no puede exceder el saldo pendiente de la cuota.");
-      return;
-    } */
 
     setSaving(true);
     try {
-      const res = await pagosApi.update(
-        venta.VentaID, // este es el id que va en la URL
+      const res = await pagosApi.abonar(
         {
+          ClienteID: venta.ClienteID,
           VentaID: venta.VentaID,
           TipoPago: form.metodoPago,
           MontoRecibido: form.montoRecibido
         }
       );
 
-      setFacturaId(res.FacturaID ?? res.facturaId ?? res.factura_id ?? null);
+      //setFacturaId(res.FacturaID ?? res.facturaId ?? res.factura_id ?? null);
       notify.success("Pago registrado correctamente");
     } catch (err) {
       setError(err.message || "Error al registrar el pago.");
@@ -235,7 +194,6 @@ export default function PagoForm() {
     );
   }
 
-  console.log(venta);
   if (venta && venta.CuotasRestantes === 0) {
     return (
       <div>
@@ -357,27 +315,6 @@ export default function PagoForm() {
                     </div>
                   </div>
                 )}
-
-                {/*
-                <div className="pt-4">
-                  <p className="text-xs text-stone-500 mb-2">Cuotas pendientes</p>
-                  {loadingCuotas && <p className="text-sm text-stone-500 animate-pulse">Cargando cuotas...</p>}
-                  {!loadingCuotas && cuotasPendientes.length === 0 && (
-                    <p className="text-sm text-stone-500">No hay cuotas pendientes para este lote.</p>
-                  )}
-                  {/*cuotasPendientes.length > 0 && (
-                    <FormField label="Seleccionar cuota" required>
-                      <Select value={form.cuotaId} onChange={setField("cuotaId")}>
-                        <option value="">Seleccione una cuota</option>
-                        {cuotasPendientes.map((cuota) => (
-                          <option key={cuota.CuotaID} value={cuota.CuotaID}>
-                            Cuota #{cuota.NumeroCuota} — Vence {new Date(cuota.FechaVencimiento).toLocaleDateString("es-HN")} — Saldo {fmtLps(cuota.SaldoPendiente)}
-                          </option>
-                        ))}
-                      </Select>
-                    </FormField>
-                  )
-                </div>*/}
               </Card>
 
               <Card className="p-6 space-y-4">
@@ -469,7 +406,7 @@ export default function PagoForm() {
                     </div>
                   </div>
                 </div>
-                <Button type="submit" disabled={saving /*|| !form.cuotaId*/ || !isVentaCredito || !isLoteProceso} className="w-full justify-center">
+                <Button type="submit" disabled={saving || !isVentaCredito || !isLoteProceso} className="w-full justify-center">
                   {saving ? "Procesando..." : "Registrar pago"}
                 </Button>
                 {venta && !isVentaCredito && (

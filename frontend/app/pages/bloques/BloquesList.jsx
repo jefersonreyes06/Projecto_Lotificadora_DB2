@@ -25,7 +25,6 @@ export function BloquesList() {
 
   const filteredData = useMemo(() => {
     return data.filter((row) => {
-      console.log("Filtering row:", row);
       const matchesName = filters.nombre
         ? String(row.Bloque ?? row.bloque ?? "").toLowerCase().includes(filters.nombre.toLowerCase())
         : true;
@@ -92,7 +91,7 @@ export function BloquesList() {
             <div>
               <label className="text-sm font-semibold text-stone-400 block mb-2">Nombre</label>
               <Input
-                placeholder="Filtrar por Bloque" 
+                placeholder="Filtrar por Bloque"
                 value={filters.nombre}
                 onChange={(e) => setFilters((f) => ({ ...f, nombre: e.target.value }))}
               />

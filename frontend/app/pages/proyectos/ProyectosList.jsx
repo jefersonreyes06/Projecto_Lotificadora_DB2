@@ -94,15 +94,6 @@ export default function ProyectosList() {
 
         <Card className="mb-6 p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/*<div>
-              <label className="text-sm font-semibold text-stone-400 block mb-2">Proyecto ID</label>
-              <Input
-                type="text"
-                placeholder="Filtrar por ID"
-                value={filters.proyectoId}
-                onChange={(e) => setFilters((f) => ({ ...f, proyectoId: e.target.value }))}
-              />
-            </div>*/}
             <div>
               <label className="text-sm font-semibold text-stone-400 block mb-2">Nombre de proyecto</label>
               <Input

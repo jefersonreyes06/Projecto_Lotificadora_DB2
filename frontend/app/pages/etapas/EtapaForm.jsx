@@ -38,7 +38,7 @@ export default function EtapaForm() {
 
   useNotifyError(error);
 
-  useEffect(() => { proyectosApi.list().then(setProyectos).catch(() => {}); }, []);
+  useEffect(() => { proyectosApi.list().then(setProyectos).catch(() => { }); }, []);
   useEffect(() => {
     if (!isEdit) return;
     setLoading(true);
@@ -50,11 +50,11 @@ export default function EtapaForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    console.log(form)
+
     try {
       isEdit ? await etapasApi.update(id, form) : await etapasApi.create(form);
       navigate("/etapas");
-    }catch (err) {
+    } catch (err) {
       const message = err.message || "Error al crear etapa";
       setError(message);
       notify.error(message);
@@ -96,14 +96,6 @@ export default function EtapaForm() {
               <FormField label="Tasa interés anual %" required>
                 <Input type="number" value={form.TasaInteresAnual} onChange={set("TasaInteresAnual")} placeholder="9.5" required />
               </FormField>
-              {/*<FormField label="Estado" required>
-                <Select value={form.Estado} onChange={set("Estado")} required>
-                  <option value="EnPlanificacion">EnPlanificacion</option>
-                  <option value="Activo">Activo</option>
-                  <option value="Inactivo">Inactivo</option>
-                  <option value="Completado">Completado</option>
-                </Select>
-              </FormField>*/}
             </div>
             <div className="flex justify-end gap-3 pt-2 border-t border-stone-800">
               <Link to="/etapas"><Button variant="secondary">Cancelar</Button></Link>

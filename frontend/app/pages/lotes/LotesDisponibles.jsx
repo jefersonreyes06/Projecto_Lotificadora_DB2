@@ -23,9 +23,9 @@ const ESTADO_COLORS = {
 // accent: "amber" = comprador (protagonista), "blue" = aval, "purple" = beneficiario
 function PersonaCard({ data, rol, accentColor }) {
   const palettes = {
-    amber:  { ring: "border-amber-400/50",  bg: "bg-amber-400/5",   icon: "bg-amber-400/15 text-amber-400",   tag: "bg-amber-400/10 text-amber-400",   label: "text-amber-400" },
-    blue:   { ring: "border-blue-400/40",   bg: "bg-blue-400/5",    icon: "bg-blue-400/15 text-blue-400",    tag: "bg-blue-400/10 text-blue-400",     label: "text-blue-400"  },
-    purple: { ring: "border-purple-400/40", bg: "bg-purple-400/5",  icon: "bg-purple-400/15 text-purple-400", tag: "bg-purple-400/10 text-purple-400", label: "text-purple-400" },
+    amber: { ring: "border-amber-400/50", bg: "bg-amber-400/5", icon: "bg-amber-400/15 text-amber-400", tag: "bg-amber-400/10 text-amber-400", label: "text-amber-400" },
+    blue: { ring: "border-blue-400/40", bg: "bg-blue-400/5", icon: "bg-blue-400/15 text-blue-400", tag: "bg-blue-400/10 text-blue-400", label: "text-blue-400" },
+    purple: { ring: "border-purple-400/40", bg: "bg-purple-400/5", icon: "bg-purple-400/15 text-purple-400", tag: "bg-purple-400/10 text-purple-400", label: "text-purple-400" },
   };
   const p = palettes[accentColor] ?? palettes.amber;
 
@@ -39,13 +39,13 @@ function PersonaCard({ data, rol, accentColor }) {
       .toUpperCase() || "?"
   );
 
-  const nombre   = data.nombreCompleto  ?? data.NombreCompleto  ?? "—";
-  const dni      = data.dni             ?? data.DNI             ?? "—";
-  const telefono = data.telefono        ?? data.Telefono        ?? "—";
-  const empresa  = data.nombreEmpresa   ?? data.NombreEmpresa   ?? null;
-  const ocupacion= data.ocupacion       ?? data.Ocupacion       ?? null;
-  const ingreso  = data.ingresoMensual  ?? data.IngresoMensual  ?? null;
-  const estado   = data.estado          ?? data.Estado          ?? null;
+  const nombre = data.nombreCompleto ?? data.NombreCompleto ?? "—";
+  const dni = data.dni ?? data.DNI ?? "—";
+  const telefono = data.telefono ?? data.Telefono ?? "—";
+  const empresa = data.nombreEmpresa ?? data.NombreEmpresa ?? null;
+  const ocupacion = data.ocupacion ?? data.Ocupacion ?? null;
+  const ingreso = data.ingresoMensual ?? data.IngresoMensual ?? null;
+  const estado = data.estado ?? data.Estado ?? null;
 
   return (
     <div className={`rounded-xl border-2 ${p.ring} ${p.bg} p-4`}>
@@ -105,8 +105,8 @@ function PersonaCard({ data, rol, accentColor }) {
 // Campo DNI + botón buscar + resultado como PersonaCard
 function BuscadorPersona({ label, rol, accentColor, value, onChange, onBuscar, loading, data, onLimpiar }) {
   const palettes = {
-    amber:  { btn: "bg-amber-400 text-stone-950 hover:bg-amber-300", border: "border-amber-400/30" },
-    blue:   { btn: "bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/20", border: "border-blue-400/30" },
+    amber: { btn: "bg-amber-400 text-stone-950 hover:bg-amber-300", border: "border-amber-400/30" },
+    blue: { btn: "bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/20", border: "border-blue-400/30" },
     purple: { btn: "bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/20", border: "border-purple-400/30" },
   };
   const p = palettes[accentColor] ?? palettes.amber;
@@ -159,7 +159,7 @@ function ModalStepper({ step }) {
     <div className="flex items-center gap-1 mb-6">
       {steps.map((label, i) => {
         const idx = i + 1;
-        const done   = step > idx;
+        const done = step > idx;
         const active = step === idx;
         return (
           <div key={label} className="flex items-center gap-1 flex-1">
@@ -167,17 +167,15 @@ function ModalStepper({ step }) {
               {i > 0 && <div className={`h-px flex-1 transition-colors ${done || active ? "bg-amber-400/40" : "bg-stone-700"}`} />}
               <div className={`flex items-center gap-1.5 ${i > 0 ? "" : "flex-1 justify-start"}`}>
                 <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-all ${
-                    done   ? "bg-emerald-400/20 text-emerald-400 border border-emerald-400/40" :
-                    active ? "bg-amber-400 text-stone-950" :
-                             "bg-stone-800 text-stone-600 border border-stone-700"
-                  }`}
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-all ${done ? "bg-emerald-400/20 text-emerald-400 border border-emerald-400/40" :
+                      active ? "bg-amber-400 text-stone-950" :
+                        "bg-stone-800 text-stone-600 border border-stone-700"
+                    }`}
                 >
                   {done ? "✓" : idx}
                 </div>
-                <span className={`text-xs font-medium whitespace-nowrap ${
-                  active ? "text-amber-400" : done ? "text-stone-400" : "text-stone-600"
-                }`}>
+                <span className={`text-xs font-medium whitespace-nowrap ${active ? "text-amber-400" : done ? "text-stone-400" : "text-stone-600"
+                  }`}>
                   {label}
                 </span>
               </div>
@@ -192,35 +190,35 @@ function ModalStepper({ step }) {
 
 // ════════════════════════════════════════════════════════════════════════════
 export default function LotesDisponibles() {
-  const [lotes,     setLotes]    = useState([]);
-  const [proyectos, setProyectos]= useState([]);
-  const [etapas,    setEtapas]   = useState([]);
-  const [bloques,   setBloques]  = useState([]);
-  const [loading,   setLoading]  = useState(false);
-  const [error,     setError]    = useState(null);
+  const [lotes, setLotes] = useState([]);
+  const [proyectos, setProyectos] = useState([]);
+  const [etapas, setEtapas] = useState([]);
+  const [bloques, setBloques] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const [draftFiltros, setDraftFiltros] = useState({ proyectoId: "", etapaId: "", bloqueId: "", areaMin: "", areaMax: "" });
-  const [filtros,      setFiltros]      = useState({ proyectoId: "", etapaId: "", bloqueId: "", areaMin: "", areaMax: "" });
+  const [filtros, setFiltros] = useState({ proyectoId: "", etapaId: "", bloqueId: "", areaMin: "", areaMax: "" });
 
   // ── Modal state ────────────────────────────────────────────────────────────
   const [ventaModal, setVentaModal] = useState({ open: false, lote: null });
-  const [modalStep,  setModalStep]  = useState(1); // 1: comprador, 2: tipo venta, 3: confirmar
+  const [modalStep, setModalStep] = useState(1); // 1: comprador, 2: tipo venta, 3: confirmar
 
   // Personas (los 3 vienen de la misma tabla clientes)
-  const [compradorDni,    setCompradorDni]    = useState("");
-  const [compradorData,   setCompradorData]   = useState(null);
-  const [avalDni,         setAvalDni]         = useState("");
-  const [avalData,        setAvalData]        = useState(null);
+  const [compradorDni, setCompradorDni] = useState("");
+  const [compradorData, setCompradorData] = useState(null);
+  const [avalDni, setAvalDni] = useState("");
+  const [avalData, setAvalData] = useState(null);
   const [beneficiarioDni, setBeneficiarioDni] = useState("");
-  const [beneficiarioData,setBeneficiarioData]= useState(null);
+  const [beneficiarioData, setBeneficiarioData] = useState(null);
 
   const [buscando, setBuscando] = useState({ comprador: false, aval: false, beneficiario: false });
 
   // Financiamiento
   const [ventaForm, setVentaForm] = useState({
-    tipoVenta:   "Contado",
-    prima:       "",
-    aniosPlazo:  10,
+    tipoVenta: "Contado",
+    prima: "",
+    aniosPlazo: 10,
     tasa_interes: 12.0,
   });
 
@@ -238,10 +236,10 @@ export default function LotesDisponibles() {
   }, []);
 
   useEffect(() => {
-    if (!draftFiltros.proyectoId) { 
-      setEtapas([]); 
-      setBloques([]); 
-      return; 
+    if (!draftFiltros.proyectoId) {
+      setEtapas([]);
+      setBloques([]);
+      return;
     }
     etapasApi.list()
       .then((etapas) => {
@@ -252,8 +250,8 @@ export default function LotesDisponibles() {
 
   useEffect(() => {
     if (!draftFiltros.etapaId) {
-      setBloques([]); 
-      return; 
+      setBloques([]);
+      return;
     }
     bloquesApi.list()
       .then((bloques) => {
@@ -267,7 +265,7 @@ export default function LotesDisponibles() {
     const val = e.target.value;
     setDraftFiltros((prev) => {
       if (key === "proyectoId") return { ...prev, proyectoId: val, etapaId: "", bloqueId: "" };
-      if (key === "etapaId")    return { ...prev, etapaId: val, bloqueId: "" };
+      if (key === "etapaId") return { ...prev, etapaId: val, bloqueId: "" };
       return { ...prev, [key]: val };
     });
   };
@@ -276,41 +274,40 @@ export default function LotesDisponibles() {
     const area = parseFloat(item.area_m2 ?? 0);
     return (
       (!filtros.proyectoId || item.proyectoId === Number(filtros.proyectoId)) &&
-      (!filtros.etapaId    || item.etapaId === Number(filtros.etapaId)) &&
-      (!filtros.bloqueId   || item.bloqueId === Number(filtros.bloqueId)) &&
-      (!filtros.areaMin    || area >= parseFloat(filtros.areaMin)) &&
-      (!filtros.areaMax    || area <= parseFloat(filtros.areaMax))
+      (!filtros.etapaId || item.etapaId === Number(filtros.etapaId)) &&
+      (!filtros.bloqueId || item.bloqueId === Number(filtros.bloqueId)) &&
+      (!filtros.areaMin || area >= parseFloat(filtros.areaMin)) &&
+      (!filtros.areaMax || area <= parseFloat(filtros.areaMax))
     );
   }), [lotes, filtros]);
 
   // ── Modal helpers ──────────────────────────────────────────────────────────
   const abrirModal = (lote) => {
-    console.log(lote)
     setVentaModal({ open: true, lote });
     setModalStep(1);
     setCompradorDni(""); setCompradorData(null);
-    setAvalDni("");      setAvalData(null);
-    setBeneficiarioDni("");setBeneficiarioData(null);
+    setAvalDni(""); setAvalData(null);
+    setBeneficiarioDni(""); setBeneficiarioData(null);
     setVentaForm({ tipoVenta: "Contado", prima: "", aniosPlazo: 10, tasa_interes: 12.0 });
   };
 
   const cerrarModal = () => setVentaModal({ open: false, lote: null });
 
   const buscarPersona = async (tipo) => {
-    const dniMap  = { comprador: compradorDni, aval: avalDni, beneficiario: beneficiarioDni };
-    const dni     = dniMap[tipo]?.trim();
+    const dniMap = { comprador: compradorDni, aval: avalDni, beneficiario: beneficiarioDni };
+    const dni = dniMap[tipo]?.trim();
     if (!dni) return;
 
     setBuscando((b) => ({ ...b, [tipo]: true }));
     try {
       const result = await clientesApi.getByDni(dni);
-      if (tipo === "comprador")   setCompradorData(result);
-      if (tipo === "aval")        setAvalData(result);
-      if (tipo === "beneficiario")setBeneficiarioData(result);
+      if (tipo === "comprador") setCompradorData(result);
+      if (tipo === "aval") setAvalData(result);
+      if (tipo === "beneficiario") setBeneficiarioData(result);
     } catch {
-      if (tipo === "comprador")   { setCompradorData(null);    notify.error("Comprador no encontrado"); }
-      if (tipo === "aval")        { setAvalData(null);         notify.error("Aval no encontrado"); }
-      if (tipo === "beneficiario"){ setBeneficiarioData(null); notify.error("Beneficiario no encontrado"); }
+      if (tipo === "comprador") { setCompradorData(null); notify.error("Comprador no encontrado"); }
+      if (tipo === "aval") { setAvalData(null); notify.error("Aval no encontrado"); }
+      if (tipo === "beneficiario") { setBeneficiarioData(null); notify.error("Beneficiario no encontrado"); }
     } finally {
       setBuscando((b) => ({ ...b, [tipo]: false }));
     }
@@ -330,10 +327,10 @@ export default function LotesDisponibles() {
     if (!compradorData) return;
     setCreandoVenta(true);
     try {
-      const lote         = ventaModal.lote;
-      const montoTotal   = parseFloat(lote.precio_final ?? lote.valor_total ?? 0);
-      const prima        = ventaForm.tipoVenta === "Credito" ? (parseFloat(ventaForm.prima) || 0) : 0;
-      const financiado   = ventaForm.tipoVenta === "Credito" ? montoTotal - prima : 0;
+      const lote = ventaModal.lote;
+      const montoTotal = parseFloat(lote.precio_final ?? lote.valor_total ?? 0);
+      const prima = ventaForm.tipoVenta === "Credito" ? (parseFloat(ventaForm.prima) || 0) : 0;
+      const financiado = ventaForm.tipoVenta === "Credito" ? montoTotal - prima : 0;
 
       if (compradorData.id === avalData?.id) {
         notify.error("El comprador no puede ser el mismo que el aval.");
@@ -344,18 +341,18 @@ export default function LotesDisponibles() {
       }
 
       await ventasApi.create({
-        LoteID:               lote.id,
-        ClienteID:            compradorData.id,
-        BeneficiarioID:       beneficiarioData?.id ?? null,
-        AvalID:               avalData?.id ?? null,
-        UsuarioID:            1,
-        TipoVenta:            ventaForm.tipoVenta,
-        MontoTotal:           montoTotal,
-        Prima:                prima,
-        MontoFinanciado:      financiado,
-        AniosPlazo:           ventaForm.tipoVenta === "Credito" ? Number(ventaForm.aniosPlazo) : 0,
-        TasaInteresAplicada:  ventaModal.lote.tasa_interes,
-        Estado:               ventaForm.tipoVenta === "Contado" ? "Finalizada" : "En Proceso",
+        LoteID: lote.id,
+        ClienteID: compradorData.id,
+        BeneficiarioID: beneficiarioData?.id ?? null,
+        AvalID: avalData?.id ?? null,
+        UsuarioID: 1,
+        TipoVenta: ventaForm.tipoVenta,
+        MontoTotal: montoTotal,
+        Prima: prima,
+        MontoFinanciado: financiado,
+        AniosPlazo: ventaForm.tipoVenta === "Credito" ? Number(ventaForm.aniosPlazo) : 0,
+        TasaInteresAplicada: ventaModal.lote.tasa_interes,
+        Estado: ventaForm.tipoVenta === "Contado" ? "Finalizada" : "En Proceso",
       });
 
       setLotes((prev) => prev.filter((l) => l.id !== lote.id));
@@ -369,31 +366,36 @@ export default function LotesDisponibles() {
   };
 
   // Cálculos financieros para el resumen
-  const lote        = ventaModal.lote;
-  const montoTotal  = parseFloat(lote?.precio_final ?? lote?.valor_total ?? 0);
-  const prima       = ventaForm.tipoVenta === "Credito" ? (parseFloat(ventaForm.prima) || 0) : 0;
-  const financiado  = ventaForm.tipoVenta === "Credito" ? montoTotal - prima : 0;
-  const cuotaEst    = ventaForm.tipoVenta === "Credito" && ventaForm.aniosPlazo > 0 && lote?.tasa_interes
+  const lote = ventaModal.lote;
+  const montoTotal = parseFloat(lote?.precio_final ?? lote?.valor_total ?? 0);
+  const prima = ventaForm.tipoVenta === "Credito" ? (parseFloat(ventaForm.prima) || 0) : 0;
+  const financiado = ventaForm.tipoVenta === "Credito" ? montoTotal - prima : 0;
+  const cuotaEst = ventaForm.tipoVenta === "Credito" && ventaForm.aniosPlazo > 0 && lote?.tasa_interes
     ? (financiado * (lote.tasa_interes / 100 / 12)) /
-      (1 - Math.pow(1 + lote.tasa_interes / 100 / 12, -(ventaForm.aniosPlazo * 12)))
+    (1 - Math.pow(1 + lote.tasa_interes / 100 / 12, -(ventaForm.aniosPlazo * 12)))
     : 0;
 
   // ── Columnas tabla ─────────────────────────────────────────────────────────
   const columns = [
     { key: "codigo_lote", label: "Lote" },
-    { key: "proyecto",    label: "Proyecto" },
-    { key: "etapa",       label: "Etapa" },
-    { key: "bloque",      label: "Bloque" },
-    { key: "area_m2",     label: "Área (v²)",
-      render: (v) => <span className="text-stone-300">{Number(v || 0).toLocaleString()}</span> },
-    { key: "precio_final", label: "Precio",
-      render: (v) => <span className="text-amber-400 font-medium">{fmtLps(v)}</span> },
-    { key: "actions", label: "",
+    { key: "proyecto", label: "Proyecto" },
+    { key: "etapa", label: "Etapa" },
+    { key: "bloque", label: "Bloque" },
+    {
+      key: "area_m2", label: "Área (v²)",
+      render: (v) => <span className="text-stone-300">{Number(v || 0).toLocaleString()}</span>
+    },
+    {
+      key: "precio_final", label: "Precio",
+      render: (v) => <span className="text-amber-400 font-medium">{fmtLps(v)}</span>
+    },
+    {
+      key: "actions", label: "",
       render: (_, row) => (
         <Button size="sm" onClick={() => abrirModal(row)}>Vender</Button>
-      ) },
+      )
+    },
   ];
-  console.log(lotes)
 
   // ════════════════════════════════════════════════════════════════════════
   return (
@@ -440,7 +442,7 @@ export default function LotesDisponibles() {
         </Card>
 
 
-        
+
         {/* ── Tabla ────────────────────────────────────────────────────── */}
         <p className="text-xs text-stone-500 mb-3">
           {filteredLotes.length > 0 ? `${filteredLotes.length} lote(s) disponible(s)` : "Sin resultados"}
@@ -530,11 +532,10 @@ export default function LotesDisponibles() {
                         key={tipo}
                         type="button"
                         onClick={() => setVentaForm((f) => ({ ...f, tipoVenta: tipo }))}
-                        className={`py-3 px-4 rounded-xl border-2 text-sm font-semibold transition-all ${
-                          ventaForm.tipoVenta === tipo
+                        className={`py-3 px-4 rounded-xl border-2 text-sm font-semibold transition-all ${ventaForm.tipoVenta === tipo
                             ? "border-amber-400 bg-amber-400/10 text-amber-400"
                             : "border-stone-700 text-stone-500 hover:border-stone-500 hover:text-stone-300"
-                        }`}
+                          }`}
                       >
                         {tipo === "Contado" ? "◎ Contado" : "◆ Crédito"}
                       </button>
@@ -632,7 +633,7 @@ export default function LotesDisponibles() {
 
                   {/* Fichas de las 3 personas */}
                   <div className="space-y-3">
-                    <PersonaCard data={compradorData}    rol="Comprador"    accentColor="amber"  />
+                    <PersonaCard data={compradorData} rol="Comprador" accentColor="amber" />
                     <PersonaCard data={beneficiarioData} rol="Beneficiario" accentColor="purple" />
                     {avalData && <PersonaCard data={avalData} rol="Aval" accentColor="blue" />}
                   </div>

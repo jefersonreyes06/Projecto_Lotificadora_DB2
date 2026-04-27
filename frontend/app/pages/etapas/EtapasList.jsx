@@ -77,15 +77,6 @@ export default function EtapasList() {
                 onChange={(e) => setFilters((f) => ({ ...f, proyecto: e.target.value }))}
               />
             </div>
-            {/*<div>
-              <label className="text-sm font-semibold text-stone-400 block mb-2">Etapa ID</label>
-              <Input
-                type="text"
-                placeholder="Filtrar por ID"
-                value={filters.etapaId}
-                onChange={(e) => setFilters((f) => ({ ...f, etapaId: e.target.value }))}
-              />
-            </div>*/}
             <div>
               <label className="text-sm font-semibold text-stone-400 block mb-2">Nombre de etapa</label>
               <Input
@@ -95,7 +86,7 @@ export default function EtapasList() {
                 onChange={(e) => setFilters((f) => ({ ...f, nombre: e.target.value }))}
               />
             </div>
-            
+
           </div>
         </Card>
         <Card>

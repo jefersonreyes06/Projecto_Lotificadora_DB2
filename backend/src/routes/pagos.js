@@ -13,7 +13,7 @@ router.get(
   "/",
   asyncHandler(async (req, res) => {
     const { ventaId, clienteId, fechaInicio, fechaFin, metodoPago } = req.query;
-    const result = await executeProcedure("sp_pagos_listar", { 
+    const result = await executeProcedure("sp_pagos_listar", {
       VentaID: ventaId || null,
       ClienteID: clienteId || null,
       FechaInicio: fechaInicio || null,
@@ -60,7 +60,7 @@ router.get(
 router.get(
   "/plan-pagos/:ventaId",
   asyncHandler(async (req, res) => {
-    const result = await executeProcedure("sp_obtener_plan_pagos", { 
+    const result = await executeProcedure("sp_obtener_plan_pagos", {
       VentaID: parseInt(req.params.ventaId)
     });
     res.json(result.recordset);
@@ -74,7 +74,7 @@ router.get(
 router.get(
   "/:id",
   asyncHandler(async (req, res) => {
-    const result = await executeProcedure("sp_pagos_obtener", { 
+    const result = await executeProcedure("sp_pagos_obtener", {
       PagoID: parseInt(req.params.id)
     });
     res.json(result.recordset[0] ?? null);
@@ -85,8 +85,6 @@ router.get(
 router.put(
   "/:id",
   asyncHandler(async (req, res) => {
-    console.log("Actualizar pago:", req.body);
-
     const params = {
       VentaID: req.params.id, // el id viene de la URL
       TipoPago: req.body.TipoPago || null,
@@ -98,41 +96,31 @@ router.put(
   })
 );
 
-/**
+/*
  * REGISTRAR UN NUEVO PAGO (TRANSACCIONAL)
  * POST /pagos
- * Body: {
- *   cuotaId: number,
- *   montoRecibido: decimal,
- *   metodoPago: string ('Efectivo', 'Deposito', 'Transferencia'),
- *   numeroDeposito?: string,
- *   cuentaBancariaId?: number,
- *   usuarioCajaId: number,
- *   observaciones?: string,
- *   fechaPago?: date
- * }
  */
 router.post(
   "/",
   asyncHandler(async (req, res) => {
-    const { 
-      cuotaId, 
-      montoRecibido, 
-      metodoPago, 
-      numeroDeposito, 
-      cuentaBancariaId, 
-      usuarioCajaId, 
-      observaciones, 
-      fechaPago 
+    const {
+      cuotaId,
+      montoRecibido,
+      metodoPago,
+      numeroDeposito,
+      cuentaBancariaId,
+      usuarioCajaId,
+      observaciones,
+      fechaPago
     } = req.body;
-    
+
     // Validar parámetros requeridos
     if (!cuotaId || !montoRecibido || !metodoPago || !usuarioCajaId) {
-      return res.status(400).json({ 
-        error: "Parámetros requeridos faltantes: cuotaId, montoRecibido, metodoPago, usuarioCajaId" 
+      return res.status(400).json({
+        error: "Parámetros requeridos faltantes: cuotaId, montoRecibido, metodoPago, usuarioCajaId"
       });
     }
-    
+
     // Transaccional: sp_registrar_pago_completo
     // Valida cuota, registra pago, actualiza saldos y genera factura en una sola transacción
     const result = await executeProcedure("sp_registrar_pago_completo", {
@@ -156,7 +144,7 @@ router.post(
 router.get(
   "/:id/factura",
   asyncHandler(async (req, res) => {
-    const result = await executeProcedure("sp_pago_factura", { 
+    const result = await executeProcedure("sp_pago_factura", {
       PagoID: parseInt(req.params.id)
     });
     res.json(result.recordset[0] ?? null);
@@ -176,9 +164,8 @@ router.post(
   "/cierre-diario",
   asyncHandler(async (req, res) => {
     const { usuarioCajaId, fechaCierre } = req.body;
-    console.log("Ejecutando cierre diario para fecha:", fechaCierre, "UsuarioCajaID:", usuarioCajaId);
-    
-    const result = await executeProcedure("sp_cierre_caja_diario", { 
+
+    const result = await executeProcedure("sp_cierre_caja_diario", {
       UsuarioCajaID: usuarioCajaId || 1,
       FechaCierre: fechaCierre || null
     });
@@ -186,40 +173,17 @@ router.post(
   })
 );
 
-/**
- * OBTENER RESUMEN DE CAJA DIARIO
- * GET /pagos/caja/resumen
- * Query params: fechaCierre, usuarioCajaId
- */
+router.post("/registrar", async (req, res) => {
+  const { VentaID, ClienteID, MontoRecibido } = req.body;
 
-router.get("/cierre", (req, res) => {
-  console.log("🔥 ENTRO AL ENDPOINT /cierre");
-  console.log("QUERY:", req.query);
+  const result = await executeProcedure("sp_abono_cuota_cascada", {
+    ClienteID: ClienteID,
+    VentaID: VentaID,
+    MontoAbono: MontoRecibido,
+    TipoAbono: "Cuota",
+  });
 
-  res.json({ ok: true });
-});
-/*
-router.get(
-  "/cierre",
-  asyncHandler(async (req, res) => {
-    console.log("Obteniendo resumen de caja diario con params:", req.query);
-    const { fechaCierre, usuarioCajaId } = req.query;
-
-    console.log("QUERY:", req.query);
-
-    const result = await executeProcedure("sp_resumen_caja_diario", {
-      fechaCierre: fechaCierre || null,
-      usuarioCajaId: usuarioCajaId || null
-    });
-
-    console.log("RESULT COMPLETO:", result);
-
-    res.json(result.recordset);
-  })
-);*/
-router.get("/__test__", (req, res) => {
-  console.log("🔥 ROUTER INDEX FUNCIONA");
-  res.json({ ok: true });
-});
+  res.json(result.recordset ?? result.returnValue);
+})
 
 export default router;

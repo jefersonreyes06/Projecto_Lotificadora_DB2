@@ -11,7 +11,7 @@ const EMPTY = {
   NumeroLote: "",
   Proyecto: "",
   Etapa: "",
-  Bloque: "",  
+  Bloque: "",
   BloqueID: "",
   LoteID: "",
   FechaReserva: "",
@@ -38,17 +38,17 @@ export default function LoteForm() {
   useNotifyError(error);
 
   useEffect(() => {
-    proyectosApi.list().then(setProyectos).catch(() => {});
+    proyectosApi.list().then(setProyectos).catch(() => { });
   }, []);
 
   useEffect(() => {
     if (!proyectoId) { setEtapas([]); setBloques([]); return; }
-    etapasApi.list().then((etapas) => setEtapas(etapas.filter((e) => e.ProyectoID === proyectoId))).catch(() => {});
+    etapasApi.list().then((etapas) => setEtapas(etapas.filter((e) => e.ProyectoID === proyectoId))).catch(() => { });
   }, [proyectoId]);
 
   useEffect(() => {
     if (!etapaId || !proyectoId) { setBloques([]); return; }
-    bloquesApi.list().then((bloques) => setBloques(bloques.filter((b) => b.EtapaID === etapaId))).catch(() => {});
+    bloquesApi.list().then((bloques) => setBloques(bloques.filter((b) => b.EtapaID === etapaId))).catch(() => { });
   }, [etapaId, proyectoId]);
 
   useEffect(() => {
@@ -58,15 +58,15 @@ export default function LoteForm() {
       setProyectoId(d.proyectoId ?? "");
       setEtapaId(d.etapaId ?? "");
       setBloqueId(d.bloqueId ?? "");
-    }).catch(() => {});
+    }).catch(() => { });
   }, [id]);
 
   const set = (k) => (e) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const setCheck = (k) => (e) => {
-        setForm((f) => ({ ...f, Caracteristicas: e.target.checked ? [...f.Caracteristicas, k] : f.Caracteristicas.filter((c) => c !== k) }));
-        setForm((f) => ({ ...f, [k]: e.target.checked }));
+    setForm((f) => ({ ...f, Caracteristicas: e.target.checked ? [...f.Caracteristicas, k] : f.Caracteristicas.filter((c) => c !== k) }));
+    setForm((f) => ({ ...f, [k]: e.target.checked }));
   }
 
   const handleSubmit = async (e) => {
@@ -76,10 +76,10 @@ export default function LoteForm() {
 
     try {
       if (isEdit) {
-        await lotesApi.update(id, {...form, Caracteristicas: form.Caracteristicas.join(",")});
+        await lotesApi.update(id, { ...form, Caracteristicas: form.Caracteristicas.join(",") });
         notify.success("Lote actualizado correctamente");
       } else {
-        await lotesApi.create({...form, Caracteristicas: form.Caracteristicas.join(",")});
+        await lotesApi.create({ ...form, Caracteristicas: form.Caracteristicas.join(",") });
         notify.success("Lote creado correctamente");
       }
       navigate("/lotes");
@@ -168,56 +168,47 @@ export default function LoteForm() {
                     />
                   </FormField>
                 </div>
-
-                {/*<FormField label="Estado">
-                  <Select value={form.estado} onChange={set("estado")}>
-                    <option value="Disponible">Disponible</option>
-                    <option value="Reservado">Reservado</option>
-                    <option value="Vendido">Vendido</option>
-                  </Select>
-                </FormField>*/}
               </Card>
 
               {/* Características */}
               {
-              !isEdit && 
-              <Card className="p-6">
-                <p className="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-4">
-                  Características que afectan el valor
-                </p>
-                <p className="text-xs text-stone-600 mb-4">
-                  Estas características se evalúan mediante{" "}
-                  <code className="bg-stone-800 px-1 rounded text-amber-400 text-xs">
-                    fn_valor_lote
-                  </code>{" "}
-                  para calcular el precio final.
-                </p>
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { key: 1, label: "Lote de esquina" },
-                    { key: 2, label: "Cerca de parque" },
-                    { key: 6, label: "Calle cerrada" },
-                    { key: 4, label: "Frente a avenida" },
-                  ].map(({ key, label }) => (
-                    <label
-                      key={key}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-md border cursor-pointer transition-all ${
-                        form[key]
-                          ? "border-amber-400/40 bg-amber-400/5"
-                          : "border-stone-700 hover:border-stone-600"
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={!!form[key]}
-                        onChange={setCheck(key)}
-                        className="accent-amber-400 w-4 h-4"
-                      />
-                      <span className="text-sm text-stone-300">{label}</span>
-                    </label>
-                  ))}
-                </div>
-              </Card>}
+                !isEdit &&
+                <Card className="p-6">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-4">
+                    Características que afectan el valor
+                  </p>
+                  <p className="text-xs text-stone-600 mb-4">
+                    Estas características se evalúan mediante{" "}
+                    <code className="bg-stone-800 px-1 rounded text-amber-400 text-xs">
+                      fn_valor_lote
+                    </code>{" "}
+                    para calcular el precio final.
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { key: 1, label: "Lote de esquina" },
+                      { key: 2, label: "Cerca de parque" },
+                      { key: 6, label: "Calle cerrada" },
+                      { key: 4, label: "Frente a avenida" },
+                    ].map(({ key, label }) => (
+                      <label
+                        key={key}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-md border cursor-pointer transition-all ${form[key]
+                            ? "border-amber-400/40 bg-amber-400/5"
+                            : "border-stone-700 hover:border-stone-600"
+                          }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={!!form[key]}
+                          onChange={setCheck(key)}
+                          className="accent-amber-400 w-4 h-4"
+                        />
+                        <span className="text-sm text-stone-300">{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </Card>}
 
               <div className="flex justify-end gap-3">
                 <Link to="/lotes">

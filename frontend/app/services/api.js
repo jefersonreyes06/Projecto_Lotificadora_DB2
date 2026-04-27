@@ -149,6 +149,7 @@ export const pagosApi = {
   update: (id, data) => request(`/pagos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   remove: (id) => request(`/pagos/${id}`, { method: "DELETE" }),
   // sp_cierre_caja_diario — cursor
+  abonar: (data) => request("/pagos/registrar", { method: "POST", body: JSON.stringify(data) }),
   cierreDiario: (fecha) => request(`/pagos/cierre?fechaCierre=${fecha}&usuarioCajaId=1`),
   crearCierreDiario: (fecha, usuarioCajaId) =>
     request('/pagos/cierre-diario', {
@@ -207,17 +208,6 @@ export const avalApi = {
   historial: (id) => request(`/aval/${id}/historial`), // Vista vw_historial_cliente
 };
 
-// ──────────────────────────────────────────────
-/*const normalizeVentaPayload = (data) => ({
-  ClienteId: data.clienteId ?? data.ClienteId ?? data.cliente_id ?? data.ClienteID ?? null,
-
-  LoteId: data.loteId ?? data.LoteId ?? data.lote_id ?? data.LoteID ?? null,
-  TipoVenta: data.tipo_venta ?? data.TipoVenta ?? data.tipoVenta ?? null,
-  Prima: data.prima !== undefined && data.prima !== null ? data.prima : 0,
-  AniosPlazo: data.tipo_venta === 'Credito' ? (data.anios_financiamiento ?? data.aniosPlazo ?? data.AniosPlazo ?? 0) : 0,
-  TasaInteresAplicada: data.tipo_venta === 'Credito' ? (data.tasa_interes ?? data.tasaInteresAplicada ?? data.TasaInteresAplicada ?? data.interes ?? 12.0) : 0,
-});
-*/
 // VENTAS — sp_ventas_*
 // ──────────────────────────────────────────────
 export const ventasApi = {
@@ -298,15 +288,6 @@ export const reportesApi = {
   ocupacionLotes: (estado) => request(`/reportes/ocupacion-lotes?estado=${estado || ""}`), // Vista vw_ocupacion_lotes
   resumenProyectos: () => request("/reportes/resumen-proyectos"), // Vista vw_resumen_proyectos
 };
-/*
-export const proyectosApi = {
-  list: () => request("/proyectos"),                         // EXEC sp_proyectos_listar
-  get: (id) => request(`/proyectos/${id}`),                  // EXEC sp_proyectos_obtener @id
-  create: (data) => request("/proyectos", { method: "POST", body: JSON.stringify(data) }),
-  update: (id, data) => request(`/proyectos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  remove: (id) => request(`/proyectos/${id}`, { method: "DELETE" }),
-  dashboard: () => request("/proyectos/dashboard"),          // Vista vw_dashboard_proyectos
-};*/
 
 // ──────────────────────────────────────────────
 // VISTAS
@@ -317,22 +298,11 @@ export const vistasApi = {
   resumenProyectos: () => request("/reportes/resumen-proyectos"), // Vista vw_resumen_proyectos
   prestamosActivos: () => request("/vistas/prestamos-activos"), // Vista vw_prestamos_activos
 };
-/*
-// ──────────────────────────────────────────────
-// PROCEDIMIENTOS
-// ──────────────────────────────────────────────
-export const procedimienApi = {
-  list: () => request("/vistas"),   
-  ocupacionLotes: (estado) => request(`/reportes/ocupacion-lotes?estado=${estado || ""}`), // Vista vw_ocupacion_lotes
-  resumenProyectos: () => request("/reportes/resumen-proyectos"), // Vista vw_resumen_proyectos
-};*/
 
 // ──────────────────────────────────────────────
 // FUNCIONES
 // ──────────────────────────────────────────────
 export const funcionesApi = {
   list: () => request("/funciones"),
-  //ocupacionLotes: (estado) => request(`/reportes/ocupacion-lotes?estado=${estado || ""}`), // Vista vw_ocupacion_lotes
-  //resumenProyectos: () => request("/reportes/resumen-proyectos"), // Vista vw_resumen_proyectos
 };
 

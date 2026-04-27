@@ -32,9 +32,8 @@ function InfoRow({ label, value, accent, mono }) {
     <div className="flex justify-between items-center py-2.5 border-b border-stone-800/50 last:border-0 gap-4">
       <span className="text-sm text-stone-500 flex-shrink-0">{label}</span>
       <span
-        className={`text-sm text-right break-all ${
-          accent ? "font-semibold text-amber-400" : mono ? "font-mono text-stone-300" : "font-medium text-stone-200"
-        }`}
+        className={`text-sm text-right break-all ${accent ? "font-semibold text-amber-400" : mono ? "font-mono text-stone-300" : "font-medium text-stone-200"
+          }`}
       >
         {value ?? "—"}
       </span>
@@ -79,10 +78,10 @@ function SkeletonCard({ rows = 4 }) {
 export default function VentaDetalle() {
   const { id } = useParams();
 
-  const [venta,   setVenta]   = useState(null);
-  const [pagos,   setPagos]   = useState([]);
+  const [venta, setVenta] = useState(null);
+  const [pagos, setPagos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState(null);
+  const [error, setError] = useState(null);
 
   useNotifyError(error);
 
@@ -92,8 +91,6 @@ export default function VentaDetalle() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [id]);
-
-  console.log(pagos)
 
   // ── Loading ──────────────────────────────────────────────────────────────
   if (loading) {
@@ -129,108 +126,123 @@ export default function VentaDetalle() {
   }
 
   // ── Cálculos derivados ───────────────────────────────────────────────────
-  const montoTotal    = Number(venta.MontoTotal    ?? venta.monto_total    ?? 0);
-  const montoPagado   = venta.TipoVenta == "Contado" ? montoTotal : Number(venta.SaldoPagado   ?? venta.monto_pagado   ?? 0);
+  const montoTotal = Number(venta.MontoTotal ?? venta.monto_total ?? 0);
+  const montoPagado = venta.TipoVenta == "Contado" ? montoTotal : Number(venta.SaldoPagado ?? venta.monto_pagado ?? 0);
   const saldoPendiente = venta.SaldoPendiente;
-  const pctPagado     =  venta.TipoVenta == "Contado" ? 100 : venta.MontoFinanciado > 0 ? (montoPagado / venta.MontoFinanciado) * 100 : 0;
+  const pctPagado = venta.TipoVenta == "Contado" ? 100 : venta.MontoFinanciado > 0 ? (montoPagado / venta.MontoFinanciado) * 100 : 0;
 
-  const esCredito     = (venta.TipoVenta ?? venta.tipo_venta) === "Credito";
-  const estado        = venta.Estado       ?? venta.estado        ?? "—";
-  const estadoCuenta  = venta.EstadoCuenta ?? venta.estado_cuenta ?? "—";
+  const esCredito = (venta.TipoVenta ?? venta.tipo_venta) === "Credito";
+  const estado = venta.Estado ?? venta.estado ?? "—";
+  const estadoCuenta = venta.EstadoCuenta ?? venta.estado_cuenta ?? "—";
   const cuotasVencidas = Number(venta.CuotasVencidas ?? venta.cuotas_vencidas ?? 0);
 
   // Campos del lote (SP puede devolver PascalCase o snake_case)
   const lote = {
-    codigo:       venta.NumeroLote   ?? venta.lote_codigo    ?? venta.Lote    ?? "—",
-    bloque:       venta.Bloque        ?? venta.bloque         ?? "—",
-    etapa:        venta.Etapa         ?? venta.etapa          ?? "—",
-    proyecto:     venta.Proyecto      ?? venta.proyecto       ?? "—",
-    areaVaras:    venta.AreaVaras     ?? venta.area_m2        ?? venta.areaVaras ?? null,
-    valorBase:    venta.PrecioBase    ?? venta.valor_base     ?? null,
-    valorLote:    venta.PrecioFinal     ?? venta.valor_lote     ?? null,
-    esEsquina:    venta.EsEsquina     ?? venta.es_esquina     ?? false,
-    cercaParque:  venta.CercaParque   ?? venta.cerca_parque   ?? false,
-    calleCerrada: venta.CalleCerrada  ?? venta.calle_cerrada  ?? false,
-    frenteAvenida:venta.FrenteAvenida ?? venta.frente_avenida ?? false,
-    precioVara:   venta.PrecioVaraCuadrada    ?? venta.precio_vara    ?? null,
+    codigo: venta.NumeroLote ?? venta.lote_codigo ?? venta.Lote ?? "—",
+    bloque: venta.Bloque ?? venta.bloque ?? "—",
+    etapa: venta.Etapa ?? venta.etapa ?? "—",
+    proyecto: venta.Proyecto ?? venta.proyecto ?? "—",
+    areaVaras: venta.AreaVaras ?? venta.area_m2 ?? venta.areaVaras ?? null,
+    valorBase: venta.PrecioBase ?? venta.valor_base ?? null,
+    valorLote: venta.PrecioFinal ?? venta.valor_lote ?? null,
+    esEsquina: venta.EsEsquina ?? venta.es_esquina ?? false,
+    cercaParque: venta.CercaParque ?? venta.cerca_parque ?? false,
+    calleCerrada: venta.CalleCerrada ?? venta.calle_cerrada ?? false,
+    frenteAvenida: venta.FrenteAvenida ?? venta.frente_avenida ?? false,
+    precioVara: venta.PrecioVaraCuadrada ?? venta.precio_vara ?? null,
   };
 
   // Campos del cliente
   const cliente = {
-    id:        venta.ClienteID     ?? venta.cliente_id       ?? null,
-    nombre:    venta.ClienteNombre ?? venta.cliente_nombre   ?? "—",
-    apellido:  venta.ClienteApellido ?? venta.cliente_apellido ?? "",
-    dni:       venta.ClienteDNI    ?? venta.cliente_dni      ?? "—",
-    telefono:  venta.ClienteTelefono ?? venta.cliente_telefono ?? null,
-    correo:    venta.ClienteCorreo ?? venta.cliente_correo   ?? null,
-    empresa:   venta.ClienteEmpresa ?? venta.cliente_empresa ?? null,
-    ingreso:   venta.ClienteIngreso ?? venta.cliente_ingreso ?? null,
+    id: venta.ClienteID ?? venta.cliente_id ?? null,
+    nombre: venta.ClienteNombre ?? venta.cliente_nombre ?? "—",
+    apellido: venta.ClienteApellido ?? venta.cliente_apellido ?? "",
+    dni: venta.ClienteDNI ?? venta.cliente_dni ?? "—",
+    telefono: venta.ClienteTelefono ?? venta.cliente_telefono ?? null,
+    correo: venta.ClienteCorreo ?? venta.cliente_correo ?? null,
+    empresa: venta.ClienteEmpresa ?? venta.cliente_empresa ?? null,
+    ingreso: venta.ClienteIngreso ?? venta.cliente_ingreso ?? null,
     departamento: venta.ClienteDepartamento ?? venta.cliente_departamento ?? null,
-    municipio:    venta.ClienteMunicipio    ?? venta.cliente_municipio    ?? null,
+    municipio: venta.ClienteMunicipio ?? venta.cliente_municipio ?? null,
   };
 
   // Campos del aval (solo crédito)
   const aval = {
-    nombre:   venta.AvalNombre   ?? venta.aval_nombre   ?? null,
+    nombre: venta.AvalNombre ?? venta.aval_nombre ?? null,
     apellido: venta.AvalApellido ?? venta.aval_apellido ?? "",
-    dni:      venta.AvalDNI      ?? venta.aval_dni      ?? null,
+    dni: venta.AvalDNI ?? venta.aval_dni ?? null,
     telefono: venta.AvalTelefono ?? venta.aval_telefono ?? null,
   };
 
   // Campos del beneficiario (solo crédito)
   const beneficiario = {
-    nombre:   venta.BeneficiarioNombre   ?? venta.beneficiario_nombre   ?? null,
-    dni:      venta.BeneficiarioDNI      ?? venta.beneficiario_dni      ?? null,
+    nombre: venta.BeneficiarioNombre ?? venta.beneficiario_nombre ?? null,
+    dni: venta.BeneficiarioDNI ?? venta.beneficiario_dni ?? null,
     relacion: venta.BeneficiarioRelacion ?? venta.beneficiario_relacion ?? null,
   };
 
   // Financiamiento (solo crédito)
   const credito = {
-    prima:       venta.Prima             ?? venta.prima              ?? 0,
-    financiado:  venta.MontoFinanciado   ?? venta.monto_financiado   ?? 0,
-    tasa:        venta.TasaInteresAplicada       ?? venta.tasa_interes       ?? 0,
-    anios:       venta.AniosPlazo ?? venta.anios_financiamiento ?? 0,
-    cuotaMensual:venta.CuotaMensualEstimada      ?? venta.cuota_mensual      ?? 0,
+    prima: venta.Prima ?? venta.prima ?? 0,
+    financiado: venta.MontoFinanciado ?? venta.monto_financiado ?? 0,
+    tasa: venta.TasaInteresAplicada ?? venta.tasa_interes ?? 0,
+    anios: venta.AniosPlazo ?? venta.anios_financiamiento ?? 0,
+    cuotaMensual: venta.CuotaMensualEstimada ?? venta.cuota_mensual ?? 0,
     cuotasPagadas: Number(venta.CuotasPagadas ?? venta.cuotas_pagadas ?? 0),
     cuotasTotales: Number(venta.CuotasTotales ?? venta.cuotas_totales ?? 0),
   };
-  console.log(venta)
 
   // Cuenta bancaria
   const cuenta = {
-    banco:   venta.CuentaBanco   ?? venta.cuenta_banco   ?? null,
-    numero:  venta.CuentaNumero  ?? venta.cuenta_numero  ?? null,
+    banco: venta.CuentaBanco ?? venta.cuenta_banco ?? null,
+    numero: venta.CuentaNumero ?? venta.cuenta_numero ?? null,
     titular: venta.CuentaTitular ?? venta.cuenta_titular ?? null,
   };
 
   // Columnas del historial de pagos
   const pagosCols = [
-    { key: "PagoID",      label: "#",       width: 56,
-      render: (v, r) => <span className="font-mono text-xs text-stone-500">{v ?? r.id}</span> },
-    { key: "FechaPago",   label: "Fecha",
-      render: (v, r) => fmtDate(v ?? r.fecha_pago) },
-    { key: "TipoPago",    label: "Tipo",
+    {
+      key: "PagoID", label: "#", width: 56,
+      render: (v, r) => <span className="font-mono text-xs text-stone-500">{v ?? r.id}</span>
+    },
+    {
+      key: "FechaPago", label: "Fecha",
+      render: (v, r) => fmtDate(v ?? r.fecha_pago)
+    },
+    {
+      key: "TipoPago", label: "Tipo",
       render: (v, r) => {
         const t = v ?? r.tipo_pago ?? "—";
         return <Badge variant={t === "Efectivo" ? "success" : "info"}>{t}</Badge>;
-      }},
-    { key: "MontoPagado", label: "Total",
-      render: (v, r) => <span className="text-emerald-400 font-medium">{fmtLps(v ?? r.monto_pagado)}</span> },
-    { key: "Capital",     label: "Capital",
-      render: (v, r) => <span className="text-blue-400">{fmtLps(v ?? r.capital)}</span> },
-    { key: "Interes",     label: "Interés",
-      render: (v, r) => <span className="text-amber-400">{fmtLps(v ?? r.interes)}</span> },
-    { key: "NumeroCuota", label: "Cuota #",
-      render: (v, r) => <span className="text-stone-400">{v ?? r.numero_cuota ?? "—"}</span> },
-    { key: "FacturaID",   label: "Factura",
+      }
+    },
+    {
+      key: "MontoPagado", label: "Total",
+      render: (v, r) => <span className="text-emerald-400 font-medium">{fmtLps(v ?? r.monto_pagado)}</span>
+    },
+    {
+      key: "Capital", label: "Capital",
+      render: (v, r) => <span className="text-blue-400">{fmtLps(v ?? r.capital)}</span>
+    },
+    {
+      key: "Interes", label: "Interés",
+      render: (v, r) => <span className="text-amber-400">{fmtLps(v ?? r.interes)}</span>
+    },
+    {
+      key: "NumeroCuota", label: "Cuota #",
+      render: (v, r) => <span className="text-stone-400">{v ?? r.numero_cuota ?? "—"}</span>
+    },
+    {
+      key: "FacturaID", label: "Factura",
       render: (v, r) => {
         const fid = v ?? r.factura_id;
         return fid
           ? <Link to={`/pagos/${fid}/factura`} onClick={(e) => e.stopPropagation()}>
-              <Badge variant="default">#{fid}</Badge>
-            </Link>
+            <Badge variant="default">#{fid}</Badge>
+          </Link>
           : <span className="text-stone-600">—</span>;
-      }},
+      }
+    },
   ];
 
   // ── Render ───────────────────────────────────────────────────────────────
@@ -246,7 +258,7 @@ export default function VentaDetalle() {
                 <Button variant="secondary">Plan de pagos</Button>
               </Link>
             )}
-            <Link to={`/pagos/nuevo?ventaId=${id}`}>
+            <Link to={`/pagos/nuevo?numeroLote=${encodeURIComponent(lote.codigo)}`}>
               <Button>+ Registrar pago</Button>
             </Link>
             <Link to="/ventas"><Button variant="ghost">← Volver</Button></Link>
@@ -310,8 +322,8 @@ export default function VentaDetalle() {
             {/* Info de la venta */}
             <Card className="p-5">
               <SectionTitle>Venta</SectionTitle>
-              <InfoRow label="Número"       value={`#${id}`} mono />
-              <InfoRow label="Fecha"        value={fmtDate(venta.FechaVenta ?? venta.fecha_venta)} />
+              <InfoRow label="Número" value={`#${id}`} mono />
+              <InfoRow label="Fecha" value={fmtDate(venta.FechaVenta ?? venta.fecha_venta)} />
               <InfoRow
                 label="Tipo"
                 value={
@@ -341,21 +353,21 @@ export default function VentaDetalle() {
             {/* Lote */}
             <Card className="p-5">
               <SectionTitle>Lote</SectionTitle>
-              <InfoRow label="Código"      value={lote.codigo} mono />
-              <InfoRow label="Bloque"      value={lote.bloque} />
-              <InfoRow label="Etapa"       value={lote.etapa} />
-              <InfoRow label="Proyecto"    value={lote.proyecto} />
-              <InfoRow label="Área"        value={lote.areaVaras != null ? `${Number(lote.areaVaras).toLocaleString("es-HN")} v²` : null} />
+              <InfoRow label="Código" value={lote.codigo} mono />
+              <InfoRow label="Bloque" value={lote.bloque} />
+              <InfoRow label="Etapa" value={lote.etapa} />
+              <InfoRow label="Proyecto" value={lote.proyecto} />
+              <InfoRow label="Área" value={lote.areaVaras != null ? `${Number(lote.areaVaras).toLocaleString("es-HN")} v²` : null} />
               <InfoRow label="Precio / v²" value={fmtLps(lote.precioVara)} />
-              <InfoRow label="Valor base"  value={fmtLps(lote.valorBase)} />
+              <InfoRow label="Valor base" value={fmtLps(lote.valorBase)} />
               <InfoRow label="Valor total" value={fmtLps(lote.valorLote)} accent />
 
               {/* Características del lote */}
               {(lote.esEsquina || lote.cercaParque || lote.calleCerrada || lote.frenteAvenida) && (
                 <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-stone-800">
-                  {lote.esEsquina     && <Badge variant="warning">Esquina</Badge>}
-                  {lote.cercaParque   && <Badge variant="info">Cerca de parque</Badge>}
-                  {lote.calleCerrada  && <Badge variant="success">Calle cerrada</Badge>}
+                  {lote.esEsquina && <Badge variant="warning">Esquina</Badge>}
+                  {lote.cercaParque && <Badge variant="info">Cerca de parque</Badge>}
+                  {lote.calleCerrada && <Badge variant="success">Calle cerrada</Badge>}
                   {lote.frenteAvenida && <Badge>Frente a avenida</Badge>}
                 </div>
               )}
@@ -365,8 +377,8 @@ export default function VentaDetalle() {
             {cuenta.banco && (
               <Card className="p-5">
                 <SectionTitle>Cuenta bancaria de la etapa</SectionTitle>
-                <InfoRow label="Banco"   value={cuenta.banco} />
-                <InfoRow label="Número"  value={cuenta.numero} mono />
+                <InfoRow label="Banco" value={cuenta.banco} />
+                <InfoRow label="Número" value={cuenta.numero} mono />
                 <InfoRow label="Titular" value={cuenta.titular} />
               </Card>
             )}
@@ -390,9 +402,9 @@ export default function VentaDetalle() {
                 </div>
               </div>
 
-              <InfoRow label="Teléfono"     value={cliente.telefono} />
-              <InfoRow label="Correo"       value={cliente.correo} />
-              <InfoRow label="Empresa"      value={cliente.empresa} />
+              <InfoRow label="Teléfono" value={cliente.telefono} />
+              <InfoRow label="Correo" value={cliente.correo} />
+              <InfoRow label="Empresa" value={cliente.empresa} />
               <InfoRow label="Ingreso mensual" value={fmtLps(cliente.ingreso)} />
               {cliente.departamento && (
                 <InfoRow
@@ -407,10 +419,10 @@ export default function VentaDetalle() {
               <Card className="p-5">
                 <SectionTitle>Financiamiento</SectionTitle>
                 <InfoRow label="Monto financiado" value={fmtLps(credito.financiado)} accent />
-                <InfoRow label="Prima"            value={fmtLps(credito.prima)} />
-                <InfoRow label="Tasa de interés"  value={`${credito.tasa}% anual`} />
-                <InfoRow label="Plazo"            value={`${credito.anios} años · ${credito.anios * 12} cuotas`} />
-                <InfoRow label="Cuota mensual"    value={fmtLps(credito.cuotaMensual)} accent />
+                <InfoRow label="Prima" value={fmtLps(credito.prima)} />
+                <InfoRow label="Tasa de interés" value={`${credito.tasa}% anual`} />
+                <InfoRow label="Plazo" value={`${credito.anios} años · ${credito.anios * 12} cuotas`} />
+                <InfoRow label="Cuota mensual" value={fmtLps(credito.cuotaMensual)} accent />
                 {credito.cuotasTotales > 0 && (
                   <InfoRow
                     label="Avance cuotas"
@@ -454,8 +466,8 @@ export default function VentaDetalle() {
                   <>
                     <SectionTitle className="mt-4">Beneficiario en caso de fallecimiento</SectionTitle>
                     <div className="mt-3">
-                      <InfoRow label="Nombre"   value={beneficiario.nombre} />
-                      <InfoRow label="DNI"      value={beneficiario.dni} mono />
+                      <InfoRow label="Nombre" value={beneficiario.nombre} />
+                      <InfoRow label="DNI" value={beneficiario.dni} mono />
                       <InfoRow label="Relación" value={beneficiario.relacion} />
                     </div>
                   </>
@@ -471,8 +483,8 @@ export default function VentaDetalle() {
             <Card className="p-5">
               <SectionTitle>Resumen financiero</SectionTitle>
               <div className="space-y-0">
-                <InfoRow label="Valor del lote"   value={fmtLps(lote.valorLote)} />
-                {esCredito && <InfoRow label="Prima"          value={fmtLps(credito.prima)} />}
+                <InfoRow label="Valor del lote" value={fmtLps(lote.valorLote)} />
+                {esCredito && <InfoRow label="Prima" value={fmtLps(credito.prima)} />}
                 {esCredito && <InfoRow label="Monto financiado" value={fmtLps(credito.financiado)} />}
                 <div className="h-px bg-stone-700 my-1" />
                 <InfoRow label="Total de la venta" value={fmtLps(montoTotal)} accent />
@@ -517,33 +529,6 @@ export default function VentaDetalle() {
                 </Link>
               </Card>
             )}
-
-            {/* Acciones */}
-            {/* <Card className="p-5">
-              <SectionTitle>Acciones</SectionTitle>
-              <div className="space-y-2">
-                <Link to={`/pagos/nuevo?ventaId=${id}`} className="block">
-                  <Button className="w-full justify-center">Registrar pago</Button>
-                </Link>
-                {esCredito && (
-                  <Link to={`/ventas/${id}/plan-pagos`} className="block">
-                    <Button variant="secondary" className="w-full justify-center">
-                      Ver tabla de amortización
-                    </Button>
-                  </Link>
-                )}
-                <Link to={`/pagos?ventaId=${id}`} className="block">
-                  <Button variant="ghost" className="w-full justify-center">
-                    Historial de pagos
-                  </Button>
-                </Link>
-                <Link to={`/lotes/${venta.LoteID ?? venta.lote_id}`} className="block">
-                  <Button variant="ghost" className="w-full justify-center">
-                    Ver lote
-                  </Button>
-                </Link>
-              </div>
-            </Card> */}
           </div>
         </div>
 

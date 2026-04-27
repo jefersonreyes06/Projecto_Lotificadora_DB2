@@ -32,7 +32,6 @@ export default function LotesList() {
 
   const filteredData = useMemo(() => {
     return data.filter((item) => {
-      console.log("Filtering item:", item);
       const codigo = String(item.NumeroLote ?? item.codigo ?? "").toLowerCase();
       const bloque = String(item.bloque ?? item.Bloque ?? "").toLowerCase();
       const etapa = String(item.etapa ?? item.Etapa ?? "").toLowerCase();
@@ -53,10 +52,10 @@ export default function LotesList() {
     { key: "Etapa", label: "Etapa" },
     { key: "Proyecto", label: "Proyecto" },
     { key: "AreaVaras", label: "Área v²", render: (v) => (v != null ? Number(v).toLocaleString("es-HN") : "") },
-    //{ key: "es_esquina", label: "Esquina", render: (v) => (v ? <Badge variant="warning">Sí</Badge> : "—") },
+    { key: "PrecioVaraCuadrada", label: "Precio v²" },
     { key: "Estado", label: "Estado", render: (v) => <Badge variant={v === "Disponible" ? "success" : v === "Vendido" ? "danger" : "warning"}>{v}</Badge> },
     { key: "PrecioFinal", label: "Valor", render: (v) => <span className="text-amber-400">L {Number(v).toLocaleString("es-HN")}</span> },
-    { key: "LoteID", label: "ID", width: 80, render: (id) => <Link to={`/lotes/${id}/editar`}><Button size="sm" variant="ghost">Editar</Button></Link> },
+    { key: "LoteID", label: "Acción", width: 80, render: (id) => <Link to={`/lotes/${id}/editar`}><Button size="sm" variant="ghost">Editar</Button></Link> },
   ];
 
   return (

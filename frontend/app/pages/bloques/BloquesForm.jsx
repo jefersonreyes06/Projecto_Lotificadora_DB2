@@ -36,15 +36,14 @@ export default function BloquesForm() {
   const [error, setError] = useState(null);
 
   useNotifyError(error);
-  
+
   useEffect(() => {
-    proyectosApi.list().then(setProyectos).catch(() => {});
+    proyectosApi.list().then(setProyectos).catch(() => { });
   }, []);
 
   useEffect(() => {
-    console.log("ProyectoID cambiado:", form.ProyectoID); // Debug
     if (!form.ProyectoID) { setEtapas([]); return; }
-    etapasApi.list().then((etapas) => setEtapas(etapas.filter((e) => e.ProyectoID === +form.ProyectoID))).catch(() => {});
+    etapasApi.list().then((etapas) => setEtapas(etapas.filter((e) => e.ProyectoID === +form.ProyectoID))).catch(() => { });
   }, [form.ProyectoID]);
 
   useEffect(() => {
@@ -119,31 +118,31 @@ export default function BloquesForm() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <FormField label="Proyecto" required isDisabled>
                   <Select value={form.ProyectoID} onChange={set("ProyectoID")} required disabled={isEdit}>
-                      {isEdit && (
-                        <option value={form.Proyecto}>
-                          {form.Proyecto ?? "Proyecto actual"}
-                        </option>
-                      )}
-                      {!isEdit && <option value="">Seleccione...</option>}
-                      {!isEdit && proyectos.map((p) => (
-                        <option key={p.ProyectoID} value={p.ProyectoID}>{p.Nombre}</option>
-                      ))}
+                    {isEdit && (
+                      <option value={form.Proyecto}>
+                        {form.Proyecto ?? "Proyecto actual"}
+                      </option>
+                    )}
+                    {!isEdit && <option value="">Seleccione...</option>}
+                    {!isEdit && proyectos.map((p) => (
+                      <option key={p.ProyectoID} value={p.ProyectoID}>{p.Nombre}</option>
+                    ))}
 
                   </Select>
                 </FormField>
-                
+
                 <FormField label="Etapa" required>
 
                   <Select value={form.EtapaID} onChange={set('EtapaID')} required>
-                      {isEdit && (
-                        <option value={form.EtapaID}>
-                          {form.etapa ?? form.Etapa ?? "Etapa actual"}
-                        </option>
-                      )}
-                      {!isEdit && <option value="">Seleccione...</option>}
-                      {!isEdit && etapas.map((e) => (
-                        <option key={e.EtapaID} value={e.EtapaID}>{e.Etapa}</option>
-                      ))}
+                    {isEdit && (
+                      <option value={form.EtapaID}>
+                        {form.etapa ?? form.Etapa ?? "Etapa actual"}
+                      </option>
+                    )}
+                    {!isEdit && <option value="">Seleccione...</option>}
+                    {!isEdit && etapas.map((e) => (
+                      <option key={e.EtapaID} value={e.EtapaID}>{e.Etapa}</option>
+                    ))}
                   </Select>
                 </FormField>
 
@@ -158,7 +157,7 @@ export default function BloquesForm() {
 
                 <FormField required label="Área total (varas²)">
                   <Input
-                  required
+                    required
                     type="number"
                     value={form.AreaTotalVaras}
                     onChange={set("AreaTotalVaras")}
@@ -166,7 +165,7 @@ export default function BloquesForm() {
                     min={0}
                     step="0.01"
                   />
-                </FormField> 
+                </FormField>
               </div>
 
               <div className="flex justify-end gap-3 pt-2 border-t border-stone-800">

@@ -17,9 +17,7 @@ router.get(
 router.get(
   "/dni/:dni",
   asyncHandler(async (req, res) => {
-    //console.log("GET /dni/ called with dni:", req.params.dni);
     const result = await executeProcedure("sp_aval_obtener_por_dni", { dni: req.params.dni });
-    //console.log("Result:", result.recordset);
     res.json(result.recordset[0] ?? null);
   })
 );
@@ -40,7 +38,6 @@ router.post(
       ? parseFloat(req.body.ingreso_mensual) * 0.3
       : null;
 
-      console.log('Datos del frontend:', req.body);
     const params = {
       NombreCompleto: `${req.body.nombre} ${req.body.apellido}`,
       DNI: req.body.dni,

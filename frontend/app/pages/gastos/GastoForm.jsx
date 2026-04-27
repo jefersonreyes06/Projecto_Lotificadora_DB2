@@ -60,7 +60,6 @@ export default function ProyectoForm() {
     e.preventDefault();
     setSaving(true);
     setError(null);
-    console.log({ ProyectoID: id, TipoGastoID: form.TipoGastoID, MontoTotal: form.MontoTotal, Concepto: form.Concepto, Proveedor: form.Proveedor });
 
     try {
       await gastosApi.create({ ProyectoID: id, TipoGastoID: form.TipoGastoID, MontoTotal: form.MontoTotal, Concepto: form.Concepto, Proveedor: form.Proveedor });
@@ -125,19 +124,6 @@ export default function ProyectoForm() {
                     />
                   </FormField>
                 </div>
-                {/*
-                <div>
-                  <FormField label="Etapa" required>
-                    <Select value={form.Etapa} onChange={set("Etapa")}>
-                      <option value="">Seleccionar Etapa</option>
-                      {etapas.map((etapa) => (
-                        <option key={etapa.EtapaID} value={etapa.EtapaID}>
-                          {etapa.Etapa}
-                        </option>
-                      ))}
-                    </Select>
-                  </FormField>
-                </div>*/}
 
                 <div className="col-span-2">
                   <FormField label="Tipo de Gasto" required>

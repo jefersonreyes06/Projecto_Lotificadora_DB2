@@ -7,20 +7,20 @@ import {
 } from "../../components/index";
 import { notify } from "../../utils/notify";
 
-const fmtLps  = (v) => `L ${Number(v ?? 0).toLocaleString("es-HN", { minimumFractionDigits: 2 })}`;
+const fmtLps = (v) => `L ${Number(v ?? 0).toLocaleString("es-HN", { minimumFractionDigits: 2 })}`;
 const fmtDate = (v) => v ? new Date(v).toLocaleDateString("es-HN") : "—";
 
 export default function PagosList() {
-  const [searchParams]          = useSearchParams();
-  const ventaIdParam            = searchParams.get("ventaId") ?? "";
-  const [data, setData]         = useState([]);
+  const [searchParams] = useSearchParams();
+  const ventaIdParam = searchParams.get("ventaId") ?? "";
+  const [data, setData] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [search, setSearch]     = useState("");
-  const [tipoFiltro, setTipo]   = useState("");
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [tipoFiltro, setTipo] = useState("");
   const [cierreFecha, setCierre] = useState(new Date().toISOString().split("T")[0]);
   const [cierreLoading, setCierreLoading] = useState(false);
-  const [cierreMsg, setCierreMsg]         = useState(null);
+  const [cierreMsg, setCierreMsg] = useState(null);
   const [busquedaLote, setBusquedaLote] = useState("");
   const navigate = useNavigate();
 
@@ -32,20 +32,13 @@ export default function PagosList() {
         setData(d);
         setFiltered(d);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   };
 
 
   useEffect(load, [ventaIdParam]);
 
-  /*useEffect(() => {
-    let d = data;
-    //if (search)     d = d.filter((r) => `${r.cliente} ${r.id} ${r.factura_id}`.toLowerCase().includes(search.toLowerCase()));
-    //if (tipoFiltro) d = d.filter((r) => r.tipo_pago === tipoFiltro);
-    setFiltered(d);
-  }, [search, tipoFiltro, data]);
-*/
   const handleVerResumenDiario = async () => {
     if (!cierreFecha) {
       notify.error("Por favor, seleccione una fecha para el resumen diario.");
@@ -53,10 +46,8 @@ export default function PagosList() {
     }
     setCierreLoading(true);
     try {
-      console.log("Obteniendo resumen diario para fecha:", cierreFecha);
       const res = await pagosApi.cierreDiario(cierreFecha);
       // Aquí podrías mostrar el resumen en un modal o una nueva página
-      console.log("Resumen diario:", res);
       notify.success("Resumen diario obtenido. Revisa la consola para más detalles.");
     } catch (e) {
       const message = e.message || "Error al obtener el resumen diario.";
@@ -99,22 +90,29 @@ export default function PagosList() {
   const totalBanco = (data ?? []).filter((p) => p?.TipoPago !== "Efectivo").reduce((s, p) => s + Number(p.MontoCuota ?? 0), 0);
 
   const columns = [
-    { key: "id",           label: "#", width: 60, render: (v) => <span className="text-stone-500 font-mono text-xs">{v}</span> },
-    { key: "fecha_pago",   label: "Fecha",    render: fmtDate },
-    { key: "cliente",      label: "Cliente" },
-    { key: "lote",         label: "Lote" },
-    { key: "tipo_pago",    label: "Tipo",
-      render: (v) => <Badge variant={v === "Efectivo" ? "success" : v === "Deposito" ? "info" : "warning"}>{v}</Badge> },
-    { key: "monto_pagado", label: "Monto",
-      render: (v) => <span className="text-emerald-400 font-medium">{fmtLps(v)}</span> },
-    { key: "capital",      label: "Capital",  render: (v) => <span className="text-blue-400">{fmtLps(v)}</span> },
-    { key: "interes",      label: "Interés",  render: (v) => <span className="text-amber-400">{fmtLps(v)}</span> },
-    { key: "factura_id",   label: "Factura",  render: (v) => v ? <Badge variant="default">#{v}</Badge> : "—" },
-    { key: "depositado",   label: "Depositado",
+    { key: "id", label: "#", width: 60, render: (v) => <span className="text-stone-500 font-mono text-xs">{v}</span> },
+    { key: "fecha_pago", label: "Fecha", render: fmtDate },
+    { key: "cliente", label: "Cliente" },
+    { key: "lote", label: "Lote" },
+    {
+      key: "tipo_pago", label: "Tipo",
+      render: (v) => <Badge variant={v === "Efectivo" ? "success" : v === "Deposito" ? "info" : "warning"}>{v}</Badge>
+    },
+    {
+      key: "monto_pagado", label: "Monto",
+      render: (v) => <span className="text-emerald-400 font-medium">{fmtLps(v)}</span>
+    },
+    { key: "capital", label: "Capital", render: (v) => <span className="text-blue-400">{fmtLps(v)}</span> },
+    { key: "interes", label: "Interés", render: (v) => <span className="text-amber-400">{fmtLps(v)}</span> },
+    { key: "factura_id", label: "Factura", render: (v) => v ? <Badge variant="default">#{v}</Badge> : "—" },
+    {
+      key: "depositado", label: "Depositado",
       render: (v, row) => row.tipo_pago !== "Efectivo"
         ? <span className="text-stone-600">N/A</span>
-        : v ? <Badge variant="success">Sí</Badge> : <Badge variant="warning">Pendiente</Badge> },
-    { key: "id", label: "", width: 80,
+        : v ? <Badge variant="success">Sí</Badge> : <Badge variant="warning">Pendiente</Badge>
+    },
+    {
+      key: "id", label: "", width: 80,
       render: (id) => (
         <div onClick={(e) => e.stopPropagation()}>
           <Link to={`/pagos/${id}/factura`}><Button size="sm" variant="ghost">Factura</Button></Link>
@@ -173,10 +171,10 @@ export default function PagosList() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <StatCard label="Total recaudado"  value={fmtLps(totalEfectivo + totalBanco)} accent />
+          <StatCard label="Total recaudado" value={fmtLps(totalEfectivo + totalBanco)} accent />
           <StatCard label="En caja (efectivo)" value={fmtLps(totalEfectivo)} sub="Por depositar al banco" />
-          <StatCard label="Bancarios"        value={fmtLps(totalBanco)} sub="Depósitos y transferencias" />
-          <StatCard label="Registros"        value={data?.length} />
+          <StatCard label="Bancarios" value={fmtLps(totalBanco)} sub="Depósitos y transferencias" />
+          <StatCard label="Registros" value={data?.length} />
         </div>
 
         {/* Cierre de caja diario */}
@@ -217,12 +215,12 @@ export default function PagosList() {
             className="max-w-xs"
           />
           <input
-                type="date"
-                value={cierreFecha}
-                onChange={(e) => setCierre(e.target.value)}
-                className="bg-stone-800 border border-stone-700 rounded-md px-3 py-2 text-sm text-stone-100 focus:outline-none focus:border-amber-400/60 transition-all"
+            type="date"
+            value={cierreFecha}
+            onChange={(e) => setCierre(e.target.value)}
+            className="bg-stone-800 border border-stone-700 rounded-md px-3 py-2 text-sm text-stone-100 focus:outline-none focus:border-amber-400/60 transition-all"
           />
-              
+
           <Button onClick={handleVerResumenDiario} disabled={cierreLoading}>
             {cierreLoading ? "Procesando..." : "Ver resumen diario"}
           </Button>
@@ -244,7 +242,7 @@ export default function PagosList() {
             columns={columns}
             data={filtered}
             loading={loading}
-            //onRowClick={(row) => navigate(`/pagos/${row.id}/factura`)}
+          //onRowClick={(row) => navigate(`/pagos/${row.id}/factura`)}
           />
         </Card>
       </PageContent>

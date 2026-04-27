@@ -4,22 +4,20 @@ import { asyncHandler } from "../middleware/errorHandler.js";
 
 const router = Router();
 
-  router.get(
-    "/disponibles",
-    asyncHandler(async (req, res) => {
-      const proyectoId = req.query.proyectoId ? Number(req.query.proyectoId) : null;
-      const etapaId    = req.query.etapaId    ? Number(req.query.etapaId)    : null;
-      const bloqueId   = req.query.bloqueId   ? Number(req.query.bloqueId)   : null;
+router.get(
+  "/disponibles",
+  asyncHandler(async (req, res) => {
+    const proyectoId = req.query.proyectoId ? Number(req.query.proyectoId) : null;
+    const etapaId = req.query.etapaId ? Number(req.query.etapaId) : null;
+    const bloqueId = req.query.bloqueId ? Number(req.query.bloqueId) : null;
 
-      console.log('Received filters: proyectoId=' + proyectoId + ', etapaId=' + etapaId + ', bloqueId=' + bloqueId);
-      console.log('Received filters:' + proyectoId + etapaId + bloqueId );
-      const pool = await sql.connect(config);
+    const pool = await sql.connect(config);
 
-      const result = await pool.request()
-        .input('ProyectoID', sql.Int, proyectoId)
-        .input('EtapaID', sql.Int, etapaId)
-        .input('BloqueID', sql.Int, bloqueId)
-        .query(`
+    const result = await pool.request()
+      .input('ProyectoID', sql.Int, proyectoId)
+      .input('EtapaID', sql.Int, etapaId)
+      .input('BloqueID', sql.Int, bloqueId)
+      .query(`
           SELECT *
           FROM vw_lotes_disponibles
           WHERE (@ProyectoID IS NULL OR ProyectoID = @ProyectoID)
@@ -27,9 +25,9 @@ const router = Router();
             AND (@BloqueID IS NULL OR BloqueID = @BloqueID)
         `);
 
-      res.json(result.recordset);
-    })
-  );
+    res.json(result.recordset);
+  })
+);
 
 
 router.get(
@@ -76,7 +74,7 @@ router.post(
 router.put(
   "/:id",
   asyncHandler(async (req, res) => {
-    const { BloqueID, AreaVaras, Estado = 'Disponible'} = req.body;
+    const { BloqueID, AreaVaras, Estado = 'Disponible' } = req.body;
 
     const result = await executeProcedure("sp_lotes_actualizar", {
       id: req.params.id,
