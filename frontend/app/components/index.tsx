@@ -1,7 +1,13 @@
-// ──────────────────────────────────────────────
+import type { ReactNode } from "react";
+
+interface PageHeaderProps {
+  title: string;
+  subtitle?: string;
+  actions?: ReactNode;
+}
+
 // PageHeader
-// ──────────────────────────────────────────────
-export function PageHeader({ title, subtitle, actions }) {
+export function PageHeader({ title, subtitle, actions }: PageHeaderProps) {
   return (
     <div className="flex items-start justify-between px-8 pt-8 pb-6 border-b border-stone-800">
       <div>
@@ -15,9 +21,21 @@ export function PageHeader({ title, subtitle, actions }) {
   );
 }
 
-// ──────────────────────────────────────────────
 // Button
-// ──────────────────────────────────────────────
+
+type ButtonVariant = "primary" | "secondary" | "danger" | "ghost";
+type ButtonSize = "sm" | "md" | "lg";
+
+interface ButtonProps {
+  children: ReactNode;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  onClick?: () => void;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
+  className?: string;
+}
+
 export function Button({
   children,
   variant = "primary",
@@ -26,7 +44,7 @@ export function Button({
   type = "button",
   disabled = false,
   className = "",
-}) {
+}: ButtonProps) {
   const base =
     "inline-flex items-center gap-2 font-medium rounded-md transition-all focus:outline-none focus:ring-2 focus:ring-amber-400/40 disabled:opacity-40 disabled:cursor-not-allowed";
 
@@ -57,10 +75,15 @@ export function Button({
   );
 }
 
-// ──────────────────────────────────────────────
+type BadgeVariant = "default" | "success" | "warning" | "danger" | "info";
+
+interface BadgeProps {
+  children: ReactNode;
+  variant?: BadgeVariant;
+}
+
 // Badge
-// ──────────────────────────────────────────────
-export function Badge({ children, variant = "default" }) {
+export function Badge({ children, variant = "default" }: BadgeProps) {
   const variants = {
     default: "bg-stone-800 text-stone-300",
     success: "bg-emerald-400/10 text-emerald-400",
@@ -77,10 +100,13 @@ export function Badge({ children, variant = "default" }) {
   );
 }
 
-// ──────────────────────────────────────────────
+interface CardProps {
+  children: ReactNode;
+  className?: string;
+}
+
 // Card
-// ──────────────────────────────────────────────
-export function Card({ children, className = "" }) {
+export function Card({ children, className = "" }: CardProps) {
   return (
     <div
       className={`bg-stone-900 border border-stone-800 rounded-lg ${className}`}
@@ -90,19 +116,23 @@ export function Card({ children, className = "" }) {
   );
 }
 
-// ──────────────────────────────────────────────
+interface StatCardProps {
+  label: string;
+  value: string;
+  sub?: string;
+  accent?: boolean;
+}
+
 // StatCard
-// ──────────────────────────────────────────────
-export function StatCard({ label, value, sub, accent = false }) {
+export function StatCard({ label, value, sub, accent = false }: StatCardProps) {
   return (
     <Card className="p-5">
       <p className="text-xs text-stone-500 uppercase tracking-widest mb-2">
         {label}
       </p>
       <p
-        className={`text-2xl font-semibold ${
-          accent ? "text-amber-400" : "text-stone-100"
-        }`}
+        className={`text-2xl font-semibold ${accent ? "text-amber-400" : "text-stone-100"
+          }`}
       >
         {value}
       </p>
@@ -111,10 +141,26 @@ export function StatCard({ label, value, sub, accent = false }) {
   );
 }
 
-// ──────────────────────────────────────────────
-// DataTable
-// ──────────────────────────────────────────────
-export function DataTable({ columns, data, onRowClick, loading = false }) {
+interface Column {
+  key: string;
+  label: string;
+  width?: string;
+  render?: (value: any, row: any) => React.ReactNode;
+}
+
+interface DataTableProps {
+  columns: Column[];
+  data: any[];
+  onRowClick?: (row: any) => void;
+  loading?: boolean;
+}
+
+export function DataTable({
+  columns,
+  data,
+  onRowClick,
+  loading = false,
+}: DataTableProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-40 text-stone-600 text-sm">
@@ -153,11 +199,10 @@ export function DataTable({ columns, data, onRowClick, loading = false }) {
             <tr
               key={row.id ?? i}
               onClick={() => onRowClick && onRowClick(row)}
-              className={`border-b border-stone-800/50 transition-colors ${
-                onRowClick
-                  ? "cursor-pointer hover:bg-stone-800/50"
-                  : ""
-              }`}
+              className={`border-b border-stone-800/50 transition-colors ${onRowClick
+                ? "cursor-pointer hover:bg-stone-800/50"
+                : ""
+                }`}
             >
               {columns.map((col) => (
                 <td key={col.key} className="px-4 py-3 text-stone-300">
@@ -172,10 +217,15 @@ export function DataTable({ columns, data, onRowClick, loading = false }) {
   );
 }
 
-// ──────────────────────────────────────────────
+interface FormFieldProps {
+  label: string;
+  error?: string;
+  children: ReactNode;
+  required?: boolean;
+}
+
 // FormField
-// ──────────────────────────────────────────────
-export function FormField({ label, error, children, required }) {
+export function FormField({ label, error, children, required }: FormFieldProps) {
   return (
     <div className="space-y-1.5">
       <label className="block text-xs font-semibold text-stone-400 uppercase tracking-wider">
@@ -187,10 +237,13 @@ export function FormField({ label, error, children, required }) {
   );
 }
 
-// ──────────────────────────────────────────────
+import type { InputHTMLAttributes } from "react";
+
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+  className?: string;
+}
 // Input
-// ──────────────────────────────────────────────
-export function Input({ className = "", ...props }) {
+export function Input({ className = "", ...props }: InputProps) {
   return (
     <input
       className={`w-full bg-stone-800 border border-stone-700 rounded-md px-3 py-2 text-sm text-stone-100 placeholder-stone-600 focus:outline-none focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/20 transition-all ${className}`}
@@ -199,10 +252,14 @@ export function Input({ className = "", ...props }) {
   );
 }
 
-// ──────────────────────────────────────────────
+import type { SelectHTMLAttributes } from "react";
+
+interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+  children: ReactNode;
+  className?: string;
+}
 // Select
-// ──────────────────────────────────────────────
-export function Select({ children, className = "", ...props }) {
+export function Select({ children, className = "", ...props }: SelectProps) {
   return (
     <select
       className={`w-full bg-stone-800 border border-stone-700 rounded-md px-3 py-2 text-sm text-stone-100 focus:outline-none focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/20 transition-all ${className}`}
@@ -213,10 +270,15 @@ export function Select({ children, className = "", ...props }) {
   );
 }
 
-// ──────────────────────────────────────────────
+type AlertVariant = "info" | "success" | "warning" | "danger";
+
+interface AlertProps {
+  children: ReactNode;
+  variant?: AlertVariant;
+}
+
 // Alert
-// ──────────────────────────────────────────────
-export function Alert({ children, variant = "info" }) {
+export function Alert({ children, variant = "info" }: AlertProps) {
   const variants = {
     info: "bg-blue-400/10 border-blue-400/20 text-blue-300",
     success: "bg-emerald-400/10 border-emerald-400/20 text-emerald-300",
@@ -232,10 +294,15 @@ export function Alert({ children, variant = "info" }) {
   );
 }
 
-// ──────────────────────────────────────────────
+interface ModalProps {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  children: ReactNode;
+  width?: string;
+}
 // Modal
-// ──────────────────────────────────────────────
-export function Modal({ open, onClose, title, children, width = "max-w-lg" }) {
+export function Modal({ open, onClose, title, children, width = "max-w-lg" }: ModalProps) {
   if (!open) return null;
   return (
     <div
@@ -260,9 +327,10 @@ export function Modal({ open, onClose, title, children, width = "max-w-lg" }) {
   );
 }
 
-// ──────────────────────────────────────────────
+interface PageContentProps {
+  children: ReactNode
+}
 // Section container
-// ──────────────────────────────────────────────
-export function PageContent({ children }) {
+export function PageContent({ children }: PageContentProps) {
   return <div className="px-8 py-6">{children}</div>;
 }

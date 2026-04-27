@@ -1,7 +1,7 @@
 import { type RouteConfig, index, layout, route, prefix } from "@react-router/dev/routes";
 
 export default [
-  layout("layouts/MainLayout.jsx", [
+  layout("layouts/MainLayout.tsx", [
     index("pages/Dashboard.jsx"),
 
     // Proyectos

@@ -3,7 +3,19 @@ import { ToastContainer } from "react-toastify";
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 
-const navGroups = [
+type NavItem = {
+  to: string;
+  label: string;
+  icon: string;
+  exact?: boolean;
+};
+
+type NavGroup = {
+  label: string;
+  items: NavItem[];
+};
+
+const navGroups: NavGroup[] = [
   {
     label: "Principal",
     items: [
@@ -34,7 +46,8 @@ const navGroups = [
 
 export default function MainLayout() {
   const [collapsed, setCollapsed] = useState(false);
-  const [theme, setTheme] = useState("dark");
+  type Theme = "dark" | "light";
+  const [theme, setTheme] = useState<Theme>("dark");
   const location = useLocation();
 
   useEffect(() => {
