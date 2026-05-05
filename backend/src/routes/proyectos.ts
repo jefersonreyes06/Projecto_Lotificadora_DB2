@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { executeProcedure, querySql, executeScalarFunction } from "../utils/sql.js";
 import { asyncHandler } from "../middleware/errorHandler.js";
 
@@ -6,7 +6,7 @@ const router = Router();
 
 router.get(
   "/dashboard",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeScalarFunction("fn_ContarProyectosActivos");
     res.json({ total: result });
   })
@@ -15,8 +15,8 @@ router.get(
 
 router.get(
   "/",
-  asyncHandler(async (req, res) => {
-    
+  asyncHandler(async (req: Request, res: Response) => {
+
     const result = await executeProcedure("sp_proyectos_listar", {
       proyectoId: req.query.proyectoId,
     });
@@ -26,7 +26,7 @@ router.get(
 
 router.get(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_proyectos_obtener", { id: req.params.id });
     res.json(result.recordset[0] ?? null);
   })
@@ -34,7 +34,7 @@ router.get(
 
 router.post(
   "/",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_proyectos_crear", req.body);
     res.json(result.recordset ?? result.returnValue);
   })
@@ -42,7 +42,7 @@ router.post(
 
 router.put(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const { Nombre, UbicacionLegal, MaxAniosFinanciamiento, Estado } = req.body;
     const payload = {
       id: req.params.id,
@@ -62,7 +62,7 @@ router.put(
 
 router.delete(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_proyectos_eliminar", { id: req.params.id });
     res.json(result.recordset ?? { deletedId: req.params.id });
   })

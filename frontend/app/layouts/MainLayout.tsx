@@ -1,7 +1,6 @@
-import { Outlet, NavLink, useLocation } from "react-router";
-import { ToastContainer } from "react-toastify";
+import { Outlet, NavLink, useLocation, Navigate } from "react-router";
 import { useEffect, useState } from "react";
-import "react-toastify/dist/ReactToastify.css";
+import { useAuth } from "../contexts/AuthContext";
 
 type NavItem = {
   to: string;
@@ -45,10 +44,23 @@ const navGroups: NavGroup[] = [
 ];
 
 export default function MainLayout() {
+  const { isAuthenticated, isLoading, logout, user } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   type Theme = "dark" | "light";
   const [theme, setTheme] = useState<Theme>("dark");
   const location = useLocation();
+
+  if (isLoading) {
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-stone-950">
+        <div className="w-12 h-12 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
   useEffect(() => {
     const storedTheme = window.localStorage.getItem("lotificadora-theme");
@@ -143,14 +155,33 @@ export default function MainLayout() {
           ))}
         </nav>
 
-        {/* Footer */}
-        {!collapsed && (
-          <div className="px-5 py-4 border-t border-stone-800">
-            <p className="text-[10px] text-stone-600">
-              Sistema v1.0 · UNAH BD2
-            </p>
-          </div>
-        )}
+        {/* Footer with User and Logout */}
+        <div className="border-t border-stone-800 p-4 space-y-4">
+          {!collapsed && user && (
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-stone-800 flex items-center justify-center border border-stone-700">
+                <span className="text-stone-300 text-xs font-bold uppercase">
+                  {user.email.charAt(0)}
+                </span>
+              </div>
+              <div className="overflow-hidden">
+                <p className="text-sm font-medium text-stone-200 truncate">{user.email.split('@')[0]}</p>
+                <p className="text-[10px] text-stone-500 truncate">Administrador</p>
+              </div>
+            </div>
+          )}
+
+          <button
+            onClick={logout}
+            className={`flex items-center gap-3 w-full p-2 text-stone-400 hover:text-red-400 hover:bg-red-400/10 rounded-md transition-colors ${collapsed ? "justify-center" : "px-3"}`}
+            title="Cerrar Sesión"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
+              <path d="M17 16L21 12M21 12L17 8M21 12H9M13 16V17C13 18.6569 11.6569 20 10 20H6C4.34315 20 3 18.6569 3 17V7C3 5.34315 4.34315 4 6 4H10C11.6569 4 13 5.34315 13 7V8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {!collapsed && <span className="text-sm font-medium">Cerrar Sesión</span>}
+          </button>
+        </div>
       </aside>
 
       {/* Main Content */}
@@ -171,18 +202,6 @@ export default function MainLayout() {
         <span>{theme === "dark" ? "" : ""}</span>
         <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
       </button>
-
-      <ToastContainer
-        position="bottom-right"
-        autoClose={4000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
     </div>
   );
 }

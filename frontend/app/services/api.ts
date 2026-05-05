@@ -2,12 +2,16 @@
 // api.js — Capa de servicios para SQL Server
 // Todos los endpoints llaman procedimientos almacenados,
 // vistas o funciones en el servidor.
-// BASE_URL apunta al backend (Express / .NET / etc.)
+// BASE_URL apunta al backend (Express)
 // ──────────────────────────────────────────────────────────
+import type { Proyecto } from "./types/proyecto";
+import type { Etapa } from "./types/etapa";
+import type { Bloque, BloqueFormInput } from "./types/bloque";
+import type { Lote, LoteFormInput } from "./types/lote";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
-async function request(path, options = {}) {
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
     headers: { "Content-Type": "application/json" },
     ...options,
@@ -17,82 +21,76 @@ async function request(path, options = {}) {
     const err = await res.json().catch(() => ({ message: "Error del servidor" }));
     throw new Error(err.message || `HTTP ${res.status}`);
   }
+
   return res.json();
 }
 
-// ──────────────────────────────────────────────
+export const authApi = {
+  login: (data: any) => request("/auth/login", { method: "POST", body: JSON.stringify(data) }),
+};
+
 // PROYECTOS — sp_proyectos_*
-// ──────────────────────────────────────────────
 export const proyectosApi = {
-  list: () => request("/proyectos"),                         // EXEC sp_proyectos_listar
-  get: (id) => request(`/proyectos/${id}`),                  // EXEC sp_proyectos_obtener @id
-  create: (data) => request("/proyectos", { method: "POST", body: JSON.stringify(data) }),
-  update: (id, data) => request(`/proyectos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  remove: (id) => request(`/proyectos/${id}`, { method: "DELETE" }),
-  dashboard: () => request("/proyectos/dashboard"),          // Vista vw_dashboard_proyectos
+  list: (): Promise<Proyecto[]> => request<Proyecto[]>("/proyectos"),                         // EXEC sp_proyectos_listar
+  get: (id: number): Promise<Proyecto> => request<Proyecto>(`/proyectos/${id}`),                  // EXEC sp_proyectos_obtener @id
+  create: (data: Proyecto): Promise<Proyecto> => request<Proyecto>("/proyectos", { method: "POST", body: JSON.stringify(data) }),
+  update: (id: number, data: Proyecto): Promise<Proyecto> => request<Proyecto>(`/proyectos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  remove: (id: number): Promise<void> => request<void>(`/proyectos/${id}`, { method: "DELETE" }),
+  dashboard: (): Promise<any> => request("/proyectos/dashboard"),          // Vista vw_dashboard_proyectos
 };
 
-// ──────────────────────────────────────────────
 // ETAPAS — sp_etapas_*
-// ──────────────────────────────────────────────
 export const etapasApi = {
-  list: (proyectoId) =>
-    request(`/etapas${proyectoId ? `?proyectoId=${proyectoId}` : ""}`),
-  get: (id) => request(`/etapas/${id}`),
-  create: (data) => request("/etapas", { method: "POST", body: JSON.stringify(data) }),
-  update: (id, data) => request(`/etapas/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  remove: (id) => request(`/etapas/${id}`, { method: "DELETE" }),
-  cuentas: (etapaId) => request(`/etapas/${etapaId}/cuentas`),
+  list: (proyectoId: number): Promise<Etapa[]> =>
+    request<Etapa[]>(`/etapas${proyectoId ? `?proyectoId=${proyectoId}` : ""}`),
+  get: (id: number): Promise<Etapa> => request<Etapa>(`/etapas/${id}`),
+  create: (data: Etapa): Promise<Etapa> => request<Etapa>("/etapas", { method: "POST", body: JSON.stringify(data) }),
+  update: (id: number, data: Etapa): Promise<Etapa> => request<Etapa>(`/etapas/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  remove: (id: number): Promise<void> => request<void>(`/etapas/${id}`, { method: "DELETE" }),
+  cuentas: (etapaId: number): Promise<any> => request<any>(`/etapas/${etapaId}/cuentas`),
 };
 
-// ──────────────────────────────────────────────
+
 // BLOQUES — sp_bloques_*
-// ──────────────────────────────────────────────
-const normalizeBloquePayload = (data) => ({
-  EtapaID:
-    data.etapaId !== undefined && data.etapaId !== null
-      ? Number(data.etapaId)
-      : data.EtapaID !== undefined && data.EtapaID !== null
-        ? Number(data.EtapaID)
-        : null,
-  Bloque: data.Bloque,
-  AreaTotalVaras:
-    data.AreaTotalVaras !== undefined && data.AreaTotalVaras !== null
-      ? Number(data.AreaTotalVaras)
-      : data.areaTotalVaras !== undefined && data.areaTotalVaras !== null
-        ? Number(data.areaTotalVaras)
-        : null
-});
+const normalizeBloquePayload = (data: BloqueFormInput): Bloque => {
+  const rawId = data.bloqueId ?? data.bloque_id ?? data.BloqueID ?? null;
+
+
+  return {
+    BloqueID: rawId !== undefined && rawId !== null ? Number(rawId) : null,
+    EtapaID: data.EtapaID ?? data.etapaId ?? data.EtapaID ?? null,
+    Bloque: data.nombre ?? data.bloque ?? data.Bloque ?? null,
+    AreaTotalVaras: data.AreaTotalVaras ?? data.areaTotalVaras ?? data.area_total_varas ?? null,
+  };
+};
 
 export const bloquesApi = {
-  list: (etapaId) =>
+  list: (etapaId: number) =>
     request(`/bloques${etapaId ? `?etapaId=${etapaId}` : ""}`),
-  get: (id) => request(`/bloques/${id}`),
-  create: (data) => request("/bloques", {
+  get: (id: number) => request(`/bloques/${id}`),
+  create: (data: Bloque) => request("/bloques", {
     method: "POST",
     body: JSON.stringify(normalizeBloquePayload(data)),
   }),
-  update: (id, data) => request(`/bloques/${id}`, {
+  update: (id: number, data: Bloque) => request(`/bloques/${id}`, {
     method: "PUT",
     body: JSON.stringify(normalizeBloquePayload(data)),
   }),
-  remove: (id) => request(`/bloques/${id}`, { method: "DELETE" }),
+  remove: (id: number) => request(`/bloques/${id}`, { method: "DELETE" }),
 };
 
-// ──────────────────────────────────────────────
+
 // LOTES — sp_lotes_*
-// ──────────────────────────────────────────────
-const normalizeLotePayload = (data) => ({
+const normalizeLotePayload = (data: LoteFormInput) => ({
   BloqueID: data.bloqueId ?? data.BloqueID ?? data.bloque_id ?? null,
   NumeroLote: data.numeroLote ?? data.numero_lote ?? data.codigo_lote ?? data.codigoLote ?? null,
   AreaVaras: data.areaVaras ?? data.area_varas ?? data.AreaVaras ?? data.area_m2 ?? data.areaM2 ?? data.areavaras ?? null,
   PrecioVara: data.precioVara ?? data.precio_vara ?? data.PrecioVara ?? data.precioVara ?? data.precio_vara ?? null,
   Estado: data.estado ?? data.Estado ?? 'Disponible',
-  FechaReserva: data.fechaReserva ?? data.FechaReserva ?? null,
-  //caracteristicas: data.caracteristicas ?? [],
+  FechaReserva: data.fechaReserva ?? data.FechaReserva ?? null
 });
 
-const normalizeLoteDisponible = (data) => ({
+const normalizeLoteDisponible = (data: LoteFormInput) => ({
   id: data.LoteID ?? data.id ?? null,
   codigo_lote: data.codigo_lote ?? data.NumeroLote ?? data.numeroLote ?? "",
   proyecto: data.proyecto ?? data.Proyecto ?? data.ProyectoNombre ?? "",
@@ -110,48 +108,48 @@ const normalizeLoteDisponible = (data) => ({
 });
 
 export const lotesApi = {
-  list: (bloqueId) =>
+  list: (bloqueId: number) =>
     request(`/lotes${bloqueId ? `?bloqueId=${bloqueId}` : ""}`),
-  get: (id) => request(`/lotes/${id}`),
+  get: (id: number) => request(`/lotes/${id}`),
   //create: (data) => request("/lotes", { method: "POST", body: JSON.stringify(normalizeLotePayload(data)) }),
-  getByNumero: (numeroLote) => request(`/lotes/NumeroLote?NumeroLote=${encodeURIComponent(numeroLote)}`),
-  create: (data) => request("/lotes", { method: "POST", body: JSON.stringify(data) }),
+  getByNumero: (numeroLote: string) => request(`/lotes/NumeroLote?NumeroLote=${encodeURIComponent(numeroLote)}`),
+  create: (data: Lote) => request("/lotes", { method: "POST", body: JSON.stringify(data) }),
   //update: (id, data) => request(`/proyectos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  update: (id, data) => request(`/lotes/${id}`, { method: "PUT", body: JSON.stringify(normalizeLotePayload(data)) }),
-  remove: (id) => request(`/lotes/${id}`, { method: "DELETE" }),
+  update: (id: number, data: any) => request(`/lotes/${id}`, { method: "PUT", body: JSON.stringify(normalizeLotePayload(data)) }),
+  remove: (id: number) => request(`/lotes/${id}`, { method: "DELETE" }),
   // Vista vw_lotes_disponibles
-  disponibles: (filtros) =>
+  disponibles: (filtros: any) =>
     request(`/lotes/disponibles?${new URLSearchParams(filtros)}`),
   // fn_valor_lote(id) — función escalar SQL
-  calcularValor: (id) => request(`/lotes/${id}/valor`),
+  calcularValor: (id: number) => request(`/lotes/${id}/valor`),
   // Lotes disponibles para venta
   disponiblesVenta: () =>
-    request("/ventas/lotes/disponibles").then((rows) => rows.map(normalizeLoteDisponible)),
+    request("/ventas/lotes/disponibles").then((rows: any) => rows.map(normalizeLoteDisponible)),
 };
 
 // ──────────────────────────────────────────────
 // PAGOS — sp_pagos_*
 // ──────────────────────────────────────────────
 export const pagosApi = {
-  list: (ventaId) =>
+  list: (ventaId: number) =>
     request(`/pagos${ventaId ? `?ventaId=${ventaId}` : ""}`),
-  get: (id) => request(`/pagos/${id}`),
-  registrar: (data) => request("/pagos", { method: "POST", body: JSON.stringify(data) }),
-  pendientes: (ventaId) => request(`/ventas/${ventaId}/cuotas-pendientes`),
+  get: (id: number) => request(`/pagos/${id}`),
+  registrar: (data: any) => request("/pagos", { method: "POST", body: JSON.stringify(data) }),
+  pendientes: (ventaId: number) => request(`/ventas/${ventaId}/cuotas-pendientes`),
   // sp_obtener_plan_pagos — obtener cuotas por VentaID
-  planPagos: (ventaId) => request(`/pagos/plan-pagos/${ventaId}`),
+  planPagos: (ventaId: number) => request(`/pagos/plan-pagos/${ventaId}`),
   // sp_lotes_disponibles_credito — buscar lote por NumeroLote
-  lotePorNumero: (numeroLote) =>
+  lotePorNumero: (numeroLote: string) =>
     request(`/pagos/lotes/disponibles?numeroLote=${encodeURIComponent(numeroLote)}`),
   // sp_lotes_disponibles_credito — buscar lotes por DNI
-  lotesPorDni: (dni) =>
+  lotesPorDni: (dni: string) =>
     request(`/pagos/lotes/disponibles?dni=${encodeURIComponent(dni)}`),
-  update: (id, data) => request(`/pagos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  remove: (id) => request(`/pagos/${id}`, { method: "DELETE" }),
+  update: (id: number, data: any) => request(`/pagos/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  remove: (id: number) => request(`/pagos/${id}`, { method: "DELETE" }),
   // sp_cierre_caja_diario — cursor
-  abonar: (data) => request("/pagos/registrar", { method: "POST", body: JSON.stringify(data) }),
-  cierreDiario: (fecha) => request(`/pagos/cierre?fechaCierre=${fecha}&usuarioCajaId=1`),
-  crearCierreDiario: (fecha, usuarioCajaId) =>
+  abonar: (data: any) => request("/pagos/registrar", { method: "POST", body: JSON.stringify(data) }),
+  cierreDiario: (fecha: string) => request(`/pagos/cierre?fechaCierre=${fecha}&usuarioCajaId=1`),
+  crearCierreDiario: (fecha: string, usuarioCajaId: number) =>
     request('/pagos/cierre-diario', {
       method: 'POST',
       body: JSON.stringify({ fechaCierre: fecha, usuarioCajaId }),
@@ -159,14 +157,24 @@ export const pagosApi = {
     }),
 
   // Factura de pago
-  factura: (id) => request(`/pagos/${id}/factura`),
-  cuentasPendientes: () => request("/pagos/prestamos-activos"),
+  factura: (id: number) => request(`/pagos/${id}/factura`),
+  cuentasPendientes: ({ Estado, Cliente }: { Estado?: string, Cliente?: string }) => {
+    const params = new URLSearchParams();
+    if (Estado !== undefined && Estado !== null && Estado !== "") {
+      params.append("Estado", Estado);
+    }
+    if (Cliente !== undefined && Cliente !== null && Cliente !== "") {
+      params.append("Cliente", Cliente);
+    }
+    const query = params.toString();
+    return request(`/pagos/prestamos-activos${query ? `?${query}` : ""}`)
+  },
 };
 //___________________________________________
 // GASTOS - sp_gastos_*
 //___________________________________________ 
 export const gastosApi = {
-  list: (tipo, proyecto) => {
+  list: (tipo: string, proyecto: string) => {
     const params = new URLSearchParams();
     if (tipo !== undefined && tipo !== null && tipo !== "") {
       params.append("conGastos", tipo);
@@ -178,59 +186,59 @@ export const gastosApi = {
     return request(`/gastos${query ? `?${query}` : ""}`);
   },
   listTipos: () => request("/gastos/tipos"),
-  create: (data) => request("/gastos", { method: "POST", body: JSON.stringify(data) }),
+  create: (data: any) => request("/gastos", { method: "POST", body: JSON.stringify(data) }),
 };
 
 
 // CLIENTES — sp_clientes_*
 // ──────────────────────────────────────────────
 export const clientesApi = {
-  list: (search) =>
+  list: (search: string) =>
     request(`/clientes${search ? `?q=${encodeURIComponent(search)}` : ""}`),
-  get: (id) => request(`/clientes/${id}`),
-  getByDni: (dni) => request(`/clientes/dni/${dni}`), // Nuevo: obtener por DNI
-  create: (data) => request("/clientes", { method: "POST", body: JSON.stringify(data) }),
-  update: (id, data) => request(`/clientes/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  remove: (id) => request(`/clientes/${id}`, { method: "DELETE" }),
-  historial: (id) => request(`/clientes/${id}/historial`), // Vista vw_historial_cliente
+  get: (id: number) => request(`/clientes/${id}`),
+  getByDni: (dni: string) => request(`/clientes/dni/${dni}`), // Nuevo: obtener por DNI
+  create: (data: any) => request("/clientes", { method: "POST", body: JSON.stringify(data) }),
+  update: (id: number, data: any) => request(`/clientes/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  remove: (id: number) => request(`/clientes/${id}`, { method: "DELETE" }),
+  historial: (id: number) => request(`/clientes/${id}/historial`), // Vista vw_historial_cliente
 };
 
 // Aval — sp_aval_*
 // ──────────────────────────────────────────────
 export const avalApi = {
-  list: (search) =>
+  list: (search: string) =>
     request(`/aval${search ? `?q=${encodeURIComponent(search)}` : ""}`),
-  get: (id) => request(`/aval/${id}`),
-  getByDni: (dni) => request(`/aval/dni/${dni}`), // Nuevo: obtener por DNI
-  create: (data) => request("/aval", { method: "POST", body: JSON.stringify(data) }),
-  update: (id, data) => request(`/aval/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  remove: (id) => request(`/aval/${id}`, { method: "DELETE" }),
-  historial: (id) => request(`/aval/${id}/historial`), // Vista vw_historial_cliente
+  get: (id: number) => request(`/aval/${id}`),
+  getByDni: (dni: string) => request(`/aval/dni/${dni}`), // Nuevo: obtener por DNI
+  create: (data: any) => request("/aval", { method: "POST", body: JSON.stringify(data) }),
+  update: (id: number, data: any) => request(`/aval/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  remove: (id: number) => request(`/aval/${id}`, { method: "DELETE" }),
+  historial: (id: number) => request(`/aval/${id}/historial`), // Vista vw_historial_cliente
 };
 
 // VENTAS — sp_ventas_*
 // ──────────────────────────────────────────────
 export const ventasApi = {
   list: () => request("/ventas"),
-  get: (id) => request(`/ventas/${id}`),
+  get: (id: number) => request(`/ventas/${id}`),
   // sp_crear_venta_completa — con manejo transaccional
-  create: (data) => request("/ventas", { method: "POST", body: JSON.stringify(data) }),//normalizeVentaPayload(data)) }),
-  update: (id, data) => request(`/ventas/${id}`, { method: "PUT", body: JSON.stringify(data) }),//normalizeVentaPayload(data)) }),
-  remove: (id) => request(`/ventas/${id}`, { method: "DELETE" }),
+  create: (data: any) => request("/ventas", { method: "POST", body: JSON.stringify(data) }),//normalizeVentaPayload(data)) }),
+  update: (id: number, data: any) => request(`/ventas/${id}`, { method: "PUT", body: JSON.stringify(data) }),//normalizeVentaPayload(data)) }),
+  remove: (id: number) => request(`/ventas/${id}`, { method: "DELETE" }),
   // Cancelar venta completa (transaccional)
-  cancelar: (id, motivo) => request(`/ventas/${id}/cancelar`, {
+  cancelar: (id: number, motivo: string) => request(`/ventas/${id}/cancelar`, {
     method: "POST",
     body: JSON.stringify({ motivoCancelacion: motivo })
   }),
   // sp_generar_plan_pagos — cursor + transacción
-  generarPlan: (ventaId, params) =>
+  generarPlan: (ventaId: number, params: any) =>
     request(`/ventas/${ventaId}/plan-pagos`, {
       method: "POST",
       body: JSON.stringify(params),
     }),
-  planPagos: (ventaId) => request(`/ventas/${ventaId}/plan-pagos`),
+  planPagos: (ventaId: number) => request(`/ventas/${ventaId}/plan-pagos`),
   // fn_tabla_amortizacion(ventaId) — función tipo tabla
-  amortizacion: (ventaId) => request(`/ventas/${ventaId}/amortizacion`),
+  amortizacion: (ventaId: number) => request(`/ventas/${ventaId}/amortizacion`),
   // Estadísticas de ventas
   estadisticas: () => request("/ventas/estadisticas"),
   estadisticasContado: () => request("/ventas/estadisticas/contado"),
@@ -241,12 +249,12 @@ export const ventasApi = {
 // TRANSACCIONES — Procedimientos con manejo transaccional
 // ──────────────────────────────────────────────
 export const transaccionesApi = {
-  crearVentaCompleta: (data) => ventasApi.create(data),
-  cancelarVentaCompleta: (ventaId, motivo) => ventasApi.cancelar(ventaId, motivo),
-  crearLoteCompleto: (data) => lotesApi.create(data),
-  registrarPagoCompleto: (data) => pagosApi.registrar(data),
-  generarPlanPagos: (ventaId, params) => ventasApi.generarPlan(ventaId, params),
-  cierreCajaDiario: (fecha) => pagosApi.cierreDiario(fecha),
+  crearVentaCompleta: (data: any) => ventasApi.create(data),
+  cancelarVentaCompleta: (ventaId: number, motivo: string) => ventasApi.cancelar(ventaId, motivo),
+  crearLoteCompleto: (data: any) => lotesApi.create(data),
+  registrarPagoCompleto: (data: any) => pagosApi.registrar(data),
+  generarPlanPagos: (ventaId: number, params: any) => ventasApi.generarPlan(ventaId, params),
+  cierreCajaDiario: (fecha: string) => pagosApi.cierreDiario(fecha),
 };
 
 // ──────────────────────────────────────────────
@@ -260,13 +268,13 @@ export const triggersApi = {
 // CUENTAS BANCARIAS — sp_cuentas_*
 // ──────────────────────────────────────────────
 export const cuentasApi = {
-  list: (etapaId) =>
+  list: (etapaId: number) =>
     request(`/cuentas${etapaId ? `?etapaId=${etapaId}` : ""}`),
-  get: (id) => request(`/cuentas/${id}`),
-  create: (data) => request("/cuentas", { method: "POST", body: JSON.stringify(data) }),
-  update: (id, data) => request(`/cuentas/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  remove: (id) => request(`/cuentas/${id}`, { method: "DELETE" }),
-  movimientos: (id) => request(`/cuentas/${id}/movimientos`),
+  get: (id: number) => request(`/cuentas/${id}`),
+  create: (data: any) => request("/cuentas", { method: "POST", body: JSON.stringify(data) }),
+  update: (id: number, data: any) => request(`/cuentas/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  remove: (id: number) => request(`/cuentas/${id}`, { method: "DELETE" }),
+  movimientos: (id: number) => request(`/cuentas/${id}/movimientos`),
 };
 
 // ──────────────────────────────────────────────
@@ -285,7 +293,7 @@ export const dashboardApi = {
 // ──────────────────────────────────────────────
 export const reportesApi = {
   vistas: () => request("/reportes/vistas"),
-  ocupacionLotes: (estado) => request(`/reportes/ocupacion-lotes?estado=${estado || ""}`), // Vista vw_ocupacion_lotes
+  ocupacionLotes: (estado?: string) => request(`/reportes/ocupacion-lotes?estado=${estado || ""}`), // Vista vw_ocupacion_lotes
   resumenProyectos: () => request("/reportes/resumen-proyectos"), // Vista vw_resumen_proyectos
 };
 
@@ -294,7 +302,7 @@ export const reportesApi = {
 // ──────────────────────────────────────────────
 export const vistasApi = {
   list: () => request("/vistas"),
-  ocupacionLotes: (estado) => request(`/reportes/ocupacion-lotes?estado=${estado || ""}`), // Vista vw_ocupacion_lotes
+  ocupacionLotes: (estado?: string) => request(`/reportes/ocupacion-lotes?estado=${estado || ""}`), // Vista vw_ocupacion_lotes
   resumenProyectos: () => request("/reportes/resumen-proyectos"), // Vista vw_resumen_proyectos
   prestamosActivos: () => request("/vistas/prestamos-activos"), // Vista vw_prestamos_activos
 };

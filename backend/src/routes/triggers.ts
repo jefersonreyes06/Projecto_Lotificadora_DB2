@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { querySql } from "../utils/sql.js";
 import { asyncHandler } from "../middleware/errorHandler.js";
 
@@ -6,7 +6,7 @@ const router = Router();
 
 router.get(
   "/",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const triggerNames = [
       'tr_Lotes_Insert_UpdateAreaBloque',
       'tr_Lotes_Delete_UpdateAreaBloque',
@@ -33,7 +33,7 @@ router.get(
       ORDER BY t.name;
     `;
 
-    const params = triggerNames.reduce((acc, name, index) => {
+    const params = triggerNames.reduce((acc: { [key: string]: string }, name: string, index: number) => {
       acc[`name${index}`] = name;
       return acc;
     }, {});

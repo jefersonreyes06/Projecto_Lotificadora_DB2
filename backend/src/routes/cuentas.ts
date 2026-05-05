@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { executeProcedure } from "../utils/sql.js";
 import { asyncHandler } from "../middleware/errorHandler.js";
 
@@ -6,7 +6,7 @@ const router = Router();
 
 router.get(
   "/",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_cuentas_listar", { etapaId: req.query.etapaId });
     res.json(result.recordset);
   })
@@ -14,7 +14,7 @@ router.get(
 
 router.get(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_cuentas_obtener", { id: req.params.id });
     if (result.recordset && result.recordset.length > 0) {
       res.json(result.recordset[0]);
@@ -26,7 +26,7 @@ router.get(
 
 router.post(
   "/",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const payload = {
       EtapaID: parseInt(req.body.EtapaID),
       Banco: req.body.Banco,
@@ -42,7 +42,7 @@ router.post(
 
 router.put(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const payload = {
       id: req.params.id,
       EtapaID: parseInt(req.body.EtapaID),
@@ -59,7 +59,7 @@ router.put(
 
 router.delete(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_cuentas_eliminar", { id: req.params.id });
     res.json(result.recordset ?? { deletedId: req.params.id });
   })
@@ -67,7 +67,7 @@ router.delete(
 
 router.get(
   "/:id/movimientos",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_cuentas_movimientos", { id: req.params.id });
     res.json(result.recordset);
   })

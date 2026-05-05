@@ -42,7 +42,7 @@ export function ClientesList() {
 
     setLoading(true);
     setError(null);
-    
+
     clientesApi
       .getByDni(dni)
       .then((cliente) => {
@@ -71,7 +71,7 @@ export function ClientesList() {
 
     setLoading(true);
     setError(null);
-    
+
     clientesApi
       .get(clienteId)
       .then((cliente) => {
@@ -98,9 +98,9 @@ export function ClientesList() {
     { key: "email", label: "Correo" },
     { key: "nombreEmpresa", label: "Empresa" },
     { key: "estado", label: "Estado", render: (v) => <Badge variant={v === "Activo" ? "success" : "warning"}>{v}</Badge> },
-    { key: "fechaRegistro", label: "Registrado"}, //render: (v) => new Date(v).toLocaleDateString("es-HN") }, // el bew Date del render no muestra la fecha correctamente, 
+    { key: "fechaRegistro", label: "Registrado" }, //render: (v) => new Date(v).toLocaleDateString("es-HN") }, // el bew Date del render no muestra la fecha correctamente, 
     // revisa eso Orlando!
-  
+
     {
       key: "id",
       label: "",
@@ -140,7 +140,7 @@ export function ClientesList() {
                   disabled={loading}
                   className="flex-1"
                 />
-                <Button 
+                <Button
                   onClick={buscarPorDni}
                   disabled={loading || !dni.trim() || dni.trim().length < 3}
                   variant="primary"
@@ -162,7 +162,7 @@ export function ClientesList() {
                   disabled={loading}
                   className="flex-1"
                 />
-                <Button 
+                <Button
                   onClick={buscarPorId}
                   disabled={loading || !clienteId.trim()}
                   variant="primary"

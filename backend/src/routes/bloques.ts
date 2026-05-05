@@ -1,15 +1,12 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { executeProcedure } from "../utils/sql.js";
 import { asyncHandler } from "../middleware/errorHandler.js";
 
 const router = Router();
 
-// Rutas para bloques
-
-// Listar bloques por etapa
 router.get(
   "/",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_bloques_listar", {
       etapaId: req.query.etapaId || null,
     });
@@ -19,7 +16,7 @@ router.get(
 
 router.get(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_bloques_obtener", { id: req.params.id });
     res.json(result.recordset[0] ?? null);
   })
@@ -27,13 +24,13 @@ router.get(
 
 router.post(
   "/",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const etapaId = req.body.EtapaID || req.body.etapaId;
     const nombreBloque = req.body.Bloque || req.body.nombre || req.body.Bloque;
     const area = req.body.AreaTotalVaras || req.body.areaTotalVaras;
 
     const payload = {
-      EtapaID: parseInt(etapaId), 
+      EtapaID: parseInt(etapaId),
       Bloque: nombreBloque,
       AreaTotalVaras: parseFloat(area)
     };
@@ -46,7 +43,7 @@ router.post(
 
 router.put(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const params = {
       BloqueID: req.params.id,
       Bloque: req.body.Bloque || null,
@@ -60,7 +57,7 @@ router.put(
 
 router.delete(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_bloques_eliminar", { id: req.params.id });
     res.json(result.recordset ?? { deletedId: req.params.id });
   })

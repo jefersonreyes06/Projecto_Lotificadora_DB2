@@ -78,11 +78,13 @@ export default function Dashboard() {
             value={loading ? "—" : s.ventas_mes ?? 0}
             sub="Ventas realizadas"
           />
-          <StatCard
-            label="Pagos pendientes"
-            value={loading ? "—" : s.cuotas_vencidas ?? 0}
-            sub="Cuotas por cobrar"
-          />
+          <Link to="/pagos/cuentas-activas">
+            <StatCard
+              label="Pagos pendientes"
+              value={loading ? "—" : s.cuotas_vencidas ?? 0}
+              sub="Cuotas por cobrar"
+            />
+          </Link>
           <StatCard
             label="Ingresos este mes"
             value={loading ? "—" : `L ${Number(s.ingresos_mes ?? 0).toLocaleString("es-HN")}`}

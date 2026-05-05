@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { executeProcedure, querySql } from "../utils/sql.js";
 import { asyncHandler } from "../middleware/errorHandler.js";
 
@@ -7,7 +7,7 @@ const router = Router();
 // Listar Avales con búsqueda opcional
 router.get(
   "/",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_aval_listar", { q: req.query.q });
     res.json(result.recordset);
   })
@@ -16,7 +16,7 @@ router.get(
 // Obtener cliente por DNI
 router.get(
   "/dni/:dni",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_aval_obtener_por_dni", { dni: req.params.dni });
     res.json(result.recordset[0] ?? null);
   })
@@ -25,7 +25,7 @@ router.get(
 // Obtener cliente por ID
 router.get(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_aval_obtener", { id: req.params.id });
     res.json(result.recordset[0] ?? null);
   })
@@ -33,7 +33,7 @@ router.get(
 
 router.post(
   "/",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const capacidadPago = req.body.ingreso_mensual
       ? parseFloat(req.body.ingreso_mensual) * 0.3
       : null;
@@ -62,7 +62,7 @@ router.post(
 
 router.put(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     // Calcular capacidad de pago si se proporciona ingreso
     const capacidadPago = req.body.ingreso_mensual ? parseFloat(req.body.ingreso_mensual) * 0.3 : null;
 
@@ -96,7 +96,7 @@ router.put(
 
 router.delete(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_aval_eliminar", { id: req.params.id });
     res.json(result.recordset ?? { deletedId: req.params.id });
   })
@@ -104,7 +104,7 @@ router.delete(
 
 router.get(
   "/:id/historial",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await querySql("SELECT * FROM vw_historial_aval WHERE clienteId = @id", {
       id: req.params.id,
     });

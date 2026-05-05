@@ -1,7 +1,6 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { executeProcedure } from "../utils/sql.js";
 import { asyncHandler } from "../middleware/errorHandler.js";
-import { poolConnect, pool } from "../config/db.js";
 
 const router = Router();
 /**
@@ -11,7 +10,7 @@ const router = Router();
  */
 router.get(
   "/",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const { ventaId, clienteId, fechaInicio, fechaFin, metodoPago } = req.query;
     const result = await executeProcedure("sp_pagos_listar", {
       VentaID: ventaId || null,
@@ -28,10 +27,16 @@ router.get(
 // OBTENER UNA VISTA CON TODAS LAS CUENTAS PENDIENTES DE PAGO (CRÉDITOS ACTIVOS)
 router.get(
   "/prestamos-activos",
-  asyncHandler(async (req, res) => {
-    const pool = await poolConnect;
-    const result = await pool.request().query("SELECT * FROM vw_prestamos_activos");
-    res.json(result.recordset);
+  asyncHandler(async (req: Request, res: Response) => {
+    const { Estado, Cliente } = req.query;
+
+    const result = await executeProcedure("sp_ver_cuentas", {
+      Estado: Estado === "null" || !Estado ? null : Estado,
+      Cliente: Cliente === "null" || !Cliente ? null : Cliente,
+    });
+
+    const dataToSend = result && result.recordset ? result.recordset : [];
+    res.json(dataToSend);
   })
 );
 
@@ -42,7 +47,7 @@ router.get(
  */
 router.get(
   "/lotes/disponibles",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const { dni, numeroLote, loteId } = req.query;
     const result = await executeProcedure("sp_lotes_disponibles_credito", {
       DNI: dni || null,
@@ -59,9 +64,9 @@ router.get(
  */
 router.get(
   "/plan-pagos/:ventaId",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_obtener_plan_pagos", {
-      VentaID: parseInt(req.params.ventaId)
+      VentaID: req.params.ventaId || null
     });
     res.json(result.recordset);
   })
@@ -73,9 +78,9 @@ router.get(
  */
 router.get(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_pagos_obtener", {
-      PagoID: parseInt(req.params.id)
+      PagoID: req.params.id || null
     });
     res.json(result.recordset[0] ?? null);
   })
@@ -84,7 +89,7 @@ router.get(
 // ACTUALIZAR UN PAGO EXISTENTE (POR EJEMPLO, PARA REGISTRAR UN PAGO DE CUOTA)
 router.put(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const params = {
       VentaID: req.params.id, // el id viene de la URL
       TipoPago: req.body.TipoPago || null,
@@ -102,7 +107,7 @@ router.put(
  */
 router.post(
   "/",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const {
       cuotaId,
       montoRecibido,
@@ -143,9 +148,9 @@ router.post(
  */
 router.get(
   "/:id/factura",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_pago_factura", {
-      PagoID: parseInt(req.params.id)
+      PagoID: req.params.id || null
     });
     res.json(result.recordset[0] ?? null);
   })
@@ -162,7 +167,7 @@ router.get(
  */
 router.post(
   "/cierre-diario",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const { usuarioCajaId, fechaCierre } = req.body;
 
     const result = await executeProcedure("sp_cierre_caja_diario", {

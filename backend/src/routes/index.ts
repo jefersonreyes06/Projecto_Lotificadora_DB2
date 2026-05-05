@@ -11,9 +11,11 @@ import reportesRouter from "./reportes.js";
 import dashboardRouter from "./dashboard.js";
 import triggersRouter from "./triggers.js";
 import gastosRouter from "./gastos.js";
+import authRouter from "./auth.js";
 
 const router = Router();
 
+router.use("/auth", authRouter);
 router.use("/proyectos", proyectosRouter);
 router.use("/etapas", etapasRouter);
 router.use("/bloques", bloquesRouter);

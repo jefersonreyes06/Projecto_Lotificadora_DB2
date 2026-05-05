@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { executeProcedure, querySql } from "../utils/sql.js";
 import { asyncHandler } from "../middleware/errorHandler.js";
 
@@ -6,7 +6,7 @@ const router = Router();
 
 router.get(
   "/",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_ventas_listar");
     res.json(result.recordset);
   })
@@ -14,7 +14,7 @@ router.get(
 
 router.get(
   "/estadisticas",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     // Use direct SQL queries since procedures might not exist
     const [totalResult, contadoResult, creditoResult, moraResult] = await Promise.all([
       querySql("SELECT COUNT(*) as total FROM Ventas WHERE Estado <> 'Cancelada'"),
@@ -43,14 +43,7 @@ router.get(
 
 router.post(
   "/",
-  asyncHandler(async (req, res) => {
-    if (req.body.TipoVenta === "Credito") {
-      var MontoFinanciado = req.body.MontoTotal - (req.body.Prima || 0);
-      var aniosPlazo = req.body.AniosPlazo || 0;
-      var tasaInteres = req.body.TasaInteresAplicada || 12.0;
-      var cuotaMensualEstimada = (MontoFinanciado * (tasaInteres / 100)) / (1 - Math.pow(1 + (tasaInteres / 100), -aniosPlazo * 12));
-    }
-
+  asyncHandler(async (req: Request, res: Response) => {
     const params = {
       ClienteID: req.body.ClienteID,
       BeneficiarioID: req.body.BeneficiarioID,
@@ -60,10 +53,10 @@ router.post(
       TipoVenta: req.body.TipoVenta,
       MontoTotal: req.body.MontoTotal,
       Prima: req.body.Prima || 0,
-      MontoFinanciado: MontoFinanciado || 0,
-      AniosPlazo: aniosPlazo || 0,
-      TasaInteresAplicada: tasaInteres || 12.0,
-      CuotaMensualEstimada: cuotaMensualEstimada || 0,
+      MontoFinanciado: req.body.TipoVenta === "Credito" ? req.body.MontoTotal - req.body.Prima : 0,
+      AniosPlazo: req.body.AniosPlazo || 0,
+      TasaInteresAplicada: req.body.TasaInteresAplicada || 12.0,
+      CuotaMensualEstimada: req.body.TipoVenta === "Credito" ? ((req.body.MontoTotal - (req.body.Prima || 0) * (req.body.TasaInteresAplicada / 100)) / (1 - Math.pow(1 + (req.body.TasaInteresAplicada / 100), -(req.body.AniosPlazo * 12)))) : 0,
       Estado: req.body.TipoVenta === "Contado" ? "Finalizada" : "En Proceso"
     };
 
@@ -76,7 +69,7 @@ router.post(
 // Cancelar venta completa (transaccional)
 router.post(
   "/:id/cancelar",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const { motivoCancelacion } = req.body;
     const result = await executeProcedure("sp_cancelar_venta_completa", {
       VentaID: req.params.id,
@@ -89,7 +82,7 @@ router.post(
 // Ruta para listar lotes disponibles
 router.get(
   "/lotes/disponibles",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_lotes_disponibles");
     res.json(result.recordset);
   })
@@ -104,7 +97,7 @@ router.get(
 
 router.get(
   "/estadisticas/contado",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_ventas_contar_contado");
     res.json({ total: result.recordset[0]?.total_contado ?? 0 });
   })
@@ -112,7 +105,7 @@ router.get(
 
 router.get(
   "/estadisticas/credito",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_ventas_contar_credito");
     res.json({ total: result.recordset[0]?.total_credito ?? 0 });
   })
@@ -120,7 +113,7 @@ router.get(
 
 router.get(
   "/estadisticas/mora",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_ventas_contar_mora");
     res.json({ total: result.recordset[0]?.total_mora ?? 0 });
   })
@@ -128,7 +121,7 @@ router.get(
 
 router.get(
   "/estadisticas",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_ventas_estadisticas");
     res.json(result.recordset[0] ?? {
       total_ventas: 0,
@@ -142,7 +135,7 @@ router.get(
 
 router.get(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_ventas_obtener_por_id", { VentaID: req.params.id });
     res.json(result.recordset[0] ?? null);
   })
@@ -150,9 +143,9 @@ router.get(
 
 router.get(
   "/:id/plan-pagos",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await querySql(
-      `SELECT * FROM fn_plan_pago_cliente(${parseInt(req.params.id)})`
+      `SELECT * FROM fn_plan_pago_cliente(${req.params.id})`
     );
 
     res.json(result.recordset ?? null);
@@ -161,7 +154,7 @@ router.get(
 
 router.get(
   "/:id/cuotas-pendientes",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await querySql("SELECT * FROM fn_tabla_pagos_pendientes(@id)", { id: req.params.id });
     res.json(result.recordset);
   })
@@ -169,7 +162,7 @@ router.get(
 // ------------------
 router.post(
   "/:id/plan-pagos",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const payload = { ventaId: req.params.id, ...req.body };
 
     // Transaccional: sp_generar_plan_pagos
@@ -181,7 +174,7 @@ router.post(
 
 router.put(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const payload = { VentaID: req.params.id, ...req.body };
     const result = await executeProcedure("sp_ventas_actualizar", payload);
     res.json(result.recordset ?? result.returnValue);
@@ -190,7 +183,7 @@ router.put(
 
 router.delete(
   "/:id",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const result = await executeProcedure("sp_ventas_eliminar", { VentaID: req.params.id });
     res.json(result.recordset ?? result.returnValue);
   })

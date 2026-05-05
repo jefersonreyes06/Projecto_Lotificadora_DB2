@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { pagosApi } from "../../services/api.js";
+import { cuentasApi, pagosApi } from "../../services/api.js";
 
 import {
   PageHeader, PageContent, Button, DataTable, Badge, Card, Input, Select,
@@ -11,35 +11,41 @@ const ESTADO_COLORS = { Activo: "success", Cancelado: "danger", "Al día": "succ
 
 export default function CuentasActivasList() {
   const [data, setData] = useState([]);
-  const [filtered, setFiltered] = useState([]);
+  const [filtered, setFiltered] = useState({ estado: "", nombreCompleto: "" });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchCuentas = async () => {
     setLoading(true);
-
-    pagosApi.cuentasPendientes()
-      .then((cuentasData) => {
-        setData(cuentasData);
-        setFiltered(cuentasData);
-      })
-      .catch((err) => {
-        console.error("Error cargando cuentas pendientes:", err);
-      })
-      .finally(() => {
-        setLoading(false);
+    try {
+      const response = await pagosApi.cuentasPendientes({
+        Estado: filtered.estado || null,
+        Cliente: filtered.nombreCompleto || null
       });
-  }, []);
+      const cleanData = Array.isArray(response) ? response : (response.data || []);
+
+      setData(cleanData);
+    } catch (err) {
+      console.error("Error:", err);
+      setData([]); // Si falla, que sea un array vacío para que .map() no explote
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCuentas();
+  }, [filtered.estado]);
+
+  const handleFilter = () => {
+    fetchCuentas();
+  }
 
   const columns = [
-    { key: "VentaID", label: "#", width: 60, render: (v) => <span className="text-stone-500 font-mono text-xs">{v}</span> },
-    { key: "Proyecto", label: "Proyecto" },
-    { key: "Etapa", label: "Etapa" },
-    { key: "Bloque", label: "Bloque" },
-    { key: "NumeroLote", label: "Número de Lote" },
-    { key: "PrecioFinal", label: "Precio Final" },
-    { key: "NombreCompleto", label: "Nombre Completo" },
-    { key: "DNI", label: "DNI" },
-    { key: "Estado", label: "Estado" },
+    { key: "Lote", label: "Lote" },
+    { key: "NombreCompleto", label: "Cliente" },
+    { key: "NumeroCuota", label: "No. Cuota" },
+    { key: "MontoCuota", label: "Monto de la Cuota" },
+    { key: "FechaVencimiento", label: "Fecha de Vencimiento", render: (v) => new Date(v).toLocaleDateString("es-HN") },
     {
       key: "VentaID",
       label: "",
@@ -56,15 +62,33 @@ export default function CuentasActivasList() {
   return (
     <div>
       <PageHeader
-        title="Cuentas Activas"
-        subtitle="vw_prestamos_activos - Créditos que aún no han sido pagados en su totalidad"
+        title="Cuotas"
+        subtitle="sp_ver_cuentas - Créditos que aún no han sido pagados en su totalidad"
       />
+      <Card className="p-4 mx-8 my-3">
+        <div className="flex gap-4">
+          <Select
+            value={filtered.estado}
+            onChange={(e) => setFiltered({ ...filtered, estado: e.target.value })}
+          >
+            <option value="">Todos los estados</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="mora">Mora</option>
+          </Select>
+          <Input
+            placeholder="Buscar por cliente"
+            value={filtered.nombreCompleto}
+            onChange={(e) => setFiltered({ ...filtered, nombreCompleto: e.target.value })}
+          />
+          <Button onClick={handleFilter} variant="outline">Filtrar</Button>
+        </div>
+      </Card>
       <PageContent>
         {/* Stats rápidas */}
         <Card>
           <DataTable
             columns={columns}
-            data={filtered}
+            data={Array.isArray(data) ? data : []}
             loading={loading}
           />
         </Card>

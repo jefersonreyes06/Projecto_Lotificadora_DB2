@@ -18,56 +18,56 @@ import {
 
 
 const EMPTY = {
-  nombre: "",
+  nombreCompleto: "",
   dni: "",
   rtn: "", // Campo agregado
-  fecha_nacimiento: "",
+  fechaNacimiento: "",
   genero: "",
-  estado_civil: "",
-  correo: "",
+  estadoCivil: "",
+  email: "",
   telefono: "",
-  telefono_alt: "",
+  telefonoAlt: "",
   departamento: "",
   municipio: "",
   direccion: "",
-  empresa: "",
-  cargo: "",
-  telefono_trabajo: "",
-  ingreso_mensual: "",
-  anios_laborando: "",
-  tipo_empleo: "Dependiente",
+  nombreEmpresa: "",
+  ocupacion: "",
+  telefonoEmpresa: "",
+  ingresoMensual: "",
+  aniosLaborando: "",
+  tipoEmpleo: "Dependiente",
   estado: "Activo",
 };
- 
+
 const STEPS = [
   { id: 1, label: "Datos personales", icon: "◌" },
-  { id: 2, label: "Dirección",        icon: "◍" },
-  { id: 3, label: "Datos laborales",  icon: "◎" },
-  { id: 4, label: "Confirmación",     icon: "◆" },
+  { id: 2, label: "Dirección", icon: "◍" },
+  { id: 3, label: "Datos laborales", icon: "◎" },
+  { id: 4, label: "Confirmación", icon: "◆" },
 ];
- 
-const GENEROS         = ["Masculino", "Femenino", "Otro", "Prefiero no indicar"];
+
+const GENEROS = ["Masculino", "Femenino", "Otro", "Prefiero no indicar"];
 const ESTADOS_CIVILES = ["Soltero/a", "Casado/a", "Divorciado/a", "Viudo/a", "Unión libre"];
-const TIPOS_EMPLEO    = ["Dependiente", "Independiente", "Empresario", "Jubilado", "Otro"];
-const DEPARTAMENTOS   = [
+const TIPOS_EMPLEO = ["Dependiente", "Independiente", "Empresario", "Jubilado", "Otro"];
+const DEPARTAMENTOS = [
   "Atlántida", "Choluteca", "Colón", "Comayagua", "Copán", "Cortés",
   "El Paraíso", "Francisco Morazán", "Gracias a Dios", "Intibucá",
   "Islas de la Bahía", "La Paz", "Lempira", "Ocotepeque", "Olancho",
   "Santa Bárbara", "Valle", "Yoro",
 ];
- 
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 const initials = (n, a) =>
   `${(n?.[0] ?? "").toUpperCase()}${(a?.[0] ?? "").toUpperCase()}`;
- 
+
 const capacidadPago = (ingreso) => {
   const n = parseFloat(ingreso);
   return n ? n * 0.3 : null;
 };
- 
+
 const fmtLps = (v) =>
   Number(v).toLocaleString("es-HN", { minimumFractionDigits: 2 });
- 
+
 // ── Paso 1 — Datos personales ──────────────────────────────────────────────
 function StepPersonal({ form, set, errors }) {
   return (
@@ -75,7 +75,7 @@ function StepPersonal({ form, set, errors }) {
       <SectionLabel>Identificación</SectionLabel>
       <div className="grid grid-cols-2 gap-4">
         <FormField label="Nombre(s)" required error={errors.nombre}>
-          <Input value={form.nombreComple} onChange={set("nombre")} placeholder="Juan Carlos" />
+          <Input value={form.nombreCompleto} onChange={set("nombreCompleto")} placeholder="Juan Carlos" />
         </FormField>
         <FormField label="DNI / Identidad" required error={errors.dni}>
           <Input value={form.dni} onChange={set("dni")} placeholder="0801-1990-12345" maxLength={15} />
@@ -96,11 +96,11 @@ function StepPersonal({ form, set, errors }) {
           </Select>
         </FormField>
       </div>
- 
+
       <SectionLabel>Contacto</SectionLabel>
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Correo electrónico" required error={errors.correo}>
-          <Input type="email" value={form.correo} onChange={set("correo")} placeholder="juan@ejemplo.com" />
+        <FormField label="Correo electrónico" required error={errors.email}>
+          <Input type="email" value={form.email} onChange={set("email")} placeholder="juan@ejemplo.com" />
         </FormField>
         <FormField label="Teléfono principal" required error={errors.telefono}>
           <Input value={form.telefono} onChange={set("telefono")} placeholder="9999-9999" maxLength={9} />
@@ -112,7 +112,7 @@ function StepPersonal({ form, set, errors }) {
     </div>
   );
 }
- 
+
 // ── Paso 2 — Dirección ────────────────────────────────────────────────────
 function StepDireccion({ form, set, errors }) {
   return (
@@ -143,7 +143,7 @@ function StepDireccion({ form, set, errors }) {
     </div>
   );
 }
- 
+
 // ── Paso 3 — Datos laborales ──────────────────────────────────────────────
 function StepLaboral({ form, set, errors }) {
   const cuota = capacidadPago(form.ingreso_mensual);
@@ -152,27 +152,27 @@ function StepLaboral({ form, set, errors }) {
       <SectionLabel>Información laboral</SectionLabel>
       <div className="grid grid-cols-2 gap-4">
         <FormField label="Tipo de empleo" required>
-          <Select value={form.tipo_empleo} onChange={set("tipo_empleo")}>
+          <Select value={form.tipoEmpleo} onChange={set("tipoEmpleo")}>
             {TIPOS_EMPLEO.map((t) => <option key={t}>{t}</option>)}
           </Select>
         </FormField>
         <FormField label="Empresa / Empleador" required error={errors.empresa}>
-          <Input value={form.empresa} onChange={set("empresa")} placeholder="Empresa S.A." />
+          <Input value={form.nombreEmpresa} onChange={set("nombreEmpresa")} placeholder="Empresa S.A." />
         </FormField>
         <FormField label="Cargo / Puesto">
-          <Input value={form.cargo} onChange={set("cargo")} placeholder="Analista, Gerente..." />
+          <Input value={form.ocupacion} onChange={set("ocupacion")} placeholder="Analista, Gerente..." />
         </FormField>
         <FormField label="Teléfono del trabajo">
-          <Input value={form.telefono_trabajo} onChange={set("telefono_trabajo")} placeholder="2234-5678" />
+          <Input value={form.telefonoEmpresa} onChange={set("telefonoEmpresa")} placeholder="2234-5678" />
         </FormField>
         <FormField label="Ingreso mensual (L)" required error={errors.ingreso_mensual}>
-          <Input type="number" value={form.ingreso_mensual} onChange={set("ingreso_mensual")} placeholder="0.00" min={0} />
+          <Input type="number" value={form.ingresoMensual} onChange={set("ingresoMensual")} placeholder="0.00" min={0} />
         </FormField>
         <FormField label="Años laborando">
-          <Input type="number" value={form.anios_laborando} onChange={set("anios_laborando")} placeholder="0" min={0} />
+          <Input type="number" value={form.aniosLaborando} onChange={set("aniosLaborando")} placeholder="0" min={0} />
         </FormField>
       </div>
- 
+
       {cuota && (
         <div className="bg-amber-400/5 border border-amber-400/20 rounded-md p-4 mt-2">
           <p className="text-xs text-amber-400/70 font-semibold uppercase tracking-wider mb-1">
@@ -187,32 +187,32 @@ function StepLaboral({ form, set, errors }) {
     </div>
   );
 }
- 
+
 // ── Paso 4 — Confirmación ────────────────────────────────────────────────
 function StepConfirmacion({ form }) {
   const cuota = capacidadPago(form.ingreso_mensual);
   const initStr = initials(form.nombre, form.apellido);
- 
+
   const rows = [
-    ["Correo",      form.correo],
-    ["Teléfono",    form.telefono],
+    ["Correo", form.correo],
+    ["Teléfono", form.telefono],
     ["Teléf. alt.", form.telefono_alt],
-    ["Estado civil",form.estado_civil],
-    ["Género",      form.genero],
-    ["Nacimiento",  form.fecha_nacimiento],
-    ["Departamento",form.departamento],
-    ["Municipio",   form.municipio],
-    ["Empresa",     form.empresa],
-    ["Cargo",       form.cargo],
-    ["Años lab.",   form.anios_laborando ? `${form.anios_laborando} años` : null],
-    ["Ingreso",     form.ingreso_mensual ? `L ${fmtLps(form.ingreso_mensual)}` : null],
-    ["Cap. pago",   cuota ? `L ${fmtLps(cuota)}` : null],
+    ["Estado civil", form.estado_civil],
+    ["Género", form.genero],
+    ["Nacimiento", form.fecha_nacimiento],
+    ["Departamento", form.departamento],
+    ["Municipio", form.municipio],
+    ["Empresa", form.empresa],
+    ["Cargo", form.cargo],
+    ["Años lab.", form.anios_laborando ? `${form.anios_laborando} años` : null],
+    ["Ingreso", form.ingreso_mensual ? `L ${fmtLps(form.ingreso_mensual)}` : null],
+    ["Cap. pago", cuota ? `L ${fmtLps(cuota)}` : null],
   ];
- 
+
   return (
     <div className="space-y-5">
       <SectionLabel>Resumen del cliente</SectionLabel>
- 
+
       {/* Avatar + nombre */}
       <div className="flex items-center gap-4 pb-5 border-b border-stone-800">
         <div className="w-14 h-14 rounded-full bg-amber-400/10 border-2 border-amber-400/30 flex items-center justify-center flex-shrink-0">
@@ -220,7 +220,7 @@ function StepConfirmacion({ form }) {
         </div>
         <div>
           <p className="text-lg font-semibold text-stone-100">
-            {form.nombre} {form.apellido}
+            {form.nombreCompleto}
           </p>
           <p className="text-sm text-stone-400">{form.dni || "Sin DNI"}</p>
           <div className="flex gap-2 mt-1.5">
@@ -229,7 +229,7 @@ function StepConfirmacion({ form }) {
           </div>
         </div>
       </div>
- 
+
       {/* Grid de datos */}
       <div className="grid grid-cols-2 gap-x-8 gap-y-3.5 text-sm">
         {rows.map(([label, value]) =>
@@ -241,7 +241,7 @@ function StepConfirmacion({ form }) {
           ) : null
         )}
       </div>
- 
+
       {form.direccion && (
         <div className="pt-4 border-t border-stone-800 text-sm">
           <span className="text-xs text-stone-500 block mb-1">Dirección completa</span>
@@ -251,7 +251,7 @@ function StepConfirmacion({ form }) {
     </div>
   );
 }
- 
+
 // ── Tiny helper ───────────────────────────────────────────────────────────
 function SectionLabel({ children }) {
   return (
@@ -260,22 +260,22 @@ function SectionLabel({ children }) {
     </p>
   );
 }
- 
+
 // ── Componente principal ──────────────────────────────────────────────────
 export default function ClienteForm() {
-  const { id }    = useParams();
-  const navigate  = useNavigate();
-  const isEdit    = Boolean(id);
- 
-  const [form,    setForm]    = useState(EMPTY);
-  const [step,    setStep]    = useState(1);
-  const [errors,  setErrors]  = useState({});
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const isEdit = Boolean(id);
+
+  const [form, setForm] = useState(EMPTY);
+  const [step, setStep] = useState(1);
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [saving,  setSaving]  = useState(false);
-  const [error,   setError]   = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   useNotifyError(error);
- 
+
   // Cargar en modo edición
   useEffect(() => {
     if (!isEdit) return;
@@ -286,40 +286,40 @@ export default function ClienteForm() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [id]);
- 
+
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
- 
+
   // Validación por paso
   const validate = (s) => {
     const errs = {};
     if (s === 1) {
-      if (!form.nombre.trim())   errs.nombre   = "El nombre es requerido";
-      if (!form.dni.trim())      errs.dni      = "El DNI es requerido";
+      if (!form.nombreCompleto.trim()) errs.nombre = "El nombre es requerido";
+      if (!form.dni.trim()) errs.dni = "El DNI es requerido";
       if (!form.telefono.trim()) errs.telefono = "El teléfono es requerido";
-      if (form.correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.correo))
-        errs.correo = "Correo electrónico inválido";
+      if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+        errs.email = "Correo electrónico inválido";
     }
     if (s === 2) {
-      if (!form.departamento)    errs.departamento = "Seleccione un departamento";
-      if (!form.municipio.trim())errs.municipio    = "El municipio es requerido";
-      if (!form.direccion.trim())errs.direccion    = "La dirección es requerida";
+      if (!form.departamento) errs.departamento = "Seleccione un departamento";
+      if (!form.municipio.trim()) errs.municipio = "El municipio es requerido";
+      if (!form.direccion.trim()) errs.direccion = "La dirección es requerida";
     }
     if (s === 3) {
-      if (!form.empresa.trim())      errs.empresa       = "La empresa es requerida";
-      if (!form.ingreso_mensual)     errs.ingreso_mensual = "Ingrese el ingreso mensual";
+      if (!form.nombreEmpresa.trim()) errs.empresa = "La empresa es requerida";
+      if (!form.ingresoMensual) errs.ingresoMensual = "Ingrese el ingreso mensual";
     }
     return errs;
   };
- 
+
   const next = () => {
     const errs = validate(step);
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setErrors({});
     setStep((s) => Math.min(s + 1, 4));
   };
- 
+
   const prev = () => setStep((s) => Math.max(s - 1, 1));
- 
+
   const handleSubmit = async () => {
     setSaving(true);
     setError(null);
@@ -339,7 +339,7 @@ export default function ClienteForm() {
       setSaving(false);
     }
   };
- 
+
   // ── Render ───────────────────────────────────────────────────────────────
   return (
     <div>
@@ -352,37 +352,36 @@ export default function ClienteForm() {
           </Link>
         }
       />
- 
+
       <PageContent>
         {loading ? (
           <p className="text-sm text-stone-500 animate-pulse">Cargando cliente...</p>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
- 
+
             {/* ── Columna principal ──────────────────────────────────── */}
             <div className="lg:col-span-2 space-y-4">
               {error && <Alert variant="danger">{error}</Alert>}
- 
+
               {/* Stepper tabs */}
               <div className="grid grid-cols-4 gap-1">
                 {STEPS.map((s) => (
                   <button
                     key={s.id}
                     onClick={() => { if (s.id < step) setStep(s.id); }}
-                    className={`flex flex-col items-center gap-1.5 py-3 rounded-lg text-xs font-medium transition-all border ${
-                      step === s.id
-                        ? "bg-amber-400/10 border-amber-400/40 text-amber-400"
-                        : step > s.id
+                    className={`flex flex-col items-center gap-1.5 py-3 rounded-lg text-xs font-medium transition-all border ${step === s.id
+                      ? "bg-amber-400/10 border-amber-400/40 text-amber-400"
+                      : step > s.id
                         ? "bg-stone-800 border-stone-700 text-stone-400 hover:text-stone-200 cursor-pointer"
                         : "bg-stone-900 border-stone-800 text-stone-600 cursor-default"
-                    }`}
+                      }`}
                   >
                     <span className="text-lg">{s.icon}</span>
                     <span className="hidden sm:block leading-tight text-center">{s.label}</span>
                   </button>
                 ))}
               </div>
- 
+
               {/* Barra de progreso */}
               <div className="h-0.5 bg-stone-800 rounded-full overflow-hidden">
                 <div
@@ -390,14 +389,14 @@ export default function ClienteForm() {
                   style={{ width: `${((step - 1) / (STEPS.length - 1)) * 100}%` }}
                 />
               </div>
- 
+
               {/* Contenido del paso */}
               <Card className="p-6">
-                {step === 1 && <StepPersonal  form={form} set={set} errors={errors} />}
+                {step === 1 && <StepPersonal form={form} set={set} errors={errors} />}
                 {step === 2 && <StepDireccion form={form} set={set} errors={errors} />}
-                {step === 3 && <StepLaboral   form={form} set={set} errors={errors} />}
+                {step === 3 && <StepLaboral form={form} set={set} errors={errors} />}
                 {step === 4 && <StepConfirmacion form={form} />}
- 
+
                 {/* Botones de navegación */}
                 <div className="flex justify-between items-center mt-8 pt-5 border-t border-stone-800">
                   <div>
@@ -418,18 +417,18 @@ export default function ClienteForm() {
                         {saving
                           ? "Guardando..."
                           : isEdit
-                          ? "Actualizar cliente"
-                          : "Registrar cliente"}
+                            ? "Actualizar cliente"
+                            : "Registrar cliente"}
                       </Button>
                     )}
                   </div>
                 </div>
               </Card>
             </div>
- 
+
             {/* ── Panel lateral ──────────────────────────────────────── */}
             <div className="space-y-4">
- 
+
               {/* Avatar en tiempo real */}
               <Card className="p-5 flex flex-col items-center text-center gap-3">
                 <div className="w-16 h-16 rounded-full bg-amber-400/10 border-2 border-amber-400/30 flex items-center justify-center">
@@ -439,7 +438,7 @@ export default function ClienteForm() {
                 </div>
                 <div>
                   <p className="font-semibold text-stone-100 leading-snug">
-                    {form.nombre || "Nombre"} 
+                    {form.nombreCompleto || "Nombre"}
                   </p>
                   <p className="text-xs text-stone-500 mt-0.5">{form.dni || "Sin DNI"}</p>
                 </div>
@@ -447,18 +446,18 @@ export default function ClienteForm() {
                   {form.estado}
                 </Badge>
               </Card>
- 
+
               {/* Vista previa */}
               <Card className="p-4 space-y-3 text-sm">
                 <p className="text-xs font-semibold uppercase tracking-widest text-stone-500">
                   Vista previa
                 </p>
                 {[
-                  ["Teléfono",    form.telefono],
-                  ["Correo",      form.correo],
-                  ["Departamento",form.departamento],
-                  ["Empresa",     form.empresa],
-                  ["Ingreso",     form.ingreso_mensual ? `L ${fmtLps(form.ingreso_mensual)}` : null],
+                  ["Teléfono", form.telefono],
+                  ["Correo", form.correo],
+                  ["Departamento", form.departamento],
+                  ["Empresa", form.empresa],
+                  ["Ingreso", form.ingreso_mensual ? `L ${fmtLps(form.ingreso_mensual)}` : null],
                 ].map(([label, val]) =>
                   val ? (
                     <div key={label} className="flex justify-between gap-2">
@@ -468,7 +467,7 @@ export default function ClienteForm() {
                   ) : null
                 )}
               </Card>
- 
+
               {/* Capacidad de pago */}
               {capacidadPago(form.ingreso_mensual) && (
                 <Card className="p-4 bg-amber-400/5 border-amber-400/20">
@@ -481,7 +480,7 @@ export default function ClienteForm() {
                   <p className="text-xs text-stone-600 mt-1">Cuota mensual máxima</p>
                 </Card>
               )}
- 
+
               {/* Indicador de pasos */}
               <Card className="p-4">
                 <p className="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-3">
@@ -491,13 +490,12 @@ export default function ClienteForm() {
                   {STEPS.map((s) => (
                     <div key={s.id} className="flex items-center gap-2.5 text-sm">
                       <span
-                        className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] flex-shrink-0 ${
-                          step > s.id
-                            ? "bg-emerald-400/20 text-emerald-400"
-                            : step === s.id
+                        className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] flex-shrink-0 ${step > s.id
+                          ? "bg-emerald-400/20 text-emerald-400"
+                          : step === s.id
                             ? "bg-amber-400/20 text-amber-400"
                             : "bg-stone-800 text-stone-600"
-                        }`}
+                          }`}
                       >
                         {step > s.id ? "✓" : s.id}
                       </span>
@@ -506,8 +504,8 @@ export default function ClienteForm() {
                           step === s.id
                             ? "text-stone-200 font-medium"
                             : step > s.id
-                            ? "text-stone-400"
-                            : "text-stone-600"
+                              ? "text-stone-400"
+                              : "text-stone-600"
                         }
                       >
                         {s.label}

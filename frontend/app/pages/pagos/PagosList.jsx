@@ -160,7 +160,7 @@ export default function PagosList() {
         {/* Cuentas Pendientes */}
         <Card className="p-5 mb-6 border-blue-400/20 bg-blue-400/5">
           <p className="text-xs font-semibold uppercase tracking-widest text-blue-400/70 mb-3">
-            Ver cuentas pendientes de clientes
+            Ver cuentas de clientes
           </p>
           <div className="flex gap-3 items-end flex-wrap">
             <Button onClick={handlecuentasPendientes}>
